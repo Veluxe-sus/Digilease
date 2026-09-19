@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Task 8 is done and deployed. Next: Task 9 go live. Claude only, in this folder. Deadline: live Sep 20 by 12:00 IST; video/submission by 18:00 IST.
+Site is live at https://main.d109k3dqf4r860.amplifyapp.com (Amplify, manual zip upload). Task 9: only the user's real-phone check is left. Claude only, in this folder. Deadline: live Sep 20 by 12:00 IST; video/submission by 18:00 IST.
 
 ## Done
 - Tasks 0–7 done and deployed (stack `pata-card`, ap-south-1, account 499567237530). Smoke steps 1–12 pass live.
@@ -10,9 +10,10 @@ Task 8 is done and deployed. Next: Task 9 go live. Claude only, in this folder. 
 - Steps 3–4 (`26706e8`): `offline.js` (Cache Storage), `public/sw.js` (network first, cache fallback, `ignoreVary`), `OfflineMap.jsx`, and a `SharedView` chip plus the "Preview offline map" link. Playwright on the production build: first visit is enough; offline reload shows the streets, square, route, both codes, the distance and "along the route"; the outside and arrived states work; 320/360/1440 px have no overflow; revoke → copy deleted.
 - Bucket CORS GET deployed 2026-09-20; the door photo is saved and shows offline (Playwright).
 - Overpass policy and OSM credit rules noted in RESEARCH.
+- Task 9 (2026-09-20 ~02:00 IST): Amplify app `main.d109k3dqf4r860` with the SPA rewrite (includes `mjs`). Stack redeployed with `AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com` after adding `ForceUpdate: true` to MapApiKey (the first try rolled back). Verified: API CORS, bucket CORS and map-key referers all list the site; the live share link shows tiles, is saved for offline, and opens offline. To redeploy the frontend: `npm run build`, zip with `/` paths (Python, not Compress-Archive), then Amplify → Deploy updates.
 
 ## Next
-1. Task 9 go live: Amplify deploy + `AllowedOrigin` redeploy. Then a real-phone check: QR scan, airplane mode, GPS route line, PDF print.
+1. Task 9 real-phone check (user): sign in, create a card with GPS, share, print the PDF, scan the QR with a second phone, route, then airplane mode → offline map.
 2. Task 10 review (security review includes `/area` and the service worker). Polish item: a small vertical scrollbar on the laptop offline view. Then Task 11 demo.
 
 ## Decisions

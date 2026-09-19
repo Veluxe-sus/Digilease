@@ -64,6 +64,7 @@ Sources: https://aws.amazon.com/location/pricing/ · https://docs.aws.amazon.com
 
 ## Learned while deploying (2026-09-19)
 - **SAM HttpApi silently drops `CorsConfiguration` when `AllowOrigins` is built with `!If`.** `sam validate --lint` still passes. Use plain lists: `["http://localhost:5173", !Ref AllowedOrigin]`. Check with `aws apigatewayv2 get-api ... --query CorsConfiguration`.
+- **An Amazon Location API key that was used in the last 7 days rejects a change to its restrictions** (for example new `AllowReferers`) unless the key sets `ForceUpdate: true`. Without it the stack rolls back. The key value stays the same.
 - **On a stack update, CloudFormation keeps the previous parameter value**, not the template's new default. Pass `--parameter-overrides` when a parameter's meaning changes.
 - **Amazon Location Routes v2 works in ap-south-1.** `CalculateRoutes` with `LegGeometryFormat: "Simple"` + `LegAdditionalFeatures: ["Summary"]` returned 381 points, 10,361 m and 1,582 s for Chennai Central to the DIGIPIN example point.
 - **MapLibre GL v6 (6.10) under Vite:** named exports only (no default). The worker is loaded from `new URL('./maplibre-gl-worker.mjs', import.meta.url)`, which breaks once Vite pre-bundles it: the style never finishes loading and **no error is shown**. The fix is to copy `maplibre-gl-worker.mjs` + `maplibre-gl-shared.mjs` into `public/maplibre/` and call `setWorkerUrl("/maplibre/maplibre-gl-worker.mjs")`.

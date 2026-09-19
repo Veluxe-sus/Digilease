@@ -179,6 +179,8 @@ Resources:
       KeyName: !Sub ${AWS::StackName}-map-key
       Description: PataCard map tiles from the browser
       NoExpiry: true
+      # Required to change the allowed referers of a key used in the last 7 days; the key value stays the same.
+      ForceUpdate: true
       Restrictions:
         AllowActions:
           - geo-maps:GetTile
