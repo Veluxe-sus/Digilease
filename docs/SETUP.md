@@ -91,7 +91,7 @@ Send it as `Authorization: <token>`. Use the ID token, not the access token: the
 ## 4. Go live on Amplify Hosting (Task 7)
 1. `cd frontend; npm run build`. Zip the *contents* of `frontend\dist` (not the folder itself).
 2. AWS console → Amplify → Create new app → **Deploy without Git** → upload the zip.
-3. App → Hosting → Rewrites and redirects → add: source `</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>` → target `/index.html` → type `200 (Rewrite)`.
+3. App → Hosting → Rewrites and redirects → add: source `</^[^.]+$|\.(?!(css|gif|ico|jpg|js|mjs|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>` → target `/index.html` → type `200 (Rewrite)`.
 4. Copy the app URL (`https://<branch>.<appid>.amplifyapp.com`), then:
 ```powershell
 sam build; sam deploy --parameter-overrides AllowedOrigin=https://<branch>.<appid>.amplifyapp.com
