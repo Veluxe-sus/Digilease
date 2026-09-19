@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Task 0 done. Planning docs are waiting for the user's "verified". Targets: live by Sept 20 12:00 IST, submitted by 18:00 IST.
+Task 0 done. Planning docs are waiting for the user's "verified". Deadline Sept 20 EOD. Targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
 - Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).

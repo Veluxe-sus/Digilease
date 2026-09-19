@@ -102,7 +102,8 @@ Files: `frontend/src/components/MapView.jsx`, `frontend/src/pages/NewCard.jsx`, 
   - "New link" form (name + hours presets 2 / 24 / 72 / custom)
   - links list with status pill, copy, QR (`qrcode` → canvas) and revoke
   - access log
-- Use the `frontend-design` skill for layout and visual design (one pass, not a redesign loop).
+- Follow `docs/DESIGN.md` (colours, type, components) and match `docs/mockups/` (Stitch project "PataCard", id 2246405162473946986). Then one pass with the `frontend-design` skill, not a redesign loop.
+- Mockup copy to NOT ship (false claims): "Verified property coordinates", "Zero Persisted Coordinates", "up to 10MB" (the limit is 5 MB).
 - **Check:** create a card with a photo; create 2 links; revoke one; the list shows the right statuses.
 
 ## Task 6: Receiver view and route (about 1.5 hours)

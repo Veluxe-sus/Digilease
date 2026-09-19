@@ -48,7 +48,7 @@ This file is the single source of rules. It works for Claude Code (through `CLAU
 - **Amazon Location Service stays.**
   - It isn't on the Ship It list, but the judging rule says "Using an AWS open-source project or AWS services is mandatory to win".
   - The architecture already rests on 7 listed services: Amplify Hosting, API Gateway, Lambda, DynamoDB, S3, Cognito, CloudWatch.
-- **Deadline unknown.** Assume it closes on Sept 20:
+- **Deadline: Sept 20, 2026, end of day** (confirmed by the user). Targets:
   - live on AWS by **Sept 20, 12:00 IST**
   - video and submission by **Sept 20, 18:00 IST**
 
