@@ -278,7 +278,22 @@ async function routeToShare(event, token) {
 
 class AreaUnavailable extends Error {}
 
+// Overpass policy: after an error, wait 30 s before asking again.
+// ponytail: per Lambda instance, not global; enough at one fetch per card.
+const OVERPASS_PAUSE_MS = 30_000;
+let overpassPausedUntil = 0;
+
 async function fetchStreets(box) {
+  if (Date.now() < overpassPausedUntil) throw new AreaUnavailable("Overpass paused after a recent failure");
+  try {
+    return await queryOverpass(box);
+  } catch (err) {
+    overpassPausedUntil = Date.now() + OVERPASS_PAUSE_MS;
+    throw err;
+  }
+}
+
+async function queryOverpass(box) {
   const query = `[out:json][timeout:8];way["highway"](${box.south},${box.west},${box.north},${box.east});out geom;`;
   let res;
   try {
@@ -365,5 +380,5 @@ async function handler(event) {
 
 module.exports = {
   handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest,
-  areaBox, toStreets,
+  areaBox, toStreets, fetchStreets,
 };

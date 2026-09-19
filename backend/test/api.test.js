@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { getDigiPin, getLatLngFromDigiPin } = require("../src/digipin");
 const {
-  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest, areaBox, toStreets,
+  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest, areaBox, toStreets, fetchStreets,
 } = require("../src/api");
 
 test("owner routes refuse requests with no signed-in user", async () => {
@@ -111,4 +111,18 @@ test("Overpass ways become streets with [lon, lat] lines rounded to 6 decimals",
     { name: null, kind: "footway", line: [[80.1, 13.1], [80.2, 13.2]] },
   ]);
   assert.deepEqual(toStreets({}), []);
+});
+
+test("after an Overpass failure, calls pause for 30 s instead of hammering it", async () => {
+  const realFetch = globalThis.fetch;
+  let calls = 0;
+  globalThis.fetch = async () => { calls++; return new Response("busy", { status: 429 }); };
+  try {
+    const box = areaBox(13.11, 80.2);
+    await assert.rejects(fetchStreets(box));
+    await assert.rejects(fetchStreets(box));
+    assert.equal(calls, 1);
+  } finally {
+    globalThis.fetch = realFetch;
+  }
 });

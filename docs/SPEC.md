@@ -89,7 +89,7 @@ Errors: 400 `{error}` with a plain-language message for bad input; 500 with a ge
 - The server computes and validates the DIGIPIN. Input outside India's DIGIPIN area → 400. The receiver's own DIGIPIN is computed on their phone for display only and is never sent.
 - A share is live when it is not revoked and `expiresAt` is absent or in the future. Checked in code on every public route.
 - S3 blocks all public access. Photo size and type are enforced by the presigned POST conditions.
-- The Lambda's only outside call is the Overpass API: 8-second timeout, responses over 3 MB rejected, a `User-Agent` naming the app. At most one fetch per card; after that, S3 serves it.
+- The Lambda's only outside call is the Overpass API: 8-second timeout, responses over 3 MB rejected, a `User-Agent` naming the app. At most one fetch per card; after that, S3 serves it. After a failed call, the Lambda waits 30 s before calling Overpass again (its usage policy).
 - CORS: only the Amplify domain and `http://localhost:5173`.
 - API Gateway throttling: 10 requests/s, burst 20.
 - The map API key only allows map tiles, and only from our domains.

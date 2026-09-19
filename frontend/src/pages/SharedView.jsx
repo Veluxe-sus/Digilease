@@ -191,7 +191,7 @@ export default function SharedView() {
     if (preview) banner = "Preview: this is what shows with no internet.";
     else if (backOnline) banner = "Back online";
     return (
-      <div className="receiver-shell">
+      <div className="receiver-shell offline-shell">
         <div className="offline-banner" role="status">
           <span>{banner}</span>
           {(preview || backOnline) && (

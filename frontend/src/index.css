@@ -294,7 +294,9 @@ a { color: inherit; }
 .door-thumb.big img { width: auto; height: auto; max-width: 100%; max-height: 100%; }
 .credit { font-size: 12px; color: var(--muted); }
 @media (min-width: 1024px) {
-  .offline-view { grid-template-rows: none; grid-template-columns: minmax(0, 1.45fr) minmax(380px, 1fr); height: calc(100dvh - 48px); }
+  /* Banner + view fill the screen exactly, whatever the banner's height. */
+  .offline-shell { display: flex; flex-direction: column; height: 100dvh; }
+  .offline-view { grid-template-rows: none; grid-template-columns: minmax(0, 1.45fr) minmax(380px, 1fr); flex: 1; min-height: 0; }
   .offline-map .map { height: 100%; }
   .offline-sheet { margin: 0; border-radius: 0; align-content: start; padding: 32px; box-shadow: none; border-left: 1px solid var(--line); }
 }
