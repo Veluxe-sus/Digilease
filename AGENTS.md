@@ -23,6 +23,7 @@ This file is the single source of rules. It works for Claude Code (through `CLAU
 - Backend: one Node 22 Lambda (`backend/src/api.js`) behind an API Gateway HTTP API. Cognito JWT authorizer on owner routes.
 - Data: DynamoDB (Cards, Shares, Access); private S3 bucket for door photos.
 - Maps: Amazon Location Service. Map tiles use a browser API key; routes are called from Lambda with its IAM role.
+- Offline street data: OpenStreetMap through the Overpass API, fetched by the Lambda once per card and stored in S3 (ODbL; credit "© OpenStreetMap contributors"). The receiver's phone keeps it in Cache Storage through a hand-written service worker. Never store Amazon map tiles for offline use.
 - Infrastructure as code: one SAM `template.yaml`. Region `ap-south-1` (Mumbai).
 
 ## Hard rules

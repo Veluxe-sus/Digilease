@@ -11,20 +11,20 @@ Skill names are Claude Code skills (plugin names in brackets). MCP servers are w
 |---|---|---|---|
 | `superpowers:executing-plans` | every task | Run this plan task by task with checks | Follow this file in order; tick tasks in CHECKPOINT |
 | `superpowers:systematic-debugging` | any failure | Find the root cause before changing code | Reproduce → read the error → one hypothesis → one fix → re-run |
-| `superpowers:test-driven-development` | Tasks 1, 4 | Write the failing test first for new logic | Add a `node:test` case before the code it checks |
-| `frontend-design` | Tasks 5, 8 | Layout and visual design for the product UI | Clean, mobile-first, accessible layout; one accent colour; no templates |
-| `security-review` | Task 8 | Review the public routes, tokens, CORS, IAM and S3 | Manually check SPEC "Security" line by line |
-| `code-review` | Task 8 | Correctness review of the full diff | Read the diff for bugs against SPEC |
+| `superpowers:test-driven-development` | Tasks 1, 4, 7, 8 | Write the failing test first for new logic | Add a `node:test` case before the code it checks |
+| `frontend-design` | Tasks 5, 10 | Layout and visual design for the product UI | Clean, mobile-first, accessible layout; one accent colour; no templates |
+| `security-review` | Task 10 | Review the public routes, tokens, CORS, IAM, S3 and the Overpass call | Manually check SPEC "Security" line by line |
+| `code-review` | Task 10 | Correctness review of the full diff | Read the diff for bugs against SPEC |
 | `superpowers:verification-before-completion` | end of each task | No "done" without evidence | Paste test, build or curl output before claiming done |
-| `superpowers:finishing-a-development-branch` | Task 9 | Final checks and wrap-up | Tests + build pass, commit, tag `v1-submission` |
-| `run` | Tasks 5–7 | Launch the app and see the change working | `npm run dev`, open http://localhost:5173 |
+| `superpowers:finishing-a-development-branch` | Task 11 | Final checks and wrap-up | Tests + build pass, commit, tag `v1-submission` |
+| `run` | Tasks 5–9 | Launch the app and see the change working | `npm run dev`, open http://localhost:5173 |
 
 ### MCP servers
 | MCP | Used in | For | Fallback without it |
 |---|---|---|---|
-| `context7` | Tasks 2, 4–6 | Current docs: AWS SAM, SDK v3 (`client-geo-routes`, `lib-dynamodb`, `s3-presigned-post`), Amazon Location, MapLibre GL, Amplify v6 Auth | Official docs sites: docs.aws.amazon.com, maplibre.org, docs.amplify.aws |
-| `playwright` | Tasks 6, 7 | Scripted browser run of create → share → view → revoke | Do the flow by hand in two browser windows |
-| `chrome-devtools` | Tasks 5–8 | Console and network errors, mobile emulation, Lighthouse accessibility check | Browser DevTools by hand |
+| `context7` | Tasks 2, 4–8 | Current docs: AWS SAM, SDK v3 (`client-geo-routes`, `lib-dynamodb`, `s3-presigned-post`), Amazon Location, MapLibre GL, Amplify v6 Auth, Service Worker and Cache Storage (MDN) | Official docs sites: docs.aws.amazon.com, maplibre.org, docs.amplify.aws, developer.mozilla.org, wiki.openstreetmap.org (Overpass API) |
+| `playwright` | Tasks 6–9 | Scripted browser run of create → share → view → revoke, and offline mode (`context.setOffline(true)`) | Do the flow by hand in two browser windows; DevTools "Offline" throttling |
+| `chrome-devtools` | Tasks 5–10 | Console and network errors, mobile emulation, Lighthouse accessibility check | Browser DevTools by hand |
 
 Not used: paid or credit-consuming tools (image generation, Canva, Adobe, 21st, firecrawl). claude-mem is not used either: its memory doesn't travel with the repo, and these files do.
 
@@ -115,37 +115,102 @@ Files: `frontend/src/components/MapView.jsx`, `frontend/src/pages/NewCard.jsx`, 
 
 ## Task 6: Receiver view and route (about 1.5 hours)
 File: `frontend/src/pages/SharedView.jsx`
-- `GET /s/{token}` → map pin, DIGIPIN, landmark, photo, expiry note.
+- `GET /s/{token}` → map pin, DIGIPIN, landmark, photo, expiry note ("No expiry" when `expiresAt` is null).
 - "Route from my location": browser geolocation → `POST /s/{token}/route` → draw the line on the map, show distance and minutes.
 - Fallback button: "Open in maps" (geo: link) for when routing fails.
 - A 410 shows "This address is no longer shared".
+- No phone number or "Call owner" button (SPEC Decisions).
 - **Check:** open a live link in a private window → it works. Revoke it → reload → dead message.
 
-## Task 7: Go live (about 1 hour)
+## Task 7: No-expiry links and the printable QR card (about 1 hour)
+Files: `backend/src/api.js`, `backend/test/api.test.js`, `frontend/src/pages/CardView.jsx`, `frontend/src/pages/PrintCard.jsx` (new), `frontend/src/main.jsx`, `frontend/src/index.css`
+- **Backend:**
+  - `validateShareInput`: `hours` 0–168; 0 means no expiry.
+  - `createShare`: leave `expiresAt` out when `hours` is 0.
+  - `isShareLive` and the status in `getCard`: live when not revoked and `expiresAt` is absent or in the future.
+  - `viewShare`: return `expiresAt: null` when absent.
+  - Tests first: `hours: 0` accepted, `-1` and `169` rejected; a share with no `expiresAt` is live; a revoked one is not.
+- **CardView:**
+  - "No expiry" preset next to 2 / 24 / 72 / custom; the list shows "No expiry" for those links.
+  - The note under the form: "Receivers can keep an offline copy until the link expires."
+  - "Print card" on each live link → `/card/:id/print/:token`.
+- **PrintCard page** (owner route):
+  - loads `GET /cards/{id}`, finds the share by token; a missing or dead link shows a message instead
+  - large QR of `${origin}/s/${token}` (`qrcode`), DIGIPIN 3-4-3, landmark, door photo, "Scan to find the door", "Valid until …" when the link expires
+  - "Print / Save as PDF" → `window.print()`; `@media print` hides everything but the card; `@page` sized A6
+- Nothing new to install; `qrcode` is already a dependency.
+- **Check:** `backend npm test` passes; redeploy (announce first); create a no-expiry link, print to PDF, scan the QR on the PDF with a phone → the receiver page opens.
+
+## Task 8: Last-km offline map (about 4–5 hours)
+Read SPEC "Last-km offline map" first. Check the Overpass API usage policy and the ODbL credit rule on wiki.openstreetmap.org before step 1, and note what you found in `docs/RESEARCH.md`.
+
+**Step 1, backend: the area route.**
+Files: `backend/src/api.js`, `backend/test/api.test.js`, `template.yaml`
+- `GET /s/{token}/area` (public): live-share check → read `areas/{cardId}.json` from S3 → if missing, fetch from Overpass, convert, store, return. No access entry.
+- Overpass query for the ±500 m box around the card's `lat`/`lon`: `[out:json][timeout:8];way["highway"](S,W,N,E);out geom;` sent by POST to `https://overpass-api.de/api/interpreter` with Node's built-in `fetch`, an 8 s `AbortSignal.timeout`, a 3 MB cap and a `User-Agent: PataCard (hackathon)`.
+- Pure helpers, tested first: `areaBox(lat, lon)` → `{south, west, north, east}`; `toStreets(overpassJson)` → `[{name, kind, line}]` with coordinates rounded to 6 decimals.
+- Overpass error, timeout or oversize → 503 `{error: "Street map not available right now"}`; nothing is stored.
+- Add the route to the public list in the handler's `isPublic` check.
+- `template.yaml`: new `GetArea` event, `Path: "/s/{token}/area"`, `Method: GET`, `Auth: { Authorizer: NONE }`. The existing `S3CrudPolicy` already covers `areas/`. Keep the 10 s Lambda timeout.
+- **Check:** `npm test`; `sam validate --lint`; redeploy (announce first); `curl <ApiUrl>/s/<live token>/area` twice: the first call fetches, the second is served from S3 (it's faster, and the object is in the bucket); a revoked token → 410.
+
+**Step 2, frontend math (pure, tested first).**
+File: `frontend/src/lib/geo.js`, tests in `frontend/src/lib/lib.test.js`
+- `distanceMeters(a, b)` (haversine), `insideBox(point, box)`, `alongRoute(point, line)` → metres left along the line from the nearest point, or null when more than 50 m from it.
+- **Check:** `frontend npm test` passes, with known distances (for example two DIGIPIN cell centres).
+
+**Step 3, save for offline.**
+Files: `frontend/src/lib/offline.js` (new), `frontend/public/sw.js` (new), `frontend/src/pages/SharedView.jsx`
+- `offline.js`: save, load and delete the per-token copy in Cache Storage under keys `/offline/{token}/card|photo|area|route`; `load` returns nothing and deletes the copy when `expiresAt` has passed.
+- `SharedView`:
+  - online load → save the card and fetch + save the photo blob and `/area`
+  - after a route → save the line
+  - a 410 → delete the copy
+  - a failed fetch → load the copy and switch to the offline view
+- `sw.js` (hand-written, about 30 lines, no library): on fetch of same-origin GET requests, go to the network first; on failure answer from the cache, with navigations falling back to the cached `/index.html`. `SharedView` also adds the page's own loaded files (`performance.getEntriesByType("resource")`, same origin, plus `/` and `/index.html`) to the cache, so the first visit is enough.
+- Register the service worker from `SharedView` with scope `/`, only in production builds (`import.meta.env.PROD`).
+- The "Saved for offline" chip.
+- **Check:** `npm run build && npm run preview`; with Playwright open a live link, then `setOffline(true)` and reload → the page opens and shows the saved card and photo.
+
+**Step 4, the offline map view.**
+Files: `frontend/src/components/OfflineMap.jsx` (new), `frontend/src/pages/SharedView.jsx`, `frontend/src/index.css`
+- MapLibre with an inline style: a plain background, GeoJSON sources for streets, the square outline and the route. No tile URLs and no glyphs; the door and "you" markers and the code labels are HTML `Marker`s and a panel, so nothing needs the network.
+- `navigator.geolocation.watchPosition` → "You: …" DIGIPIN via `getDigiPin`; the door code; the distance from `distanceMeters`, and "about N m along the route" from `alongRoute`; the outside-the-square message; the OpenStreetMap credit line.
+- "Show offline map" toggle, and automatic switching when offline.
+- **Check:** in Playwright (preview build): open the link, route, `setOffline(true)`, set a fake geolocation inside the square → the map shows streets, the route, both markers, the right codes and a distance. Move the fake position outside → the outside message. Then on a real phone in airplane mode.
+
+## Task 9: Go live (about 1 hour)
 - `npm run build` → **(You)** Amplify Hosting manual deploy of `frontend/dist` + the SPA rewrite rule (SETUP §4).
 - **(You)** redeploy SAM with `AllowedOrigin=https://<branch>.<appid>.amplifyapp.com` (updates CORS and the map key).
-- **Check on a real phone:** sign in, create a card with GPS, share, scan the QR with another phone, route. The map does not load from any other domain.
+- **Check on a real phone:** sign in, create a card with GPS, share, scan the QR with another phone, route, then airplane mode → the offline map still works. The map does not load from any other domain.
 
-## Task 8: Review and polish (about 1.5 hours)
-- Run the `security-review` skill on the public routes and the template.
-- UI polish; empty and error states; mobile widths.
-- README: live URL, architecture, screenshots, what we learned.
-- **Check:** `superpowers:verification-before-completion`. Tests pass, build passes, phone flow works.
+## Task 10: Review and polish (about 1.5 hours)
+- Run the `security-review` skill on the public routes (including `/area` and the Overpass call), the service worker and the template.
+- UI polish; empty and error states; mobile widths. (The user will give UI direction separately.)
+- README: live URL, architecture (with OpenStreetMap / Overpass), screenshots, the "why not" table with the offline row, what we learned.
+- **Check:** `superpowers:verification-before-completion`. Tests pass, build passes, phone flow works online and offline.
 
-## Task 9: Demo video (You + Claude, about 1 hour)
+## Task 11: Demo video (You + Claude, about 1 hour)
 | Time | Shot |
 |---|---|
-| 0:00–0:30 | The problem: landmark addresses fail ambulances and riders; DIGIPIN exists but can't be shared safely. |
-| 0:30–1:15 | Owner drops a pin, DIGIPIN appears, adds "blue gate, behind temple" + photo, gets the card. |
-| 1:15–2:00 | Creates "Ambulance, 24 h" link; on a phone the receiver opens the QR, sees the photo, taps route. |
-| 2:00–2:30 | Owner sees "Ambulance opened at 14:02", revokes it; the receiver reloads and sees the dead link. |
-| 2:30–2:45 | "Why not just WhatsApp?" Show the README table: place not person, door photo, no phone numbers, revoke, access log, speakable code. |
+| 0:00–0:25 | The problem: landmark addresses fail riders and guests, and the last kilometre is where the signal drops. DIGIPIN exists but can't be shared safely. |
+| 0:25–0:55 | Owner drops a pin, DIGIPIN appears, adds "blue gate, behind temple" + photo, gets the card. |
+| 0:55–1:20 | Creates a "Wedding guests, no expiry" link and prints the QR card. |
+| 1:20–2:05 | A guest scans the QR at home: map, photo, route, "Saved for offline". Airplane mode on: the offline map still shows the streets, the blue dot, "You: …", "Door: …" and "240 m to go". |
+| 2:05–2:30 | Owner sees "Wedding guests opened at 14:02", revokes a courier link; the courier's page shows the dead link. |
+| 2:30–2:45 | "Why not WhatsApp or Google Maps?" Place not person, door photo, no phone numbers, revoke, access log, and the last kilometre works with no signal. |
 | 2:45–3:00 | Architecture diagram, cost of about $0, what we learned. |
 
-## If time runs short, cut in this order
-1. print layout
-2. photo upload
-3. access-log UI (keep logging)
-4. in-app route (keep the "Open in maps" link)
+## Task 12: Stretch, offline re-route (about 2 hours, only if Tasks 9–11 are done)
+File: `frontend/src/lib/geo.js` (+ tests), `frontend/src/components/OfflineMap.jsx`
+- Build a graph from the saved streets (street points shared between ways are junctions), snap the receiver and the door to the nearest points, shortest path (Dijkstra), draw it and show its length.
+- **Check:** a unit test on a small hand-made street grid; then in Playwright offline, the drawn path follows the streets.
 
-Never cut: create → share → view → revoke.
+## If time runs short, cut in this order
+1. Task 12 (offline re-route)
+2. "about N m along the route" (keep the straight-line distance)
+3. the photo in the offline copy
+4. access-log UI (keep logging)
+5. in-app route (keep the "Open in maps" link)
+
+Never cut: create → share → view → revoke, and the offline map with streets, "you" dot, both codes and the distance. They are the pitch.
