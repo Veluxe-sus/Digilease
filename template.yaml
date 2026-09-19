@@ -1,0 +1,210 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: PataCard - consent-based DIGIPIN address cards (API, auth, data, map key)
+
+Parameters:
+  AllowedOrigin:
+    Type: String
+    Default: none
+    Description: >-
+      Deployed site origin, e.g. https://main.d123.amplifyapp.com (no trailing slash).
+      Leave as "none" until the site exists; localhost:5173 is always allowed.
+
+Conditions:
+  HasSiteOrigin: !Not [!Equals [!Ref AllowedOrigin, none]]
+
+Resources:
+  # ---------- Auth: owners sign in with email ----------
+  UserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Sub ${AWS::StackName}-owners
+      UsernameAttributes: [email]
+      AutoVerifiedAttributes: [email]
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireUppercase: false
+          RequireSymbols: false
+
+  UserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+      ClientName: !Sub ${AWS::StackName}-web
+      GenerateSecret: false
+      PreventUserExistenceErrors: ENABLED
+      # SRP for the web app; USER_PASSWORD_AUTH only so the CLI smoke test can get a token.
+      ExplicitAuthFlows:
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+
+  # ---------- API ----------
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      Auth:
+        DefaultAuthorizer: CognitoJwt
+        Authorizers:
+          CognitoJwt:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub https://cognito-idp.${AWS::Region}.amazonaws.com/${UserPool}
+              audience:
+                - !Ref UserPoolClient
+      CorsConfiguration:
+        AllowOrigins: !If
+          - HasSiteOrigin
+          - [!Ref AllowedOrigin, "http://localhost:5173"]
+          - ["http://localhost:5173"]
+        AllowHeaders: [authorization, content-type]
+        AllowMethods: [GET, POST, DELETE, OPTIONS]
+        MaxAge: 600
+      DefaultRouteSettings:
+        ThrottlingRateLimit: 10
+        ThrottlingBurstLimit: 20
+
+  ApiFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/
+      Handler: src/api.handler
+      Runtime: nodejs22.x
+      Architectures: [arm64]
+      MemorySize: 256
+      Timeout: 10
+      Environment:
+        Variables:
+          CARDS_TABLE: !Ref CardsTable
+          SHARES_TABLE: !Ref SharesTable
+          ACCESS_TABLE: !Ref AccessTable
+          PHOTO_BUCKET: !Ref PhotoBucket
+      Policies:
+        - DynamoDBCrudPolicy: { TableName: !Ref CardsTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref SharesTable }
+        - DynamoDBCrudPolicy: { TableName: !Ref AccessTable }
+        - S3CrudPolicy: { BucketName: !Ref PhotoBucket }
+        - Statement:
+            - Effect: Allow
+              Action: geo-routes:CalculateRoutes
+              Resource: !Sub arn:aws:geo-routes:${AWS::Region}::provider/default
+      Events:
+        CreateCard:   { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: /cards, Method: POST } }
+        ListCards:    { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: /cards, Method: GET } }
+        GetCard:      { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}", Method: GET } }
+        CreateShare:  { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}/shares", Method: POST } }
+        ListAccess:   { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}/access", Method: GET } }
+        RevokeShare:  { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/shares/{token}", Method: DELETE } }
+        ViewShare:
+          Type: HttpApi
+          Properties: { ApiId: !Ref HttpApi, Path: "/s/{token}", Method: GET, Auth: { Authorizer: NONE } }
+        RouteToShare:
+          Type: HttpApi
+          Properties: { ApiId: !Ref HttpApi, Path: "/s/{token}/route", Method: POST, Auth: { Authorizer: NONE } }
+
+  ApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${ApiFunction}
+      RetentionInDays: 7
+
+  # ---------- Data ----------
+  CardsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: cardId, AttributeType: S }
+        - { AttributeName: ownerSub, AttributeType: S }
+      KeySchema:
+        - { AttributeName: cardId, KeyType: HASH }
+      GlobalSecondaryIndexes:
+        - IndexName: byOwner
+          KeySchema: [{ AttributeName: ownerSub, KeyType: HASH }]
+          Projection: { ProjectionType: ALL }
+
+  SharesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: token, AttributeType: S }
+        - { AttributeName: cardId, AttributeType: S }
+      KeySchema:
+        - { AttributeName: token, KeyType: HASH }
+      GlobalSecondaryIndexes:
+        - IndexName: byCard
+          KeySchema: [{ AttributeName: cardId, KeyType: HASH }]
+          Projection: { ProjectionType: ALL }
+      # TTL deletes expired links eventually; the Lambda still checks expiresAt itself.
+      TimeToLiveSpecification:
+        AttributeName: expiresAt
+        Enabled: true
+
+  AccessTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - { AttributeName: cardId, AttributeType: S }
+        - { AttributeName: ts, AttributeType: S }
+      KeySchema:
+        - { AttributeName: cardId, KeyType: HASH }
+        - { AttributeName: ts, KeyType: RANGE }
+
+  PhotoBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+      CorsConfiguration:
+        CorsRules:
+          - AllowedMethods: [POST]
+            AllowedOrigins: !If
+              - HasSiteOrigin
+              - [!Ref AllowedOrigin, "http://localhost:5173"]
+              - ["http://localhost:5173"]
+            AllowedHeaders: ["*"]
+            MaxAge: 600
+
+  # ---------- Map tiles for the browser (tiles only, our domains only) ----------
+  MapApiKey:
+    Type: AWS::Location::APIKey
+    Properties:
+      KeyName: !Sub ${AWS::StackName}-map-key
+      Description: PataCard map tiles from the browser
+      NoExpiry: true
+      Restrictions:
+        AllowActions:
+          - geo-maps:GetTile
+          - geo-maps:GetStaticMap
+        AllowResources:
+          - !Sub arn:aws:geo-maps:${AWS::Region}::provider/default
+        AllowReferers: !If
+          - HasSiteOrigin
+          - [!Sub "${AllowedOrigin}/*", "http://localhost:5173/*"]
+          - ["http://localhost:5173/*"]
+
+Outputs:
+  ApiUrl:
+    Value: !Sub https://${HttpApi}.execute-api.${AWS::Region}.${AWS::URLSuffix}
+  UserPoolId:
+    Value: !Ref UserPool
+  UserPoolClientId:
+    Value: !Ref UserPoolClient
+  MapKeyName:
+    Value: !Sub ${AWS::StackName}-map-key
+  PhotoBucket:
+    Value: !Ref PhotoBucket
+  Region:
+    Value: !Ref AWS::Region

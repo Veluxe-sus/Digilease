@@ -45,12 +45,26 @@ On the event Discord:
 cd C:\Users\adlak\claude_projects\pata-card
 sam validate --lint
 sam build
-sam deploy --guided   # first time only. Stack name: pata-card, region: ap-south-1,
-                      # AllowedOrigin: http://localhost:5173, confirm changes: y,
-                      # allow SAM to create IAM roles: y, save to samconfig.toml: y
+sam deploy --guided   # first time only; answers below
 sam list stack-outputs --stack-name pata-card
 aws location describe-key --key-name <MapKeyName from outputs> --query Key --output text
 ```
+
+Answers for `sam deploy --guided`:
+
+| Prompt | Answer |
+|---|---|
+| Stack Name | `pata-card` |
+| AWS Region | `ap-south-1` |
+| Parameter AllowedOrigin | press Enter (keeps `none` until the site exists) |
+| Confirm changes before deploy | `y` |
+| Allow SAM CLI IAM role creation | `Y` |
+| Disable rollback | `N` |
+| "ViewShare / RouteToShare has no authentication. Is this okay?" | `y` (the two receiver routes are public on purpose) |
+| Save arguments to configuration file | `Y` (use the default file name and environment) |
+| "Deploy this changeset?" | `y` |
+
+Later deploys: `sam build; sam deploy` (it reuses `samconfig.toml`).
 
 Put the outputs in `frontend\.env.local`. Never commit this file:
 ```
@@ -66,7 +80,11 @@ VITE_MAP_API_KEY=<key from describe-key>
 aws cognito-idp sign-up --client-id <UserPoolClientId> --username you@example.com --password "<8+ chars>" --user-attributes Name=email,Value=you@example.com
 aws cognito-idp admin-confirm-sign-up --user-pool-id <UserPoolId> --username you@example.com
 ```
-Claude will give you the exact command to get an ID token at that point. It depends on the client's auth flows.
+Get an ID token (the client allows `USER_PASSWORD_AUTH` for exactly this):
+```powershell
+$env:TOKEN = aws cognito-idp initiate-auth --client-id <UserPoolClientId> --auth-flow USER_PASSWORD_AUTH --auth-parameters USERNAME=you@example.com,PASSWORD="<password>" --query AuthenticationResult.IdToken --output text
+```
+Send it as `Authorization: <token>`. Use the ID token, not the access token: the API checks the audience claim, which only the ID token carries.
 
 ## 4. Go live on Amplify Hosting (Task 7)
 1. `cd frontend; npm run build`. Zip the *contents* of `frontend\dist` (not the folder itself).
@@ -74,7 +92,7 @@ Claude will give you the exact command to get an ID token at that point. It depe
 3. App → Hosting → Rewrites and redirects → add: source `</^[^.]+$|\.(?!(css|gif|ico|jpg|js|png|txt|svg|woff|woff2|ttf|map|json|webp)$)([^.]+$)/>` → target `/index.html` → type `200 (Rewrite)`.
 4. Copy the app URL (`https://<branch>.<appid>.amplifyapp.com`), then:
 ```powershell
-sam deploy --parameter-overrides AllowedOrigin=https://<branch>.<appid>.amplifyapp.com
+sam build; sam deploy --parameter-overrides AllowedOrigin=https://<branch>.<appid>.amplifyapp.com
 ```
 5. Open the URL on your phone.
 

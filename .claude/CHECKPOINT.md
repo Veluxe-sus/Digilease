@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Docs verified by the user. Task 1 done (10/10 backend tests pass). Next: Task 2, `template.yaml`. Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
+Task 1 done (10/10 tests). Task 2: `template.yaml` written, `sam validate --lint` passes; waiting for the user to deploy (SETUP §2). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
 - Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).
@@ -16,7 +16,7 @@ Docs verified by the user. Task 1 done (10/10 backend tests pass). Next: Task 2,
 - Task 0: AWS CLI 2.36.49 + SAM 1.166.2; IAM user `vansh` (CLI-only, admin), account 499567237530, ap-south-1; budget `pata-card-5usd` ($5/month, alert at 80%).
 
 ## Next
-1. PLAN Task 2: write `template.yaml`, run `sam validate --lint`; the user runs `sam build` + `sam deploy --guided`.
+1. User: `sam build` + `sam deploy --guided` (answers in SETUP §2), then `sam list stack-outputs`.
 2. PLAN Task 3: curl smoke test on AWS.
 
 ## Decisions
