@@ -139,7 +139,8 @@ File: `frontend/src/pages/SharedView.jsx`
 | 0:30–1:15 | Owner drops a pin, DIGIPIN appears, adds "blue gate, behind temple" + photo, gets the card. |
 | 1:15–2:00 | Creates "Ambulance, 24 h" link; on a phone the receiver opens the QR, sees the photo, taps route. |
 | 2:00–2:30 | Owner sees "Ambulance opened at 14:02", revokes it; the receiver reloads and sees the dead link. |
-| 2:30–3:00 | Architecture diagram, cost of about $0, what we learned. |
+| 2:30–2:45 | "Why not just WhatsApp?" Show the README table: place not person, door photo, no phone numbers, revoke, access log, speakable code. |
+| 2:45–3:00 | Architecture diagram, cost of about $0, what we learned. |
 
 ## If time runs short, cut in this order
 1. print layout

@@ -17,6 +17,21 @@ Built for the WeMakeDevs x AWS **First Commit** hackathon (Ship It track). Probl
 4. The receiver opens the link and sees the spot, the photo and a route.
 5. You see "Ambulance opened at 14:02". Revoke it, and the link dies.
 
+## Why not just share a location on WhatsApp or Google Maps?
+Those are great for "where am I right now". PataCard is for "where is my door", given to people you don't know, on your terms.
+
+| Need | WhatsApp / Google Maps pin | PataCard |
+|---|---|---|
+| Shares the **place**, not the person | Live location follows *you*; a static pin is just a dot | The card is your door, whether or not you're home |
+| Landmark + door photo with the location | Separate messages, lost in a chat | One link: exact spot, landmark note and door photo |
+| No phone numbers exchanged | The receiver must be in your contacts | A link or QR for any app's delivery notes, or printed on the door |
+| Take it back | A shared pin stays in their chat | Revoke any time; the link stops working |
+| Know who opened it | No record | Access log per link ("Ambulance opened at 14:02") |
+| Say it on a call | Coordinates can't be read out | A 10-character DIGIPIN like `4T3 96F4 2L7` can be |
+| National standard | A provider's own system | India Post's DIGIPIN |
+
+PataCard is a working prototype of the consent layer India Post has planned for DIGIPIN (DHRUVA): addresses shared with consent, per receiver, revocable.
+
 ## Architecture
 _Diagram added in Task 8._ Amplify Hosting (React) → API Gateway HTTP API (Cognito JWT) → Lambda (Node 22) → DynamoDB + S3, with Amazon Location Service for maps and routes. Deployed with AWS SAM.
 
