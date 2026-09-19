@@ -43,6 +43,7 @@ export const api = {
   listAccess: (id) => request(`/cards/${enc(id)}/access`),
   revokeShare: (token) => request(`/shares/${enc(token)}`, { method: "DELETE" }),
   viewShare: (token) => request(`/s/${enc(token)}`, { auth: false }),
+  area: (token) => request(`/s/${enc(token)}/area`, { auth: false }),
   route: (token, from) => request(`/s/${enc(token)}/route`, { method: "POST", body: from, auth: false }),
 };
 

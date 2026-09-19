@@ -266,3 +266,35 @@ a { color: inherit; }
   .print-card { width: 105mm; height: 148mm; border: 0; color: #000; }
   .print-card * { color: #000 !important; border-color: #000 !important; }
 }
+
+/* ---------- Offline map (Task 8, DESIGN §8.2) ---------- */
+.save-chip { margin-left: auto; font-size: 0.8rem; font-weight: 600; color: var(--muted); border-radius: 999px; padding: 4px 10px; background: rgba(86,98,111,0.1); }
+.save-chip.saved { color: var(--live); background: rgba(30,123,79,0.1); }
+.preview-offline { justify-self: start; padding: 8px 0; }
+.offline-banner { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 8px 16px; background: var(--ink); color: #fff; font-size: 14px; }
+.btn-banner { background: #fff; color: var(--ink); border: 0; border-radius: 999px; min-height: 36px; padding: 0 14px; font: 600 0.85rem var(--font); cursor: pointer; white-space: nowrap; }
+.offline-view { display: grid; grid-template-rows: 60dvh auto; }
+.offline-map .map { height: 60dvh; min-height: 280px; background: var(--paper); }
+.offline-sheet { position: relative; margin-top: -16px; background: var(--surface); border-radius: 16px 16px 0 0; padding: 20px 16px 24px; display: grid; gap: 12px; align-content: start; box-shadow: 0 -2px 12px rgba(22,32,43,0.08); }
+.offline-sheet p { margin: 0; }
+.offline-distance { font-size: 28px; font-weight: 600; line-height: 1.2; }
+.offline-distance.arrived { color: var(--live); }
+.offline-note { font-weight: 600; }
+.mini-plates { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 8px; }
+.mini-plate { display: grid; gap: 2px; padding: 8px 10px; border: 2px solid; border-radius: 8px; }
+.plate-you { border-color: var(--route); }
+.plate-door { border-color: var(--post); }
+.mini-plate .code-num { font-size: 1rem; font-weight: 700; letter-spacing: 0.06em; white-space: nowrap; }
+.mini-skeleton { height: 1.4rem; border-radius: 4px; }
+.offline-place { display: flex; align-items: center; gap: 12px; }
+.offline-landmark { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.door-thumb { flex: none; padding: 0; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: none; cursor: zoom-in; }
+.door-thumb img { display: block; width: 64px; height: 48px; object-fit: cover; }
+.door-thumb.big { position: fixed; inset: 16px; z-index: 20; display: grid; place-items: center; background: rgba(22,32,43,0.85); cursor: zoom-out; }
+.door-thumb.big img { width: auto; height: auto; max-width: 100%; max-height: 100%; }
+.credit { font-size: 12px; color: var(--muted); }
+@media (min-width: 1024px) {
+  .offline-view { grid-template-rows: none; grid-template-columns: minmax(0, 1.45fr) minmax(380px, 1fr); height: calc(100dvh - 48px); }
+  .offline-map .map { height: 100%; }
+  .offline-sheet { margin: 0; border-radius: 0; align-content: start; padding: 32px; box-shadow: none; border-left: 1px solid var(--line); }
+}

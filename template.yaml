@@ -167,7 +167,7 @@ Resources:
         RestrictPublicBuckets: true
       CorsConfiguration:
         CorsRules:
-          - AllowedMethods: [POST]
+          - AllowedMethods: [GET, POST]  # GET: the receiver page saves the door photo for offline use
             AllowedOrigins: ["http://localhost:5173", !Ref AllowedOrigin]
             AllowedHeaders: ["*"]
             MaxAge: 600
