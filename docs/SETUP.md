@@ -10,13 +10,31 @@ winget install -e --id Amazon.SAM-CLI
 aws --version
 sam --version
 node -v            # 20+ is fine locally; Lambda runs Node 22
-aws configure      # IAM user access key (never root keys); region ap-south-1; output json
-aws sts get-caller-identity
 ```
 
-In the AWS console:
-- **Billing → Budgets → Create budget:** monthly cost budget, **$5**, with an email alert.
-- **Billing → Credits:** confirm "Applicable products" covers Amazon Location Service.
+**IAM user for the CLI (console, once):**
+1. IAM → Users → Create user. Leave "AWS Management Console access" **unchecked**.
+2. Permissions: **Attach policies directly** → **AdministratorAccess** → Create user.
+3. User → Security credentials → Create access key → "Command Line Interface (CLI)" → create. The secret is shown once.
+4. Never paste the keys into chat, files or git. Delete the key after the hackathon.
+
+```powershell
+aws configure      # the access key above; region ap-south-1; output json
+aws sts get-caller-identity   # should show arn:aws:iam::<account>:user/<name>
+```
+
+**$5 budget alarm (CLI, no console needed).** Put your email on the first line:
+```powershell
+$email = "you@example.com"
+$acct  = aws sts get-caller-identity --query Account --output text
+@{BudgetName="pata-card-5usd";BudgetLimit=@{Amount="5";Unit="USD"};TimeUnit="MONTHLY";BudgetType="COST"} | ConvertTo-Json | Set-Content -Encoding ascii "$env:TEMP\budget.json"
+ConvertTo-Json -Depth 5 @(@{Notification=@{NotificationType="ACTUAL";ComparisonOperator="GREATER_THAN";Threshold=80;ThresholdType="PERCENTAGE"};Subscribers=@(@{SubscriptionType="EMAIL";Address=$email})}) | Set-Content -Encoding ascii "$env:TEMP\notify.json"
+aws budgets create-budget --account-id $acct --budget "file://$env:TEMP\budget.json" --notifications-with-subscribers "file://$env:TEMP\notify.json"
+aws budgets describe-budgets --account-id $acct --query "Budgets[].[BudgetName,BudgetLimit.Amount]" --output table
+```
+You get an email when actual spend passes $4 (80% of $5).
+
+**Optional (console only):** Billing → Credits → check that "Applicable products" covers Amazon Location Service.
 
 On the event Discord:
 - Does Amazon Location Service count for Ship It?
