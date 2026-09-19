@@ -61,5 +61,11 @@ echo "   view after revoke $(curl -s -w ' %{http_code}' $API/s/$TOK)"
 
 echo "10. bad input"
 echo "   London coords -> $(curl -s -w ' %{http_code}' "${H[@]}" -X POST $API/cards -d '{"lat":51.5,"lon":-0.12}')"
-echo "   hours=0 -> $(curl -s -w ' %{http_code}' "${H[@]}" -X POST $API/cards/$CARD/shares -d '{"label":"x","hours":0}')"
+echo "   blank hours -> $(curl -s -w ' %{http_code}' "${H[@]}" -X POST $API/cards/$CARD/shares -d '{"label":"x","hours":""}')"
 echo "   other user's card id -> $(curl -s -w ' %{http_code}' "${H[@]}" $API/cards/00000000-0000-0000-0000-000000000000)"
+
+echo "11. no-expiry link (hours=0): live, no expiresAt, then revoke"
+NE=$(curl -s "${H[@]}" -X POST $API/cards/$CARD/shares -d '{"label":"Wedding guests","hours":0}' | J 'o.share.token')
+curl -s $API/s/$NE | J '"   view digipin="+o.digipin+" expiresAt="+o.expiresAt'
+echo "   revoke status $(curl -s -o /dev/null -w '%{http_code}' "${H[@]}" -X DELETE $API/shares/$NE)"
+echo "   view after revoke $(curl -s -o /dev/null -w '%{http_code}' $API/s/$NE)"
