@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Tasks 0–9 done; the user's phone check passed. Task 10 is committed (`8cfcd06`) but not deployed: the backend redeploy (Overpass 30 s back-off) waits on the user's yes, and the user uploads the new frontend zip to Amplify. Live: https://main.d109k3dqf4r860.amplifyapp.com. GitHub: https://github.com/Veluxe-sus/pata_card (remote `origin`, branch `main`). Deadline: video/submission by 18:00 IST Sep 20.
+Tasks 0–9 done; the user's phone check passed. Task 10 done; backend deployed. The new frontend zip awaits the user's Amplify upload. Live: https://main.d109k3dqf4r860.amplifyapp.com. GitHub: https://github.com/Veluxe-sus/pata_card (remote `origin`, branch `main`). Deadline: video/submission by 18:00 IST Sep 20.
 
 ## Done
 - Tasks 0–7 deployed (stack `pata-card`, ap-south-1, account 499567237530). Smoke steps 1–12 pass live.
@@ -11,7 +11,7 @@ Tasks 0–9 done; the user's phone check passed. Task 10 is committed (`8cfcd06`
 - Task 10 (`8cfcd06`): manual security review against SPEC (the `security-review` skill needs a remote; it had none then). One fix: the Lambda pauses 30 s after an Overpass failure. README has the live URL, the offline feature, a mermaid diagram, the security summary, what we learned, screenshots, and the OSM credit. The laptop offline view no longer scrolls.
 
 ## Next
-1. Deploy the backend (preview: ApiFunction + HttpApi modified). Always pass `--parameter-overrides AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com`. The user uploads `Desktop\pata-card-dist.zip` via Amplify → Deploy updates. Then `git push`.
+1. Backend deployed and pushed (`b19306f`). The user uploads `Desktop\pata-card-dist.zip` via Amplify → Deploy updates (location messages, laptop layout, street-map retry). Future deploys: always pass `--parameter-overrides AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com`.
 2. Task 11 demo video (shot list in PLAN). Optional: `code-review` of the whole diff.
 3. The user will recheck laptop location on a friend's laptop.
 4. Overpass is slow at European peak (see RESEARCH). Before recording, open the demo card's link and wait for "Saved for offline"; after that its streets come from S3.
