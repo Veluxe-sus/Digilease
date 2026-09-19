@@ -47,3 +47,10 @@ export function formatPrintExpiry(expiresAt) {
   });
   return `Valid until ${when}`;
 }
+
+// GeolocationPositionError codes: 1 denied, 2 unavailable (e.g. a laptop with system location off), 3 timeout.
+export function locationError(err, fallback) {
+  if (err?.code === 1) return `Location is blocked for this site. Allow it in your browser settings, or ${fallback}.`;
+  if (err?.code === 3) return `Finding your location took too long. Try again, or ${fallback}.`;
+  return `Your device couldn't find its location. On a laptop, turn on location in the system settings, or ${fallback}.`;
+}

@@ -3,7 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { getDigiPin } from "./digipin.js";
 import { alongRoute, distanceMeters, insideBox } from "./geo.js";
-import { formatDigipin, formatDistance, formatDuration, formatPrintExpiry, formatShareExpiry, timeLeft } from "./format.js";
+import { formatDigipin, formatDistance, locationError, formatDuration, formatPrintExpiry, formatShareExpiry, timeLeft } from "./format.js";
 
 test("frontend digipin.js is India Post's file plus only the export lines", () => {
   const official = readFileSync(new URL("../../../backend/src/digipin.js", import.meta.url), "utf8");
@@ -75,4 +75,12 @@ test("metres left along a route from the nearest point on it, null when far off 
   assert.equal(alongRoute({ lat: north(13.1, 500), lon: east(13.1, 80.2, 60) }, line), null);
   assert.equal(alongRoute(mid, [[80.2, 13.1]]), null);
   assert.equal(alongRoute(mid, null), null);
+});
+
+test("location errors name the real cause, not always \"blocked\"", () => {
+  const tail = "tap the map where your door is";
+  assert.match(locationError({ code: 1 }, tail), /^Location is blocked for this site\. .*tap the map where your door is\.$/);
+  assert.match(locationError({ code: 2 }, tail), /couldn't find its location/);
+  assert.match(locationError({ code: 3 }, tail), /took too long/);
+  assert.match(locationError(undefined, tail), /couldn't find its location/);
 });

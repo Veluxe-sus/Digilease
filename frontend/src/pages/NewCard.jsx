@@ -4,6 +4,7 @@ import MapView from "../components/MapView.jsx";
 import DigipinPlate from "../components/DigipinPlate.jsx";
 import { getDigiPin } from "../lib/digipin.js";
 import { api, uploadPhoto } from "../lib/api.js";
+import { locationError } from "../lib/format.js";
 
 const MAX_LANDMARK = 200;
 const MAX_PHOTO = 5 * 1024 * 1024;
@@ -44,9 +45,9 @@ export default function NewCard() {
         setAccuracy(Math.round(pos.coords.accuracy));
         setLocating(false);
       },
-      () => {
+      (err) => {
         setLocating(false);
-        setError("Location is off or blocked. Allow it in your browser, or tap the map where your door is.");
+        setError(locationError(err, "tap the map where your door is"));
       },
       { enableHighAccuracy: true, timeout: 15000 },
     );

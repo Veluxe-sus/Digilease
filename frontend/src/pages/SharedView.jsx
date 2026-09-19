@@ -4,7 +4,7 @@ import DigipinPlate from "../components/DigipinPlate.jsx";
 import MapView from "../components/MapView.jsx";
 import OfflineMap from "../components/OfflineMap.jsx";
 import { api } from "../lib/api.js";
-import { formatDistance, formatDuration, formatShareExpiry } from "../lib/format.js";
+import { formatDistance, formatDuration, formatShareExpiry, locationError } from "../lib/format.js";
 import { canSaveOffline, deleteCopy, loadCopy, saveAppShell, saveJson, savePhoto } from "../lib/offline.js";
 
 function ReceiverHeader({ saveState }) {
@@ -136,8 +136,8 @@ export default function SharedView() {
           setRouting(false);
         }
       },
-      () => {
-        setRouteError("Location is off or blocked. Allow it in your browser, or open the address in maps.");
+      (err) => {
+        setRouteError(locationError(err, "open the address in maps"));
         setRouting(false);
       },
       { enableHighAccuracy: true, timeout: 15000 },
