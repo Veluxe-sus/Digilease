@@ -1,0 +1,260 @@
+// PataCard API — one Lambda behind an API Gateway HTTP API (payload v2).
+// Owner routes sit behind the Cognito JWT authorizer; /s/{token} routes are public
+// and only work while the share link is neither revoked nor expired.
+const { randomBytes, randomUUID } = require("node:crypto");
+const { getDigiPin, getLatLngFromDigiPin } = require("./digipin");
+const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
+const {
+  DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand,
+} = require("@aws-sdk/lib-dynamodb");
+const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
+const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
+const { GeoRoutesClient, CalculateRoutesCommand } = require("@aws-sdk/client-geo-routes");
+
+const { CARDS_TABLE, SHARES_TABLE, ACCESS_TABLE, PHOTO_BUCKET } = process.env;
+const db = DynamoDBDocumentClient.from(new DynamoDBClient({}));
+const s3 = new S3Client({});
+const routes = new GeoRoutesClient({});
+
+const MAX_LANDMARK = 200;
+const MAX_LABEL = 40;
+const MAX_HOURS = 168;
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const PHOTO_TYPES = { "image/jpeg": "jpg", "image/png": "png" };
+
+class BadRequest extends Error {}
+
+// ---------- validation (pure, unit-tested) ----------
+
+function toNumber(value, name) {
+  const n = typeof value === "string" ? Number(value) : value;
+  if (typeof n !== "number" || !Number.isFinite(n)) throw new BadRequest(`${name} must be a number`);
+  return n;
+}
+
+function validateCardInput(body) {
+  const lat = toNumber(body.lat, "lat");
+  const lon = toNumber(body.lon, "lon");
+  let digipin;
+  try {
+    digipin = getDigiPin(lat, lon);
+  } catch {
+    throw new BadRequest("That location is outside India's DIGIPIN area");
+  }
+  const landmark = typeof body.landmark === "string" ? body.landmark.trim() : "";
+  if (landmark.length > MAX_LANDMARK) throw new BadRequest(`Landmark must be ${MAX_LANDMARK} characters or fewer`);
+  let photoType = null;
+  if (body.photoType != null) {
+    if (!PHOTO_TYPES[body.photoType]) throw new BadRequest("Photo must be a JPEG or PNG");
+    photoType = body.photoType;
+  }
+  // Store the DIGIPIN cell centre, so what we share is exactly what the code means.
+  const centre = getLatLngFromDigiPin(digipin);
+  return { digipin, lat: Number(centre.latitude), lon: Number(centre.longitude), landmark, photoType };
+}
+
+function validateShareInput(body) {
+  const label = typeof body.label === "string" ? body.label.trim() : "";
+  if (!label) throw new BadRequest("Give the link a name, like \"Ambulance\"");
+  if (label.length > MAX_LABEL) throw new BadRequest(`Name must be ${MAX_LABEL} characters or fewer`);
+  const hours = toNumber(body.hours, "hours");
+  if (!Number.isInteger(hours) || hours < 1 || hours > MAX_HOURS) {
+    throw new BadRequest(`Hours must be a whole number from 1 to ${MAX_HOURS}`);
+  }
+  return { label, hours };
+}
+
+function validateOrigin(body) {
+  const lat = toNumber(body.fromLat, "fromLat");
+  const lon = toNumber(body.fromLon, "fromLon");
+  if (lat < -90 || lat > 90 || lon < -180 || lon > 180) throw new BadRequest("Your location is not valid");
+  return { lat, lon };
+}
+
+function isShareLive(share, nowSeconds) {
+  return Boolean(share) && !share.revoked && share.expiresAt > nowSeconds;
+}
+
+const newToken = () => randomBytes(16).toString("base64url");
+const nowSeconds = () => Math.floor(Date.now() / 1000);
+
+// ---------- helpers ----------
+
+const json = (statusCode, body) => ({
+  statusCode,
+  headers: { "content-type": "application/json" },
+  body: body === undefined ? "" : JSON.stringify(body),
+});
+
+function parseBody(event) {
+  if (!event.body) return {};
+  const raw = event.isBase64Encoded ? Buffer.from(event.body, "base64").toString("utf8") : event.body;
+  try {
+    return JSON.parse(raw);
+  } catch {
+    throw new BadRequest("Request body must be JSON");
+  }
+}
+
+async function photoUrl(key) {
+  if (!key) return null;
+  return getSignedUrl(s3, new GetObjectCommand({ Bucket: PHOTO_BUCKET, Key: key }), { expiresIn: 300 });
+}
+
+async function getOwnedCard(cardId, ownerSub) {
+  const { Item } = await db.send(new GetCommand({ TableName: CARDS_TABLE, Key: { cardId } }));
+  return Item && Item.ownerSub === ownerSub ? Item : null;
+}
+
+async function getLiveShare(token) {
+  const { Item: share } = await db.send(new GetCommand({ TableName: SHARES_TABLE, Key: { token } }));
+  if (!isShareLive(share, nowSeconds())) return null;
+  const { Item: card } = await db.send(new GetCommand({ TableName: CARDS_TABLE, Key: { cardId: share.cardId } }));
+  return card ? { share, card } : null;
+}
+
+const GONE = { error: "This address is no longer shared" };
+
+// ---------- owner routes ----------
+
+async function createCard(event, sub) {
+  const input = validateCardInput(parseBody(event));
+  const cardId = randomUUID();
+  const photoKey = input.photoType ? `cards/${cardId}.${PHOTO_TYPES[input.photoType]}` : null;
+  const card = {
+    cardId, ownerSub: sub, digipin: input.digipin, lat: input.lat, lon: input.lon,
+    landmark: input.landmark, photoKey, createdAt: new Date().toISOString(),
+  };
+  await db.send(new PutCommand({ TableName: CARDS_TABLE, Item: card }));
+  let upload = null;
+  if (photoKey) {
+    upload = await createPresignedPost(s3, {
+      Bucket: PHOTO_BUCKET,
+      Key: photoKey,
+      Conditions: [["content-length-range", 1, MAX_PHOTO_BYTES], ["eq", "$Content-Type", input.photoType]],
+      Fields: { "Content-Type": input.photoType },
+      Expires: 300,
+    });
+  }
+  return json(201, { card, upload });
+}
+
+async function listCards(sub) {
+  const { Items } = await db.send(new QueryCommand({
+    TableName: CARDS_TABLE, IndexName: "byOwner",
+    KeyConditionExpression: "ownerSub = :s", ExpressionAttributeValues: { ":s": sub },
+  }));
+  return json(200, { cards: Items || [] });
+}
+
+async function getCard(cardId, sub) {
+  const card = await getOwnedCard(cardId, sub);
+  if (!card) return json(404, { error: "Card not found" });
+  const { Items } = await db.send(new QueryCommand({
+    TableName: SHARES_TABLE, IndexName: "byCard",
+    KeyConditionExpression: "cardId = :c", ExpressionAttributeValues: { ":c": cardId },
+  }));
+  const now = nowSeconds();
+  const shares = (Items || []).map((s) => ({
+    token: s.token, label: s.label, createdAt: s.createdAt, expiresAt: s.expiresAt,
+    status: s.revoked ? "revoked" : s.expiresAt > now ? "live" : "expired",
+  }));
+  return json(200, { card: { ...card, photoUrl: await photoUrl(card.photoKey) }, shares });
+}
+
+async function createShare(event, cardId, sub) {
+  const card = await getOwnedCard(cardId, sub);
+  if (!card) return json(404, { error: "Card not found" });
+  const { label, hours } = validateShareInput(parseBody(event));
+  const share = {
+    token: newToken(), cardId, ownerSub: sub, label, revoked: false,
+    createdAt: new Date().toISOString(), expiresAt: nowSeconds() + hours * 3600,
+  };
+  await db.send(new PutCommand({ TableName: SHARES_TABLE, Item: share }));
+  return json(201, { share: { token: share.token, label, expiresAt: share.expiresAt, status: "live" } });
+}
+
+async function revokeShare(token, sub) {
+  const { Item } = await db.send(new GetCommand({ TableName: SHARES_TABLE, Key: { token } }));
+  if (!Item || Item.ownerSub !== sub) return json(404, { error: "Link not found" });
+  await db.send(new UpdateCommand({
+    TableName: SHARES_TABLE, Key: { token },
+    UpdateExpression: "SET revoked = :t", ExpressionAttributeValues: { ":t": true },
+  }));
+  return json(204);
+}
+
+async function listAccess(cardId, sub) {
+  const card = await getOwnedCard(cardId, sub);
+  if (!card) return json(404, { error: "Card not found" });
+  const { Items } = await db.send(new QueryCommand({
+    TableName: ACCESS_TABLE, KeyConditionExpression: "cardId = :c",
+    ExpressionAttributeValues: { ":c": cardId }, ScanIndexForward: false, Limit: 50,
+  }));
+  return json(200, { access: (Items || []).map(({ openedAt, label }) => ({ openedAt, label })) });
+}
+
+// ---------- public (receiver) routes ----------
+
+async function viewShare(token) {
+  const found = await getLiveShare(token);
+  if (!found) return json(410, GONE);
+  const { share, card } = found;
+  const openedAt = new Date().toISOString();
+  await db.send(new PutCommand({
+    TableName: ACCESS_TABLE,
+    Item: { cardId: card.cardId, ts: `${openedAt}#${randomBytes(4).toString("hex")}`, openedAt, label: share.label },
+  }));
+  return json(200, {
+    digipin: card.digipin, lat: card.lat, lon: card.lon, landmark: card.landmark,
+    photoUrl: await photoUrl(card.photoKey), label: share.label, expiresAt: share.expiresAt,
+  });
+}
+
+async function routeToShare(event, token) {
+  const found = await getLiveShare(token);
+  if (!found) return json(410, GONE);
+  const from = validateOrigin(parseBody(event));
+  const { card } = found;
+  const res = await routes.send(new CalculateRoutesCommand({
+    Origin: [from.lon, from.lat],
+    Destination: [card.lon, card.lat],
+    TravelMode: "Car",
+    LegGeometryFormat: "Simple",
+  }));
+  const route = res.Routes && res.Routes[0];
+  if (!route) return json(404, { error: "No route found to this address" });
+  const line = route.Legs.flatMap((leg) => (leg.Geometry && leg.Geometry.LineString) || []);
+  return json(200, {
+    line,
+    distanceMeters: route.Summary ? route.Summary.Distance : null,
+    durationSeconds: route.Summary ? route.Summary.Duration : null,
+  });
+}
+
+// ---------- router ----------
+
+async function handler(event) {
+  const p = event.pathParameters || {};
+  const sub = event.requestContext?.authorizer?.jwt?.claims?.sub;
+  try {
+    switch (event.routeKey) {
+      case "POST /cards": return await createCard(event, sub);
+      case "GET /cards": return await listCards(sub);
+      case "GET /cards/{id}": return await getCard(p.id, sub);
+      case "POST /cards/{id}/shares": return await createShare(event, p.id, sub);
+      case "GET /cards/{id}/access": return await listAccess(p.id, sub);
+      case "DELETE /shares/{token}": return await revokeShare(p.token, sub);
+      case "GET /s/{token}": return await viewShare(p.token);
+      case "POST /s/{token}/route": return await routeToShare(event, p.token);
+      default: return json(404, { error: "Not found" });
+    }
+  } catch (err) {
+    if (err instanceof BadRequest) return json(400, { error: err.message });
+    console.error("request failed", event.routeKey, err.name, err.message);
+    return json(500, { error: "Something went wrong. Try again in a moment." });
+  }
+}
+
+module.exports = { handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, BadRequest };
