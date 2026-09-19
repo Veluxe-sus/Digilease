@@ -8,16 +8,9 @@ Everything before code is ready. Waiting for the user's "verified" to start PLAN
 - Problem/solution brief published: https://claude.ai/artifact/YQVLt9N4wL71wjxMcKcLer (private link)
 - DIGIPIN spec verified against the official repo `INDIAPOST-gov/digipin`; example output checked (`4T396F42L7`).
 - Docs: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, README draft, DESIGN.
-- Design: `docs/DESIGN.md` plus 6 Stitch mockups in `docs/mockups/`.
-  - Phone: new card, card, dead link. The receiver screen exists only in Stitch.
-  - Laptop (two panes): new card, card, receiver.
-  - Stitch project id 2246405162473946986.
+- Design: `docs/DESIGN.md` + 6 Stitch mockups in `docs/mockups/` (phone s1/s2/s4, laptop d1-d3; Stitch project 2246405162473946986).
 - Draft `backend/src/api.js`, `backend/test/api.test.js`, `backend/package.json` written. Dependencies are installed; tests have not run.
-- Task 0:
-  - AWS CLI 2.36.49 and SAM CLI 1.166.2 installed.
-  - IAM user `vansh` (AdministratorAccess, CLI-only) created and configured.
-  - Account 499567237530, region ap-south-1.
-  - Budget `pata-card-5usd` ($5/month) created, with an email alert at 80% of actual spend.
+- Task 0: AWS CLI 2.36.49 + SAM 1.166.2; IAM user `vansh` (CLI-only, admin), account 499567237530, ap-south-1; budget `pata-card-5usd` ($5/month, alert at 80%).
 
 ## Next
 1. User says "verified".
