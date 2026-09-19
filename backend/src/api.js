@@ -7,7 +7,7 @@ const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
   DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand,
 } = require("@aws-sdk/lib-dynamodb");
-const { S3Client, GetObjectCommand } = require("@aws-sdk/client-s3");
+const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { GeoRoutesClient, CalculateRoutesCommand } = require("@aws-sdk/client-geo-routes");
@@ -22,6 +22,10 @@ const MAX_LABEL = 40;
 const MAX_HOURS = 168;
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
 const PHOTO_TYPES = { "image/jpeg": "jpg", "image/png": "png" };
+const AREA_HALF_METRES = 500;
+const METRES_PER_DEGREE = 111_320;
+const OVERPASS_URL = "https://overpass-api.de/api/interpreter";
+const OVERPASS_MAX_BYTES = 3 * 1024 * 1024;
 
 class BadRequest extends Error {}
 
@@ -93,6 +97,26 @@ function summarizeRoute(route) {
     return { line, distanceMeters: route.Summary.Distance ?? null, durationSeconds: route.Summary.Duration ?? null };
   }
   return { line, distanceMeters: found ? distance : null, durationSeconds: found ? duration : null };
+}
+
+// The ±500 m square the offline map covers.
+function areaBox(lat, lon) {
+  const dLat = AREA_HALF_METRES / METRES_PER_DEGREE;
+  const dLon = AREA_HALF_METRES / (METRES_PER_DEGREE * Math.cos((lat * Math.PI) / 180));
+  return { south: lat - dLat, west: lon - dLon, north: lat + dLat, east: lon + dLon };
+}
+
+const round6 = (n) => Math.round(n * 1e6) / 1e6;
+
+// Overpass `out geom` ways → [{name, kind, line: [[lon, lat], ...]}], the same order as route lines.
+function toStreets(overpass) {
+  return (overpass.elements || [])
+    .filter((e) => e.type === "way" && Array.isArray(e.geometry) && e.geometry.length >= 2)
+    .map((e) => ({
+      name: (e.tags && e.tags.name) || null,
+      kind: (e.tags && e.tags.highway) || null,
+      line: e.geometry.map((g) => [round6(g.lon), round6(g.lat)]),
+    }));
 }
 
 function isShareLive(share, nowSeconds) {
@@ -252,13 +276,72 @@ async function routeToShare(event, token) {
   return json(200, summarizeRoute(route));
 }
 
+class AreaUnavailable extends Error {}
+
+async function fetchStreets(box) {
+  const query = `[out:json][timeout:8];way["highway"](${box.south},${box.west},${box.north},${box.east});out geom;`;
+  let res;
+  try {
+    res = await fetch(OVERPASS_URL, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "PataCard (hackathon)" },
+      body: new URLSearchParams({ data: query }),
+      signal: AbortSignal.timeout(8000),
+    });
+  } catch (err) {
+    throw new AreaUnavailable(`Overpass fetch failed: ${err.name}`);
+  }
+  if (!res.ok) throw new AreaUnavailable(`Overpass status ${res.status}`);
+  if (Number(res.headers.get("content-length")) > OVERPASS_MAX_BYTES) throw new AreaUnavailable("Overpass response too large");
+  let text;
+  try {
+    text = await res.text();
+  } catch (err) {
+    throw new AreaUnavailable(`Overpass read failed: ${err.name}`);
+  }
+  if (Buffer.byteLength(text) > OVERPASS_MAX_BYTES) throw new AreaUnavailable("Overpass response too large");
+  try {
+    return toStreets(JSON.parse(text));
+  } catch {
+    throw new AreaUnavailable("Overpass response was not JSON");
+  }
+}
+
+// Street data for the offline map. Fetched from OpenStreetMap once per card, then served from S3.
+// No access entry: the view that loads it already logged one.
+async function areaForShare(token) {
+  const found = await getLiveShare(token);
+  if (!found) return json(410, GONE);
+  const { card } = found;
+  const Key = `areas/${card.cardId}.json`;
+  try {
+    const obj = await s3.send(new GetObjectCommand({ Bucket: PHOTO_BUCKET, Key }));
+    return json(200, JSON.parse(await obj.Body.transformToString()));
+  } catch (err) {
+    if (err.name !== "NoSuchKey") throw err;
+  }
+  const box = areaBox(card.lat, card.lon);
+  let area;
+  try {
+    area = { box, streets: await fetchStreets(box) };
+  } catch (err) {
+    if (!(err instanceof AreaUnavailable)) throw err;
+    console.error("area unavailable", err.message);
+    return json(503, { error: "Street map not available right now" });
+  }
+  await s3.send(new PutObjectCommand({
+    Bucket: PHOTO_BUCKET, Key, Body: JSON.stringify(area), ContentType: "application/json",
+  }));
+  return json(200, area);
+}
+
 // ---------- router ----------
 
 async function handler(event) {
   const p = event.pathParameters || {};
   const sub = event.requestContext?.authorizer?.jwt?.claims?.sub;
   // Defence in depth: API Gateway's JWT authorizer guards owner routes, but never act without an owner.
-  const isPublic = event.routeKey === "GET /s/{token}" || event.routeKey === "POST /s/{token}/route";
+  const isPublic = ["GET /s/{token}", "POST /s/{token}/route", "GET /s/{token}/area"].includes(event.routeKey);
   if (!isPublic && !sub) return json(401, { error: "Sign in to manage your address cards" });
   try {
     switch (event.routeKey) {
@@ -270,6 +353,7 @@ async function handler(event) {
       case "DELETE /shares/{token}": return await revokeShare(p.token, sub);
       case "GET /s/{token}": return await viewShare(p.token);
       case "POST /s/{token}/route": return await routeToShare(event, p.token);
+      case "GET /s/{token}/area": return await areaForShare(p.token);
       default: return json(404, { error: "Not found" });
     }
   } catch (err) {
@@ -281,4 +365,5 @@ async function handler(event) {
 
 module.exports = {
   handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest,
+  areaBox, toStreets,
 };

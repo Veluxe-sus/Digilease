@@ -2,7 +2,7 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { getDigiPin, getLatLngFromDigiPin } = require("../src/digipin");
 const {
-  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest,
+  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest, areaBox, toStreets,
 } = require("../src/api");
 
 test("owner routes refuse requests with no signed-in user", async () => {
@@ -86,4 +86,29 @@ test("share tokens are unguessable and URL-safe", () => {
   const t = newToken();
   assert.match(t, /^[A-Za-z0-9_-]{22}$/);
   assert.notEqual(t, newToken());
+});
+
+test("area box is about 1 km x 1 km around the point", () => {
+  const b = areaBox(13.11178, 80.202635);
+  const mPerDegLat = 111_320;
+  const mPerDegLon = 111_320 * Math.cos((13.11178 * Math.PI) / 180);
+  assert.ok(Math.abs((b.north - b.south) * mPerDegLat - 1000) < 1);
+  assert.ok(Math.abs((b.east - b.west) * mPerDegLon - 1000) < 1);
+  assert.ok(Math.abs((b.north + b.south) / 2 - 13.11178) < 1e-9);
+  assert.ok(Math.abs((b.east + b.west) / 2 - 80.202635) < 1e-9);
+});
+
+test("Overpass ways become streets with [lon, lat] lines rounded to 6 decimals", () => {
+  const overpass = { elements: [
+    { type: "way", tags: { highway: "residential", name: "Temple St" },
+      geometry: [{ lat: 13.1234567891, lon: 80.2 }, { lat: 13.124, lon: 80.2012345678 }] },
+    { type: "way", tags: { highway: "footway" }, geometry: [{ lat: 13.1, lon: 80.1 }, { lat: 13.2, lon: 80.2 }] },
+    { type: "way", tags: { highway: "service" }, geometry: [{ lat: 13.1, lon: 80.1 }] },
+    { type: "node", lat: 13, lon: 80 },
+  ] };
+  assert.deepEqual(toStreets(overpass), [
+    { name: "Temple St", kind: "residential", line: [[80.2, 13.123457], [80.201235, 13.124]] },
+    { name: null, kind: "footway", line: [[80.1, 13.1], [80.2, 13.2]] },
+  ]);
+  assert.deepEqual(toStreets({}), []);
 });

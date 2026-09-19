@@ -103,6 +103,9 @@ Resources:
         RouteToShare:
           Type: HttpApi
           Properties: { ApiId: !Ref HttpApi, Path: "/s/{token}/route", Method: POST, Auth: { Authorizer: NONE } }
+        GetArea:
+          Type: HttpApi
+          Properties: { ApiId: !Ref HttpApi, Path: "/s/{token}/area", Method: GET, Auth: { Authorizer: NONE } }
 
   ApiLogGroup:
     Type: AWS::Logs::LogGroup

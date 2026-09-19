@@ -69,3 +69,14 @@ NE=$(curl -s "${H[@]}" -X POST $API/cards/$CARD/shares -d '{"label":"Wedding gue
 curl -s $API/s/$NE | J '"   view digipin="+o.digipin+" expiresAt="+o.expiresAt'
 echo "   revoke status $(curl -s -o /dev/null -w '%{http_code}' "${H[@]}" -X DELETE $API/shares/$NE)"
 echo "   view after revoke $(curl -s -o /dev/null -w '%{http_code}' $API/s/$NE)"
+
+echo "12. offline area: first call fetches OpenStreetMap, second is served from S3, revoked -> 410"
+AT=$(curl -s "${H[@]}" -X POST $API/cards/$CARD/shares -d '{"label":"Area check","hours":1}' | J 'o.share.token')
+for i in 1 2; do
+  curl -s -o /tmp/area.json -w "   call $i: status %{http_code} in %{time_total}s\n" $API/s/$AT/area
+  J '"   streets="+(o.streets||[]).length+" box="+JSON.stringify(o.box)+(o.error?" error="+o.error:"")' < /tmp/area.json
+done
+BUCKET=$(OUT PhotoBucket)
+[ -n "$BUCKET" ] && echo "   in S3: $("$AWS" s3api head-object --bucket "$BUCKET" --key "areas/$CARD.json" --query ContentLength --output text 2>&1) bytes"
+curl -s -o /dev/null "${H[@]}" -X DELETE $API/shares/$AT
+echo "   area after revoke $(curl -s -o /dev/null -w '%{http_code}' $API/s/$AT/area)"
