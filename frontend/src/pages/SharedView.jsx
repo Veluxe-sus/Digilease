@@ -108,7 +108,8 @@ export default function SharedView() {
   }
 
   const pin = { lat: card.lat, lon: card.lon };
-  const mapsUrl = `geo:0,0?q=${card.lat},${card.lon}`;
+  // A plain https link works on iPhone, Android and desktop (geo: is Android-only).
+  const mapsUrl = `https://www.google.com/maps/search/?api=1&query=${card.lat},${card.lon}`;
 
   return (
     <div className="receiver-shell">
@@ -148,7 +149,7 @@ export default function SharedView() {
             <button type="button" className="btn-primary btn-block" onClick={updateRoute} disabled={routing}>
               {routing ? "Finding route…" : route ? "Update route" : "Route from my location"}
             </button>
-            <a className="btn-text open-maps" href={mapsUrl}>Open in maps</a>
+            <a className="btn-text open-maps" href={mapsUrl} target="_blank" rel="noopener noreferrer">Open in maps</a>
           </div>
         </section>
       </main>

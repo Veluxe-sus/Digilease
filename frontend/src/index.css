@@ -230,23 +230,33 @@ a { color: inherit; }
 .print-page { max-width: 760px; margin: 0 auto; padding: 24px 16px 64px; display: grid; justify-items: center; gap: 24px; }
 .print-controls { width: min(100%, 105mm); display: grid; gap: 8px; }
 .print-controls h1, .print-helper { margin: 0; }
+/* Flex column: the photo is the only part that shrinks, so the footer ("Valid until …") always fits. */
 .print-card {
   width: min(100%, 105mm); aspect-ratio: 105 / 148; overflow: hidden; padding: 6mm;
-  display: grid; align-content: start; gap: 3mm; background: #fff; border: 1px solid var(--line);
+  display: flex; flex-direction: column; gap: 3mm; background: #fff; border: 1px solid var(--line);
   color: var(--ink); font-size: 9pt; line-height: 1.3;
 }
+.print-card > * { flex-shrink: 0; }
 .print-card-head, .print-card-foot { display: flex; justify-content: space-between; gap: 4mm; align-items: baseline; }
 .print-card-head span, .print-card-foot { color: var(--muted); font-size: 7.5pt; }
-.print-photo { width: 100%; height: 32mm; object-fit: cover; border-radius: 3mm; }
-.print-scan { display: grid; grid-template-columns: 55mm minmax(0, 1fr); gap: 3mm; align-items: center; }
-.print-qr { width: 55mm; height: 55mm; display: block; }
+.print-photo { width: 100%; flex: 0 1 32mm; min-height: 16mm; object-fit: cover; border-radius: 3mm; }
+/* 59% of the 93 mm inner width = the 55 mm QR from DESIGN §8.3; it scales down with narrow screens. */
+.print-scan { display: grid; grid-template-columns: 59% minmax(0, 1fr); gap: 3mm; align-items: center; }
+.print-qr { width: 100%; height: auto; aspect-ratio: 1; display: block; }
 .print-scan p { margin: 2mm 0 0; color: var(--muted); font-size: 7.5pt; }
 .print-digipin { display: grid; gap: 1mm; padding: 2mm 3mm; border: 2px solid var(--post); border-radius: 2mm; }
 .print-digipin span { font-size: 6.5pt; font-weight: 700; }
 .print-digipin strong { font: 700 20pt/1 var(--mono); letter-spacing: 0.08em; white-space: nowrap; }
-.print-landmark { margin: 0; font-weight: 600; }
+.print-landmark {
+  margin: 0; font-weight: 600; overflow: hidden;
+  display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 4; line-clamp: 4;
+}
 .print-card-foot { margin-top: auto; }
 .print-actions { text-align: center; }
+/* Phones narrower than the real card: let the preview grow in height instead of clipping. */
+@media screen and (max-width: 440px) {
+  .print-card { aspect-ratio: auto; overflow: visible; }
+}
 
 @page { size: A6 portrait; margin: 0; }
 @media print {

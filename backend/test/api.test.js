@@ -61,6 +61,10 @@ test("share input: label and hours limits", () => {
   assert.throws(() => validateShareInput({ label: "Guest", hours: -1 }), BadRequest);
   assert.throws(() => validateShareInput({ label: "Guest", hours: 169 }), BadRequest);
   assert.throws(() => validateShareInput({ label: "Guest", hours: 1.5 }), BadRequest);
+  // Blank must never turn into 0 ("No expiry").
+  assert.throws(() => validateShareInput({ label: "Guest", hours: "" }), BadRequest);
+  assert.throws(() => validateShareInput({ label: "Guest", hours: "  " }), BadRequest);
+  assert.throws(() => validateShareInput({ label: "Guest" }), BadRequest);
 });
 
 test("route origin must be a real coordinate", () => {

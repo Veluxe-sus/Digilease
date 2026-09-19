@@ -110,10 +110,16 @@ export default function CardView() {
 
   async function createLink(e) {
     e.preventDefault();
+    // An empty custom field would become 0, which means "No expiry". Never let that happen by accident.
+    const h = Number(hours);
+    if (custom && (String(hours).trim() === "" || !Number.isInteger(h) || h < 1 || h > 168)) {
+      setFormErr("Enter a whole number of hours from 1 to 168.");
+      return;
+    }
     setCreating(true);
     setFormErr("");
     try {
-      const { share } = await api.createShare(id, { label: label.trim(), hours: Number(hours) });
+      const { share } = await api.createShare(id, { label: label.trim(), hours: h });
       setShares((s) => [{ ...share, createdAt: new Date().toISOString() }, ...s]);
       setQrFor(share.token);
       setLabel("");
@@ -186,11 +192,11 @@ export default function CardView() {
                 <button type="button" key={h} className={`chip ${!custom && hours === h ? "on" : ""}`} aria-pressed={!custom && hours === h}
                   onClick={() => { setCustom(false); setHours(h); }}>{h === 0 ? "No expiry" : `${h} h`}</button>
               ))}
-              <button type="button" className={`chip ${custom ? "on" : ""}`} aria-pressed={custom} onClick={() => setCustom(true)}>Custom</button>
+              <button type="button" className={`chip ${custom ? "on" : ""}`} aria-pressed={custom} onClick={() => { setCustom(true); if (hours === 0) setHours(24); }}>Custom</button>
             </div>
             {custom && (
               <label className="custom-hours">
-                <input type="number" className="input input-narrow" min={1} max={168} step={1} value={hours}
+                <input type="number" className="input input-narrow" required min={1} max={168} step={1} value={hours}
                   onChange={(e) => setHours(e.target.value)} /> hours (1 to 168)
               </label>
             )}

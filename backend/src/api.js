@@ -28,6 +28,8 @@ class BadRequest extends Error {}
 // ---------- validation (pure, unit-tested) ----------
 
 function toNumber(value, name) {
+  // Number("") is 0; for hours, 0 means "No expiry", so a blank must never slip through as a number.
+  if (typeof value === "string" && value.trim() === "") throw new BadRequest(`${name} must be a number`);
   const n = typeof value === "string" ? Number(value) : value;
   if (typeof n !== "number" || !Number.isFinite(n)) throw new BadRequest(`${name} must be a number`);
   return n;
