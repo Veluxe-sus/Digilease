@@ -50,7 +50,7 @@ function ShareRow({ share, onRevoked, openQr, qrOpen }) {
           <button type="button" className="btn-text" onClick={() => setConfirming(true)}>Revoke</button>
         </div>
       )}
-      {confirming && (
+      {confirming && share.status === "live" && (
         <div className="confirm" role="group" aria-label={`Revoke ${share.label}`}>
           <span>Revoke the link for {share.label}? It stops working right away.</span>
           <div className="share-actions">

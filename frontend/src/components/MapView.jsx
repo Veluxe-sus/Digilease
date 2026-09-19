@@ -49,7 +49,12 @@ export default function MapView({ pin, onPinChange, draggable = false, zoom = 16
     }
     map.current = m;
     if (import.meta.env.DEV) window.__pataMap = m; // dev-only handle for debugging in the console
-    return () => m.remove();
+    return () => {
+      m.remove();
+      map.current = null;
+      pinMarker.current = null;
+      youMarker.current = null;
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

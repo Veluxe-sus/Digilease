@@ -1,18 +1,20 @@
 # Checkpoint: PataCard
 
 ## Now
-Cleanup completed in the Codex copy on 2026-09-19. Tasks 0–4 are done; Task 5 is implemented but its full browser acceptance check is still next. Deadline: live Sep 20 by 12:00 IST; video and submission by 18:00 IST.
+Tasks 0–5 are complete in the Codex copy. Task 5 passed its full owner-flow browser check at 390px and 1440px. Next is Task 6 receiver view. Deadline: live Sep 20 by 12:00 IST; video and submission by 18:00 IST.
 
 ## Done
 - Docs and scope are complete in SPEC, PLAN, DESIGN and RESEARCH. New screens follow DESIGN §8; mockups are skipped.
 - Backend stack `pata-card` is live in ap-south-1; prior smoke test was 10/10.
 - Frontend has Cognito login and the Task 5 owner flow: create card, map, photo, links, QR, revoke and access log.
 - Removed four tracked empty files from `backend/`: `(leg.Geometry`, `({`, `now`, `{,`.
-- Cleanup verification: backend 10/10 tests; frontend 4/4 tests; Vite production build passed.
+- Task 5 browser check: created a card with image, two links and QR; logged a public open; revoked one link; verified 390px/1440px and zero console errors.
+- Fixed MapView Strict Mode cleanup so existing door pins stay on the live map; fixed the revoke confirmation panel staying visible.
+- Verification: backend 10/10 tests; frontend 4/4 tests; Vite production build passed.
 
 ## Next
-1. Task 5 browser checks at 390px and 1440px: create card with photo, create two links, QR, revoke and access log.
-2. Then Task 6 receiver view → 7 no-expiry/print → 8 offline map → 9 go live → 10 review → 11 demo.
+1. Task 6 receiver view: public `/s/:token`, route line, dead-link state and responsive layout.
+2. Then Task 7 no-expiry/print → 8 offline map → 9 go live → 10 review → 11 demo.
 3. Task 12 only after everything above is complete.
 4. If not live by Sep 20 12:00 IST, stop feature work and do Task 9.
 
