@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Task 0 done, except the Discord questions. Planning docs are still waiting for the user's "verified".
+Task 0 done. Planning docs are waiting for the user's "verified". Targets: live by Sept 20 12:00 IST, submitted by 18:00 IST.
 
 ## Done
 - Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).
@@ -15,9 +15,8 @@ Task 0 done, except the Discord questions. Planning docs are still waiting for t
   - Budget `pata-card-5usd` ($5/month) created, with an email alert at 80% of actual spend. State OK.
 
 ## Next
-1. User: ask the Discord questions (does Location Service count? deadline time?).
-2. User verifies the docs (AGENTS, SPEC, PLAN, SETUP, RESEARCH, README).
-3. PLAN Task 1: review and test the existing backend code.
+1. User verifies the docs (AGENTS, SPEC, PLAN, SETUP, RESEARCH, README).
+2. PLAN Task 1: review and test the existing backend code.
 
 ## Decisions
 - Consent card, not a converter: India Post's portal already converts locations to codes.
@@ -29,7 +28,7 @@ Task 0 done, except the Discord questions. Planning docs are still waiting for t
 - Solo build with Claude; deploy from one AWS account, the other 3 accounts are backup credits.
 
 ## Blocked
-- Does Amazon Location Service count for Ship It? Deadline time? (User asks on Discord.)
+- Nothing. (The organizers can't be reached. The Location Service and deadline defaults are in AGENTS.md.)
 
 ## Handoff (for a new agent or account)
 - Rules: `AGENTS.md`. Behaviour: `docs/SPEC.md`. Tasks + tools: `docs/PLAN.md`. Facts: `docs/RESEARCH.md`. User commands: `docs/SETUP.md`.

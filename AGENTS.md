@@ -44,8 +44,13 @@ This file is the single source of rules. It works for Claude Code (through `CLAU
 - Frontend build: `cd frontend && npm run build`.
 - Deploy: see `docs/SETUP.md`. The user runs it.
 
-## Open question
-Amazon Location Service is not on the hackathon's Ship It service list. The user is asking the organizers on Discord. If it doesn't count, the app still qualifies on the 7 listed services it uses: Amplify Hosting, API Gateway, Lambda, DynamoDB, S3, Cognito, CloudWatch.
+## Settled without organizer input (the user can't reach them)
+- **Amazon Location Service stays.**
+  - It isn't on the Ship It list, but the judging rule says "Using an AWS open-source project or AWS services is mandatory to win".
+  - The architecture already rests on 7 listed services: Amplify Hosting, API Gateway, Lambda, DynamoDB, S3, Cognito, CloudWatch.
+- **Deadline unknown.** Assume it closes on Sept 20:
+  - live on AWS by **Sept 20, 12:00 IST**
+  - video and submission by **Sept 20, 18:00 IST**
 
 ## Checkpoint and handoff
 - Rewrite `.claude/CHECKPOINT.md` (don't append to it) whenever a task finishes, a decision is made, or something blocks. Keep it under 40 lines.
