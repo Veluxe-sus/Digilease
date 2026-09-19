@@ -34,3 +34,8 @@ export function formatWhen(iso) {
     hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", hour12: false,
   });
 }
+
+export function formatShareExpiry(expiresAt) {
+  if (expiresAt == null) return "No expiry";
+  return `Link valid until ${formatWhen(new Date(expiresAt * 1000).toISOString())}`;
+}

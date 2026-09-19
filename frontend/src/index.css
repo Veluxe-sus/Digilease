@@ -201,3 +201,27 @@ a { color: inherit; }
   .topnav a { padding: 8px 8px; font-size: 0.92rem; }
   .account .btn-text { padding: 8px 4px; font-size: 0.9rem; }
 }
+
+/* ---------- Receiver view (Task 6) ---------- */
+.receiver-shell { min-height: 100%; }
+.receiver-panel { align-content: start; }
+.receiver-place { grid-template-columns: minmax(0, 1fr); align-items: start; }
+.receiver-place .door { width: 100%; }
+.receiver-expiry { margin: 0; }
+.receiver-actions { display: grid; gap: 8px; text-align: center; }
+.route-summary { margin: 0; font-weight: 700; }
+.open-maps { display: inline-flex; justify-content: center; align-items: center; text-decoration: none; }
+.dead-link { min-height: calc(100dvh - 57px); max-width: 560px; margin: 0 auto; padding: 64px 16px; display: grid; align-content: start; justify-items: start; gap: 12px; }
+.dead-link p { margin: 0; }
+.receiver-loading { min-height: calc(100dvh - 57px); }
+.receiver-map-skeleton { height: 50dvh; min-height: 300px; border-radius: 0; }
+.receiver-loading-details { max-width: 560px; margin: 0 auto; padding: 24px 16px; display: grid; gap: 20px; }
+.receiver-loading-details .skeleton:nth-child(1) { height: 54px; }
+.receiver-loading-details .skeleton:nth-child(2) { height: 76px; }
+.receiver-loading-details .skeleton:nth-child(3) { height: 96px; }
+
+@media (min-width: 1024px) {
+  .receiver-loading { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(380px, 1fr); }
+  .receiver-map-skeleton { height: 100%; }
+  .receiver-loading-details { width: 100%; max-width: none; margin: 0; padding: 32px; background: var(--surface); border-left: 1px solid var(--line); }
+}

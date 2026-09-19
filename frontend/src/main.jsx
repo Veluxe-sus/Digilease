@@ -9,6 +9,7 @@ import Landing from "./pages/Landing.jsx";
 import MyCards from "./pages/MyCards.jsx";
 import NewCard from "./pages/NewCard.jsx";
 import CardView from "./pages/CardView.jsx";
+import SharedView from "./pages/SharedView.jsx";
 import OwnerArea from "./components/OwnerArea.jsx";
 
 Amplify.configure({
@@ -26,6 +27,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<Landing />} />
+        <Route path="/s/:token" element={<SharedView />} />
         <Route element={<OwnerArea />}>
           <Route path="/cards" element={<MyCards />} />
           <Route path="/new" element={<NewCard />} />
