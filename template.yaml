@@ -74,7 +74,7 @@ Resources:
       Runtime: nodejs22.x
       Architectures: [arm64]
       MemorySize: 256
-      Timeout: 10
+      Timeout: 20 # Overpass may take up to 15 s on a card's first /area call
       Environment:
         Variables:
           CARDS_TABLE: !Ref CardsTable

@@ -294,14 +294,14 @@ async function fetchStreets(box) {
 }
 
 async function queryOverpass(box) {
-  const query = `[out:json][timeout:8];way["highway"](${box.south},${box.west},${box.north},${box.east});out geom;`;
+  const query = `[out:json][timeout:15];way["highway"](${box.south},${box.west},${box.north},${box.east});out geom;`;
   let res;
   try {
     res = await fetch(OVERPASS_URL, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded", "user-agent": "PataCard (hackathon)" },
       body: new URLSearchParams({ data: query }),
-      signal: AbortSignal.timeout(8000),
+      signal: AbortSignal.timeout(15_000), // the public server is slow at times; the Lambda allows 20 s
     });
   } catch (err) {
     throw new AreaUnavailable(`Overpass fetch failed: ${err.name}`);

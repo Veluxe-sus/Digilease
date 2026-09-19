@@ -14,6 +14,7 @@ Tasks 0–9 done; the user's phone check passed. Task 10 is committed (`8cfcd06`
 1. Deploy the backend (preview: ApiFunction + HttpApi modified). Always pass `--parameter-overrides AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com`. The user uploads `Desktop\pata-card-dist.zip` via Amplify → Deploy updates. Then `git push`.
 2. Task 11 demo video (shot list in PLAN). Optional: `code-review` of the whole diff.
 3. The user will recheck laptop location on a friend's laptop.
+4. Overpass is slow at European peak (see RESEARCH). Before recording, open the demo card's link and wait for "Saved for offline"; after that its streets come from S3.
 
 ## Decisions
 - Claude only; one writer; Opus 5.

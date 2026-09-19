@@ -68,6 +68,20 @@ export default function SharedView() {
       } catch {
         if (active) setSaveState(null); // storage full or blocked: the live page still works
       }
+      // The public OpenStreetMap server is sometimes overloaded; the API pauses 30 s after a failure,
+      // so try once more after that while the page is open. One success is stored for every receiver.
+      if (areaData.status === "rejected" && shell.status === "fulfilled") {
+        setTimeout(async () => {
+          if (!active) return;
+          try {
+            const later = await api.area(token);
+            if (!active) return;
+            setArea(later);
+            await saveJson(token, "area", later);
+            if (active) setSaveState("saved");
+          } catch { /* still unavailable: the live page works; the next visit tries again */ }
+        }, 35_000);
+      }
     }
 
     api.viewShare(token)
