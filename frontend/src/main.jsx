@@ -7,6 +7,8 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./index.css";
 import Landing from "./pages/Landing.jsx";
 import MyCards from "./pages/MyCards.jsx";
+import NewCard from "./pages/NewCard.jsx";
+import CardView from "./pages/CardView.jsx";
 import OwnerArea from "./components/OwnerArea.jsx";
 
 Amplify.configure({
@@ -26,6 +28,8 @@ createRoot(document.getElementById("root")).render(
         <Route path="/" element={<Landing />} />
         <Route element={<OwnerArea />}>
           <Route path="/cards" element={<MyCards />} />
+          <Route path="/new" element={<NewCard />} />
+          <Route path="/card/:id" element={<CardView />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

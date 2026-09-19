@@ -1,39 +1,42 @@
 # Checkpoint: PataCard
 
 ## Now
-Backend LIVE + smoke 10/10. Task 4 done: frontend login works against the live API. Next: Task 5 (owner flow). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
+Session paused by the user mid-Task 5 (owner flow). Backend LIVE, smoke 10/10, login + map + create-card work in the browser. Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
-- Docs verified by the user: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, DESIGN, README (with the "why not WhatsApp" table).
-- Design: `docs/DESIGN.md` + 6 Stitch mockups in `docs/mockups/` (phone s1/s2/s4, laptop d1-d3).
-- Task 0: AWS CLI + SAM; IAM user `vansh`; account 499567237530, ap-south-1; $5 budget alarm.
-- Task 1: `api.js` reviewed, 10/10 unit tests (401 guard; route summary from legs).
-- Task 2: `template.yaml` deployed as stack `pata-card`. CORS fixed (no `!If`; see RESEARCH).
-  - ApiUrl `https://qqok8fblfe.execute-api.ap-south-1.amazonaws.com`
-  - UserPool `ap-south-1_EAyFdvVxW`, client `3vtdlrjkje7j84h3ok8c8tt70i`
-  - map key `pata-card-map-key`, bucket `pata-card-photobucket-rutsrsx2yeod`
-- Task 3: `scripts/smoke.sh` passes 10/10 live checks, including a real route (10.4 km, 26 min).
-  - Test user `smoke-test@patacard.invalid` exists in the pool (password random, not stored).
-- Known gap: a card whose photo upload failed has a `photoUrl` to a missing object. The frontend hides the image on error.
+- Docs verified by the user: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, DESIGN (+ mockups), README.
+- Tasks 0–4:
+  - AWS setup
+  - backend 10/10 unit tests
+  - stack `pata-card` live (ap-south-1; ApiUrl `https://qqok8fblfe.execute-api.ap-south-1.amazonaws.com`)
+  - `scripts/smoke.sh` 10/10
+  - Vite React frontend with Cognito login
+- Task 5, written:
+  - `MapView.jsx`, `DigipinPlate.jsx`, `NewCard.jsx`, `CardView.jsx`, CSS
+  - routes `/new` and `/card/:id`
+- Task 5, verified in the browser (Playwright, 390px): map tiles load; tap drops the pin; live DIGIPIN; save → CardView shows "Card saved".
+- Fixed: the MapLibre v6 worker breaks under Vite. `npm run copy-map-worker` (runs before dev/build) + `setWorkerUrl("/maplibre/...")`.
+- Test data: user `smoke-test@patacard.invalid` owns 2 cards (4T3 96F4 2L7 and 3P8 2LCJ L82). Password only in the old session's scratchpad; reset it with `admin-set-user-password` if needed.
 
 ## Next
-1. Task 5: owner flow — `MapView`, `NewCard`, `CardView` (DESIGN.md + mockups; frontend-design pass).
-2. Frontend: `npm test` (4 tests), `npm run build`, `npm run lint` all pass. `.env.local` is from stack outputs (ignored).
-3. Task 6: receiver view + route. Then Task 7: Amplify Hosting + redeploy with `AllowedOrigin`.
+1. Finish Task 5 checks on `/card/:id`: create 2 links, QR, "Send link", revoke with confirm, access log, laptop width (1440). Take screenshots.
+2. README: add Mappls Pin / eLoc, Google Plus Codes and what3words to the "why not" table. Honest line: *they solve the code; we solve consent.*
+3. **User decision pending: offline features.** Proposed, not approved:
+   - A. offline `/pin` tool as an installable web app (GPS → DIGIPIN, typed DIGIPIN → spot, no network; hand-written service worker)
+   - B. printable door plate
+   - Recommended A+B (~3 h).
+4. Task 6 receiver view + route; Task 7 Amplify Hosting + `sam deploy --parameter-overrides AllowedOrigin=<url>`; Tasks 8–9.
 
 ## Decisions
-- Consent card, not a converter. JavaScript end to end. Serverless + Cognito (7 Ship It services).
-- Store the DIGIPIN cell centre, not raw GPS. Routes computed in Lambda (no routing key in the browser).
-- A website, mobile-first; two panes at 1024px and wider.
-- `AllowedOrigin` defaults to `http://127.0.0.1:5173` until the Amplify URL exists.
-- The client allows USER_PASSWORD_AUTH only for CLI smoke tests; the web app uses SRP.
-- The user asked Claude to run deploys; infra commands still get announced before running.
+- Stay with PataCard; Scam Bust rejected (an LLM wrapper, crowded, Bedrock not on the list, no build yet). Pitch: a working prototype of DHRUVA's consent layer on the official DIGIPIN.
+- Honest weakness: Mappls eLoc (2017) already shares address codes. Our edge is per-receiver consent links (expiry, revoke, log) + door photo.
+- JavaScript end to end; serverless + Cognito; store the cell centre; routes in Lambda; mobile-first, two panes at ≥1024px.
+- The user asked Claude to run deploys; announce first; anything new or costly needs a fresh yes.
 
 ## Blocked
-- Nothing.
+- Nothing. Waiting on the user's offline-feature decision (Next #3).
 
-## Handoff (for a new agent or account)
-- Rules: `AGENTS.md`. Behaviour: `docs/SPEC.md`. Tasks + tools: `docs/PLAN.md`. Facts: `docs/RESEARCH.md`. UI: `docs/DESIGN.md` + `docs/mockups/`. User commands: `docs/SETUP.md`.
-- Re-check the live backend any time: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh`.
-- `aws` may not be on PATH until PowerShell restarts. Full path: `C:\Program Files\Amazon\AWSCLIV2\aws.exe`.
-- Don't trust this chat's memory; trust these files and `git log`.
+## Handoff
+- Read `AGENTS.md`, then `docs/PLAN.md` / `docs/SPEC.md` / `docs/DESIGN.md` / `docs/RESEARCH.md` / `docs/SETUP.md`.
+- Run: `cd frontend && npm run dev` (port 5173 fixed). Tests: `backend npm test` (10), `frontend npm test` (4). Live check: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh`.
+- Trust these files and `git log`, not chat memory.

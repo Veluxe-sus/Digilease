@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# copied from node_modules by `npm run copy-map-worker`
+public/maplibre/

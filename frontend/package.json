@@ -8,7 +8,10 @@
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "node --test src/"
+    "test": "node --test src/",
+    "copy-map-worker": "node -e \"const fs=require('fs');fs.mkdirSync('public/maplibre',{recursive:true});for(const f of ['maplibre-gl-worker.mjs','maplibre-gl-shared.mjs'])fs.copyFileSync('node_modules/maplibre-gl/dist/'+f,'public/maplibre/'+f)\"",
+    "predev": "npm run copy-map-worker",
+    "prebuild": "npm run copy-map-worker"
   },
   "dependencies": {
     "@aws-amplify/ui-react": "^6.15.6",
