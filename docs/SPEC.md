@@ -51,7 +51,7 @@ A chip shows "Saved for offline" when the card, area and page files are stored. 
 
 **Area.** A square of ±500 m around the card's cell centre (about 1 km × 1 km). Streets come from OpenStreetMap (every way with a `highway` tag), fetched by the Lambda from the Overpass API on the first `GET /s/{token}/area` for that card. They are stored in S3 and served from there after that.
 
-**Offline view.** Shown automatically when the page can't reach the API, and through a "Show offline map" toggle for testing and the demo:
+**Offline view.** Shown automatically when the page can't reach the API, and through a "Preview offline map" link for testing and the demo:
 - a plain map drawn on the phone: streets as lines, the 1 km square outline, the saved route line, a door marker and a blue "you" dot (no map tiles and no internet needed)
 - "You: `XXX XXXX XXX`" (the phone's GPS position turned into a DIGIPIN on the phone) and "Door: `4T3 96F4 2L7`"
 - the distance between the two codes' cell centres (straight line), and "about N m along the route" when a route is saved and the receiver is within 50 m of it

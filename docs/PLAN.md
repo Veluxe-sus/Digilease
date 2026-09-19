@@ -25,6 +25,43 @@ Skill names are Claude Code skills (plugin names in brackets). MCP servers are w
 | `context7` | Tasks 2, 4–8 | Current docs: AWS SAM, SDK v3 (`client-geo-routes`, `lib-dynamodb`, `s3-presigned-post`), Amazon Location, MapLibre GL, Amplify v6 Auth, Service Worker and Cache Storage (MDN) | Official docs sites: docs.aws.amazon.com, maplibre.org, docs.amplify.aws, developer.mozilla.org, wiki.openstreetmap.org (Overpass API) |
 | `playwright` | Tasks 6–9 | Scripted browser run of create → share → view → revoke, and offline mode (`context.setOffline(true)`) | Do the flow by hand in two browser windows; DevTools "Offline" throttling |
 | `chrome-devtools` | Tasks 5–10 | Console and network errors, mobile emulation, Lighthouse accessibility check | Browser DevTools by hand |
+| `stitch` | Mockups step | Generate the new screens in the existing Stitch project "PataCard" (id 2246405162473946986) | Skip the mockups and build from `docs/DESIGN.md` §8 text |
+
+## Remaining work: order and time budget (written 2026-09-19, about 13:00 IST)
+Tasks 0–4 are done and Task 5 is written. What's left, in order:
+
+| Step | Budget | Aim to finish by (IST) |
+|---|---|---|
+| Cleanup + Task 5 checks | 30 min | Sep 19, 14:00 |
+| Mockups (optional) | 30 min | Sep 19, 14:30 |
+| Task 6 receiver view | 1.5 h | Sep 19, 16:00 |
+| Task 7 no-expiry links + print card | 1 h | Sep 19, 17:00 |
+| Task 8 last-km offline map | 4–5 h | Sep 19, 22:00 |
+| Task 9 go live | 1 h | Sep 20, 11:00 |
+| Task 10 review and polish | 1.5 h | Sep 20, 13:00 |
+| Task 11 demo video | 1 h | Sep 20, 16:00 |
+| Task 12 stretch | 2 h | only if everything above is done |
+
+**Hard rule:** if the app is not live by **Sep 20, 12:00 IST**, stop feature work, cut from "If time runs short" below and do Task 9. Submission is due by **Sep 20, 18:00 IST**.
+
+**Cleanup (first thing):** `backend/` has 4 empty files committed by a bad shell command: `(leg.Geometry`, `({`, `now`, `{,`. Remove them with `git rm` and commit ("Remove stray empty files").
+
+**For Codex and other agents:**
+- `AGENTS.md` is the rules file. Skill names in this plan are Claude Code skills; use the fallback column.
+- If your sandbox has no network or AWS access, don't work around it. Print the exact command (`sam build`, `sam deploy`, `npm install`, `scripts/smoke.sh`) for the user to run, then read their output.
+
+## Mockups (optional, before Task 6; about 30 minutes)
+Only with the `stitch` MCP. Use the existing project and its design system. Generate one screen per prompt, check it against `docs/DESIGN.md` §8 and the "Mockup content to NOT ship" list in Task 5, then download each PNG into `docs/mockups/` under the name given.
+
+| File | Device | Prompt |
+|---|---|---|
+| `s5-receiver.png` | phone | Receiver page of PataCard for a shared address link. Top bar with the PataCard wordmark and a green "Saved for offline" pill. Map filling half the screen with a red teardrop pin and a blue route line. Below: "SHARED WITH YOU · Ravi (guest)", the DIGIPIN code plate 4T3 96F4 2L7 in bold monospace with a red border, landmark "Blue gate, behind Hanuman temple", a 4:3 door photo, "Link valid until 21 Sep, 18:00" in monospace. Sticky bottom bar: summary "2.4 km · 9 min", a red primary button "Update route", and a text button "Open in maps". |
+| `s6-offline.png` | phone | The same receiver page with no internet. A dark navy banner at the top: "No internet. Showing your saved map." A plain light map with only grey street lines, a dashed square outline, a blue route line, a red door pin and a blue "you" dot with a white ring. A white bottom sheet: "240 m to the door" large, "straight line" small, "about 310 m along the route". Two small monospace code plates side by side: "YOU 4T3 96F3 KK1" with a blue border and "DOOR 4T3 96F4 2L7" with a red border. A small door photo thumbnail and "Streets © OpenStreetMap contributors". |
+| `s7-print.png` | phone | Print preview screen. Top bar "Print card" with a back arrow. A white A6 postcard on a light grey page: small "PataCard" wordmark and "For: Wedding guests"; a door photo; a large QR code with "Scan to find the door" and "Open it once with internet. Near us it keeps working without signal."; the DIGIPIN plate 4T3 96F4 2L7; landmark text; "DIGIPIN by India Post". A red primary button "Print / Save as PDF". |
+| `s8-links.png` | phone | Address card page, links section. Segmented chips "2 h", "24 h", "72 h", "No expiry" (selected), "Custom" and a name field "Wedding guests". Helper text "Receivers can keep an offline copy until the link expires." A list of link rows separated by hairlines: "Wedding guests" with a green Live pill and "No expiry" in monospace; "Flipkart delivery" Live, "expires in 23 h"; "Courier" grey Revoked with strikethrough. Each live row has copy, QR, printer and revoke icons. |
+| `d4-receiver.png` | laptop, 1440px | The receiver page (from `s5-receiver.png`) in the two-pane laptop layout of `d3-receiver.png`: map on the left 60%, the details and the route button in a white right panel. |
+
+- **Check:** the PNGs are in `docs/mockups/` and nothing from the "do not ship" list appears in the built UI. Commit ("Mockups for receiver, offline map, print card").
 
 Not used: paid or credit-consuming tools (image generation, Canva, Adobe, 21st, firecrawl). claude-mem is not used either: its memory doesn't travel with the repo, and these files do.
 
@@ -120,6 +157,7 @@ File: `frontend/src/pages/SharedView.jsx`
 - Fallback button: "Open in maps" (geo: link) for when routing fails.
 - A 410 shows "This address is no longer shared".
 - No phone number or "Call owner" button (SPEC Decisions).
+- Layout: `docs/DESIGN.md` §8.1 (and `s5-receiver.png` / `d4-receiver.png` if they exist). Add the route `/s/:token` to `main.jsx`, outside `OwnerArea` (no login).
 - **Check:** open a live link in a private window → it works. Revoke it → reload → dead message.
 
 ## Task 7: No-expiry links and the printable QR card (about 1 hour)
@@ -138,6 +176,7 @@ Files: `backend/src/api.js`, `backend/test/api.test.js`, `frontend/src/pages/Car
   - loads `GET /cards/{id}`, finds the share by token; a missing or dead link shows a message instead
   - large QR of `${origin}/s/${token}` (`qrcode`), DIGIPIN 3-4-3, landmark, door photo, "Scan to find the door", "Valid until …" when the link expires
   - "Print / Save as PDF" → `window.print()`; `@media print` hides everything but the card; `@page` sized A6
+- Layout: `docs/DESIGN.md` §8.3 and §8.4. The print route goes inside `OwnerArea` in `main.jsx`.
 - Nothing new to install; `qrcode` is already a dependency.
 - **Check:** `backend npm test` passes; redeploy (announce first); create a no-expiry link, print to PDF, scan the QR on the PDF with a phone → the receiver page opens.
 
@@ -176,7 +215,8 @@ Files: `frontend/src/lib/offline.js` (new), `frontend/public/sw.js` (new), `fron
 Files: `frontend/src/components/OfflineMap.jsx` (new), `frontend/src/pages/SharedView.jsx`, `frontend/src/index.css`
 - MapLibre with an inline style: a plain background, GeoJSON sources for streets, the square outline and the route. No tile URLs and no glyphs; the door and "you" markers and the code labels are HTML `Marker`s and a panel, so nothing needs the network.
 - `navigator.geolocation.watchPosition` → "You: …" DIGIPIN via `getDigiPin`; the door code; the distance from `distanceMeters`, and "about N m along the route" from `alongRoute`; the outside-the-square message; the OpenStreetMap credit line.
-- "Show offline map" toggle, and automatic switching when offline.
+- "Preview offline map" link, and automatic switching when offline.
+- Layout and every state (waiting for GPS, outside the square, arrived, permission denied, back online): `docs/DESIGN.md` §8.2.
 - **Check:** in Playwright (preview build): open the link, route, `setOffline(true)`, set a fake geolocation inside the square → the map shows streets, the route, both markers, the right codes and a distance. Move the fake position outside → the outside message. Then on a real phone in airplane mode.
 
 ## Task 9: Go live (about 1 hour)

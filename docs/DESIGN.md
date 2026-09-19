@@ -70,3 +70,65 @@ A calm, civic, mobile-first utility. It should feel like a well-made government-
 - No AI copy clichés ("Elevate", "Seamless", "Unleash"). Plain words: "Share", "Revoke", "Route to door".
 - No filler text like "Scroll to explore".
 - Never show hyphens in the DIGIPIN. Always 3-4-3 with spaces.
+
+## 8. New screens (Tasks 6–8)
+Same look as sections 1–7; nothing new in colour or type. Mockup files to add: `s5-receiver.png`, `s6-offline.png`, `s7-print.png`, `s8-links.png` (phone) and `d4-receiver.png` (laptop), made in the Stitch project with the prompts in `docs/PLAN.md` → "Mockups". If there are no mockups, build from this text.
+
+### 8.1 Receiver page, online (`/s/:token`)
+- **Top bar:** "PataCard" wordmark on the left (no back arrow; people arrive from a link). On the right a status chip: "Saving for offline…" (Slate Muted), then "Saved for offline" with a check icon (Live Green pill).
+- **Map:** about 50% of the viewport height, with the Post Red door pin. After a route, the Route Blue line and a blue "you" dot.
+- **Content:**
+  - label "SHARED WITH YOU" and the link name ("Ravi (guest)")
+  - the DIGIPIN code plate
+  - the landmark text
+  - the door photo (4:3)
+  - mono line: "Link valid until 21 Sep, 18:00" or "No expiry"
+  - text link "Preview offline map"
+- **Sticky bottom bar:** primary "Route from my location". After a route, a summary row above it ("2.4 km · 9 min") and the button becomes "Update route". Under it, always, a text button "Open in maps".
+- **Laptop:** two panes like `d3-receiver.png`: map left, this content in the right panel.
+- **Dead link:** as `s4-dead.png`. The saved offline copy is deleted.
+
+### 8.2 Offline map (same page, no internet)
+- **Banner** across the top, Ink Navy background, white 14px text: "No internet. Showing your saved map." When the network returns: "Back online" and a "Show live map" button.
+- **Map** (about 60% of the height), drawn on the phone:
+  - Survey Paper background
+  - streets in #B9C2CC: main roads 4px, residential 2.5px, footpaths 1px dashed
+  - the 1 km square as a dashed Slate Muted outline
+  - the saved route in Route Blue, 4px
+  - the door as the Post Red pin
+  - "you" as a 14px Route Blue dot with a 3px white ring and a static 10%-tint accuracy circle (no pulsing)
+- **Bottom sheet** (white, 16px top radius):
+  - Distance, 28px semi-bold: "240 m to the door", with "straight line" in Slate Muted under it. When a route is saved and the receiver is on it: "about 310 m along the route".
+  - Two small code plates side by side, stacked below 360px wide:
+    - "YOU" `4T3 96F3 KK1` with a 2px Route Blue border
+    - "DOOR" `4T3 96F4 2L7` with a 2px Post Red border
+  - The landmark on one line and a 64px door-photo thumbnail that enlarges on tap.
+  - Credit line, 12px Slate Muted: "Streets © OpenStreetMap contributors".
+- **States:**
+  - **Waiting for GPS:** the YOU plate is a skeleton, with "Finding your position. Without data this can take up to a minute."
+  - **Outside the square:** "You're outside the saved area" and "The door is 3.2 km away".
+  - **Arrived:** within 15 m, the distance line reads "You're at the door" in Live Green.
+  - **Location permission denied:** "Allow location to see where you are. The map and the door still show."
+
+### 8.3 Printable QR card (`/card/:id/print/:token`)
+- **Screen:**
+  - top bar with a back arrow and "Print card"
+  - the card preview on Survey Paper
+  - primary button "Print / Save as PDF"
+  - helper text: "Prints at A6 (postcard size). Choose 'Save as PDF' in the print dialog to get a file."
+- **The card** (A6 portrait, 105 × 148 mm, white, 1px Hairline border, 6 mm padding), top to bottom:
+  1. A row with the small "PataCard" wordmark on the left and "For: Wedding guests" (link name, muted) on the right.
+  2. The door photo at 4:3, full width, 3 mm radius.
+  3. A row: the QR at 55 mm (Ink Navy on white, a quiet zone of 4 modules), and next to it "Scan to find the door" (semi-bold) and "Open it once with internet. Near us it keeps working without signal." (muted).
+  4. The DIGIPIN code plate (mono, 20 pt, Post Red border).
+  5. The landmark text.
+  6. A footer: "Valid until 21 Sep 2026, 18:00" only when the link expires; "DIGIPIN by India Post" in small muted text.
+- **Print CSS:** only the card prints, and it must read in black and white.
+
+### 8.4 Card page changes (`/card/:id`)
+- Hour presets: "2 h", "24 h", "72 h", "No expiry", "Custom".
+- Helper under the link form: "Receivers can keep an offline copy until the link expires."
+- **Link row:**
+  - mono "No expiry" in place of "expires in 23 h" for those links
+  - icon buttons: Copy, QR, Print (a printer icon, live links only), Revoke
+- The QR sheet's existing "Print card" button opens the print page.
