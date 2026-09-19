@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Backend is LIVE on AWS and passes the end-to-end smoke test. Next: Task 4 (frontend skeleton + login). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
+Backend LIVE + smoke 10/10. Task 4 done: frontend login works against the live API. Next: Task 5 (owner flow). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
 - Docs verified by the user: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, DESIGN, README (with the "why not WhatsApp" table).
@@ -17,8 +17,8 @@ Backend is LIVE on AWS and passes the end-to-end smoke test. Next: Task 4 (front
 - Known gap: a card whose photo upload failed has a `photoUrl` to a missing object. The frontend hides the image on error.
 
 ## Next
-1. Task 4: Vite React app in `frontend/`, `.env.local` from stack outputs, Amplify Auth login.
-2. Task 5: owner flow (map, live DIGIPIN, save, photo, share links, QR, access log).
+1. Task 5: owner flow — `MapView`, `NewCard`, `CardView` (DESIGN.md + mockups; frontend-design pass).
+2. Frontend: `npm test` (4 tests), `npm run build`, `npm run lint` all pass. `.env.local` is from stack outputs (ignored).
 3. Task 6: receiver view + route. Then Task 7: Amplify Hosting + redeploy with `AllowedOrigin`.
 
 ## Decisions
