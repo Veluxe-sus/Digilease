@@ -55,9 +55,10 @@ test("card input: rejects bad locations, long landmarks, bad photo types", () =>
 
 test("share input: label and hours limits", () => {
   assert.deepEqual(validateShareInput({ label: " Ambulance ", hours: 24 }), { label: "Ambulance", hours: 24 });
+  assert.deepEqual(validateShareInput({ label: "Wedding guests", hours: 0 }), { label: "Wedding guests", hours: 0 });
   assert.throws(() => validateShareInput({ label: "", hours: 24 }), BadRequest);
   assert.throws(() => validateShareInput({ label: "x".repeat(41), hours: 24 }), BadRequest);
-  assert.throws(() => validateShareInput({ label: "Guest", hours: 0 }), BadRequest);
+  assert.throws(() => validateShareInput({ label: "Guest", hours: -1 }), BadRequest);
   assert.throws(() => validateShareInput({ label: "Guest", hours: 169 }), BadRequest);
   assert.throws(() => validateShareInput({ label: "Guest", hours: 1.5 }), BadRequest);
 });
@@ -69,6 +70,8 @@ test("route origin must be a real coordinate", () => {
 
 test("a share is live only if not revoked and not expired", () => {
   const now = 1_000_000;
+  assert.equal(isShareLive({ revoked: false }, now), true);
+  assert.equal(isShareLive({ revoked: true }, now), false);
   assert.equal(isShareLive({ revoked: false, expiresAt: now + 1 }, now), true);
   assert.equal(isShareLive({ revoked: true, expiresAt: now + 1 }, now), false);
   assert.equal(isShareLive({ revoked: false, expiresAt: now }, now), false);

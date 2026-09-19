@@ -10,6 +10,7 @@ import MyCards from "./pages/MyCards.jsx";
 import NewCard from "./pages/NewCard.jsx";
 import CardView from "./pages/CardView.jsx";
 import SharedView from "./pages/SharedView.jsx";
+import PrintCard from "./pages/PrintCard.jsx";
 import OwnerArea from "./components/OwnerArea.jsx";
 
 Amplify.configure({
@@ -32,6 +33,7 @@ createRoot(document.getElementById("root")).render(
           <Route path="/cards" element={<MyCards />} />
           <Route path="/new" element={<NewCard />} />
           <Route path="/card/:id" element={<CardView />} />
+          <Route path="/card/:id/print/:token" element={<PrintCard />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

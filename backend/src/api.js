@@ -59,8 +59,8 @@ function validateShareInput(body) {
   if (!label) throw new BadRequest("Give the link a name, like \"Ambulance\"");
   if (label.length > MAX_LABEL) throw new BadRequest(`Name must be ${MAX_LABEL} characters or fewer`);
   const hours = toNumber(body.hours, "hours");
-  if (!Number.isInteger(hours) || hours < 1 || hours > MAX_HOURS) {
-    throw new BadRequest(`Hours must be a whole number from 1 to ${MAX_HOURS}`);
+  if (!Number.isInteger(hours) || hours < 0 || hours > MAX_HOURS) {
+    throw new BadRequest(`Hours must be a whole number from 0 to ${MAX_HOURS}`);
   }
   return { label, hours };
 }
@@ -94,7 +94,7 @@ function summarizeRoute(route) {
 }
 
 function isShareLive(share, nowSeconds) {
-  return Boolean(share) && !share.revoked && share.expiresAt > nowSeconds;
+  return Boolean(share) && !share.revoked && (share.expiresAt == null || share.expiresAt > nowSeconds);
 }
 
 const newToken = () => randomBytes(16).toString("base64url");
@@ -178,8 +178,8 @@ async function getCard(cardId, sub) {
   }));
   const now = nowSeconds();
   const shares = (Items || []).map((s) => ({
-    token: s.token, label: s.label, createdAt: s.createdAt, expiresAt: s.expiresAt,
-    status: s.revoked ? "revoked" : s.expiresAt > now ? "live" : "expired",
+    token: s.token, label: s.label, createdAt: s.createdAt, expiresAt: s.expiresAt ?? null,
+    status: s.revoked ? "revoked" : isShareLive(s, now) ? "live" : "expired",
   }));
   return json(200, { card: { ...card, photoUrl: await photoUrl(card.photoKey) }, shares });
 }
@@ -190,10 +190,10 @@ async function createShare(event, cardId, sub) {
   const { label, hours } = validateShareInput(parseBody(event));
   const share = {
     token: newToken(), cardId, ownerSub: sub, label, revoked: false,
-    createdAt: new Date().toISOString(), expiresAt: nowSeconds() + hours * 3600,
+    createdAt: new Date().toISOString(), ...(hours ? { expiresAt: nowSeconds() + hours * 3600 } : {}),
   };
   await db.send(new PutCommand({ TableName: SHARES_TABLE, Item: share }));
-  return json(201, { share: { token: share.token, label, expiresAt: share.expiresAt, status: "live" } });
+  return json(201, { share: { token: share.token, label, expiresAt: share.expiresAt ?? null, status: "live" } });
 }
 
 async function revokeShare(token, sub) {
@@ -229,7 +229,7 @@ async function viewShare(token) {
   }));
   return json(200, {
     digipin: card.digipin, lat: card.lat, lon: card.lon, landmark: card.landmark,
-    photoUrl: await photoUrl(card.photoKey), label: share.label, expiresAt: share.expiresAt,
+    photoUrl: await photoUrl(card.photoKey), label: share.label, expiresAt: share.expiresAt ?? null,
   });
 }
 

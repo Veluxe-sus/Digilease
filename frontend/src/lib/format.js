@@ -39,3 +39,11 @@ export function formatShareExpiry(expiresAt) {
   if (expiresAt == null) return "No expiry";
   return `Link valid until ${formatWhen(new Date(expiresAt * 1000).toISOString())}`;
 }
+
+export function formatPrintExpiry(expiresAt) {
+  if (expiresAt == null) return "";
+  const when = new Date(expiresAt * 1000).toLocaleString("en-IN", {
+    hour: "2-digit", minute: "2-digit", day: "numeric", month: "short", year: "numeric", hour12: false,
+  });
+  return `Valid until ${when}`;
+}

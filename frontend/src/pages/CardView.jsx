@@ -6,7 +6,7 @@ import DigipinPlate from "../components/DigipinPlate.jsx";
 import { api } from "../lib/api.js";
 import { formatWhen, timeLeft } from "../lib/format.js";
 
-const PRESETS = [2, 24, 72];
+const PRESETS = [2, 24, 72, 0];
 const linkFor = (token) => `${window.location.origin}/s/${token}`;
 
 function StatusPill({ status }) {
@@ -14,7 +14,7 @@ function StatusPill({ status }) {
   return <span className={`pill pill-${status}`}>{text}</span>;
 }
 
-function ShareRow({ share, onRevoked, openQr, qrOpen }) {
+function ShareRow({ share, cardId, onRevoked, openQr, qrOpen }) {
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState("");
@@ -40,13 +40,16 @@ function ShareRow({ share, onRevoked, openQr, qrOpen }) {
         <span className={`share-name ${share.status === "revoked" ? "struck" : ""}`}>{share.label}</span>
         <StatusPill status={share.status} />
         <span className="muted small code-num">
-          {share.status === "live" ? `expires in ${timeLeft(share.expiresAt)}` : share.status === "revoked" ? "access ended" : "time ran out"}
+          {share.status === "live"
+            ? share.expiresAt == null ? "No expiry" : `expires in ${timeLeft(share.expiresAt)}`
+            : share.status === "revoked" ? "access ended" : "time ran out"}
         </span>
       </div>
       {share.status === "live" && !confirming && (
         <div className="share-actions">
           <button type="button" className="btn-chip" onClick={send}>{sent || "Send link"}</button>
           <button type="button" className="btn-chip" onClick={() => openQr(qrOpen ? null : share.token)} aria-expanded={qrOpen}>QR</button>
+          <Link className="btn-chip" to={`/card/${cardId}/print/${share.token}`}>Print</Link>
           <button type="button" className="btn-text" onClick={() => setConfirming(true)}>Revoke</button>
         </div>
       )}
@@ -59,13 +62,13 @@ function ShareRow({ share, onRevoked, openQr, qrOpen }) {
           </div>
         </div>
       )}
-      {qrOpen && share.status === "live" && <QrPanel url={url} label={share.label} />}
+      {qrOpen && share.status === "live" && <QrPanel url={url} label={share.label} printUrl={`/card/${cardId}/print/${share.token}`} />}
       {err && <p className="error small" role="alert">{err}</p>}
     </li>
   );
 }
 
-function QrPanel({ url, label }) {
+function QrPanel({ url, label, printUrl }) {
   const [src, setSrc] = useState("");
   useEffect(() => {
     QRCode.toDataURL(url, { margin: 1, width: 440, color: { dark: "#16202B", light: "#FFFFFF" } }).then(setSrc);
@@ -74,6 +77,7 @@ function QrPanel({ url, label }) {
     <div className="qr">
       {src && <img src={src} width="220" height="220" alt={`QR code for the ${label} link`} />}
       <p className="muted small">Scan to open the address for {label}. No app needed.</p>
+      <Link className="btn-secondary btn-sm" to={printUrl}>Print card</Link>
     </div>
   );
 }
@@ -162,7 +166,7 @@ export default function CardView() {
             : (
               <ul className="shares">
                 {shares.map((s) => (
-                  <ShareRow key={s.token} share={s} onRevoked={revoked} qrOpen={qrFor === s.token} openQr={setQrFor} />
+                  <ShareRow key={s.token} share={s} cardId={id} onRevoked={revoked} qrOpen={qrFor === s.token} openQr={setQrFor} />
                 ))}
               </ul>
             )}
@@ -180,7 +184,7 @@ export default function CardView() {
             <div className="chips" role="group" aria-labelledby="hours-l">
               {PRESETS.map((h) => (
                 <button type="button" key={h} className={`chip ${!custom && hours === h ? "on" : ""}`} aria-pressed={!custom && hours === h}
-                  onClick={() => { setCustom(false); setHours(h); }}>{h} h</button>
+                  onClick={() => { setCustom(false); setHours(h); }}>{h === 0 ? "No expiry" : `${h} h`}</button>
               ))}
               <button type="button" className={`chip ${custom ? "on" : ""}`} aria-pressed={custom} onClick={() => setCustom(true)}>Custom</button>
             </div>
@@ -190,6 +194,7 @@ export default function CardView() {
                   onChange={(e) => setHours(e.target.value)} /> hours (1 to 168)
               </label>
             )}
+            <span className="muted small">Receivers can keep an offline copy until the link expires.</span>
           </div>
           {formErr && <p className="error" role="alert">{formErr}</p>}
           <button type="submit" className="btn-primary" disabled={creating || !label.trim()}>

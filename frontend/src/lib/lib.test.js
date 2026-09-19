@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { getDigiPin } from "./digipin.js";
-import { formatDigipin, formatDistance, formatDuration, formatShareExpiry, timeLeft } from "./format.js";
+import { formatDigipin, formatDistance, formatDuration, formatPrintExpiry, formatShareExpiry, timeLeft } from "./format.js";
 
 test("frontend digipin.js is India Post's file plus only the export lines", () => {
   const official = readFileSync(new URL("../../../backend/src/digipin.js", import.meta.url), "utf8");
@@ -39,4 +39,9 @@ test("time left until a link expires", () => {
 test("receiver expiry copy distinguishes permanent and expiring links", () => {
   assert.equal(formatShareExpiry(null), "No expiry");
   assert.match(formatShareExpiry(2_000_000_000), /^Link valid until /);
+});
+
+test("print expiry copy includes the year and omits permanent links", () => {
+  assert.equal(formatPrintExpiry(null), "");
+  assert.match(formatPrintExpiry(2_000_000_000), /^Valid until .*2033, /);
 });
