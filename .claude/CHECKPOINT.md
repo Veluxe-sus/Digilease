@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Task 0 (user setup) nearly done: only the budget alarm and the Discord questions are left. Planning docs are still waiting for the user's "verified".
+Task 0 done, except the Discord questions. Planning docs are still waiting for the user's "verified".
 
 ## Done
 - Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).
@@ -12,9 +12,10 @@ Task 0 (user setup) nearly done: only the budget alarm and the Discord questions
   - AWS CLI 2.36.49 and SAM CLI 1.166.2 installed.
   - IAM user `vansh` (AdministratorAccess, CLI-only) created and configured.
   - Account 499567237530, region ap-south-1.
+  - Budget `pata-card-5usd` ($5/month) created, with an email alert at 80% of actual spend. State OK.
 
 ## Next
-1. User: run the budget alarm commands (SETUP §1) and ask the Discord questions.
+1. User: ask the Discord questions (does Location Service count? deadline time?).
 2. User verifies the docs (AGENTS, SPEC, PLAN, SETUP, RESEARCH, README).
 3. PLAN Task 1: review and test the existing backend code.
 
