@@ -32,7 +32,11 @@ This file is the single source of rules. It works for Claude Code (through `CLAU
 - **DIGIPIN format:** store 10 continuous characters, no hyphens. Display in 3-4-3 groups with spaces (`4T3 96F4 2L7`).
 - **The server computes the DIGIPIN.** Never trust a code sent by the browser.
 - **Nothing is public except through a live share link** (not revoked, `expiresAt` in the future). Check `expiresAt` in code; DynamoDB TTL deletes late.
-- **The user runs all infrastructure:** installs, `aws configure`, `sam deploy`, console clicks, anything touching credentials. Print the exact command, then wait for their output. Never guess which shell or account a command lands in.
+- **Infrastructure belongs to the user.** Credentials, `aws configure`, IAM and console clicks are always theirs.
+  - On 2026-09-19 the user asked the agent to run `sam build` / `sam deploy` and the smoke test for this stack.
+  - Say what you're about to run and what it creates before running it.
+  - Anything new or destructive (deleting stacks or data, new AWS services, anything that costs money) needs a fresh yes.
+  - Never guess which shell or account a command lands in; check with `aws sts get-caller-identity`.
 - Never commit secrets: `.env*`, `samconfig.toml` overrides with keys, AWS credentials, the map API key.
 - Validate every input at the API boundary (limits in SPEC.md).
 - Keep files under 500 lines. One Lambda, one template. No new abstractions or dependencies unless PLAN.md lists them.

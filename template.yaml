@@ -5,13 +5,11 @@ Description: PataCard - consent-based DIGIPIN address cards (API, auth, data, ma
 Parameters:
   AllowedOrigin:
     Type: String
-    Default: none
+    Default: http://127.0.0.1:5173
     Description: >-
       Deployed site origin, e.g. https://main.d123.amplifyapp.com (no trailing slash).
-      Leave as "none" until the site exists; localhost:5173 is always allowed.
-
-Conditions:
-  HasSiteOrigin: !Not [!Equals [!Ref AllowedOrigin, none]]
+      Defaults to a local dev origin until the site exists; localhost:5173 is always allowed.
+      Plain lists only: SAM silently drops HttpApi CorsConfiguration built with !If.
 
 Resources:
   # ---------- Auth: owners sign in with email ----------
@@ -60,10 +58,7 @@ Resources:
               audience:
                 - !Ref UserPoolClient
       CorsConfiguration:
-        AllowOrigins: !If
-          - HasSiteOrigin
-          - [!Ref AllowedOrigin, "http://localhost:5173"]
-          - ["http://localhost:5173"]
+        AllowOrigins: ["http://localhost:5173", !Ref AllowedOrigin]
         AllowHeaders: [authorization, content-type]
         AllowMethods: [GET, POST, DELETE, OPTIONS]
         MaxAge: 600
@@ -170,10 +165,7 @@ Resources:
       CorsConfiguration:
         CorsRules:
           - AllowedMethods: [POST]
-            AllowedOrigins: !If
-              - HasSiteOrigin
-              - [!Ref AllowedOrigin, "http://localhost:5173"]
-              - ["http://localhost:5173"]
+            AllowedOrigins: ["http://localhost:5173", !Ref AllowedOrigin]
             AllowedHeaders: ["*"]
             MaxAge: 600
 
@@ -190,10 +182,7 @@ Resources:
           - geo-maps:GetStaticMap
         AllowResources:
           - !Sub arn:aws:geo-maps:${AWS::Region}::provider/default
-        AllowReferers: !If
-          - HasSiteOrigin
-          - [!Sub "${AllowedOrigin}/*", "http://localhost:5173/*"]
-          - ["http://localhost:5173/*"]
+        AllowReferers: ["http://localhost:5173/*", !Sub "${AllowedOrigin}/*"]
 
 Outputs:
   ApiUrl:

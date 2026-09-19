@@ -56,7 +56,7 @@ Answers for `sam deploy --guided`:
 |---|---|
 | Stack Name | `pata-card` |
 | AWS Region | `ap-south-1` |
-| Parameter AllowedOrigin | press Enter (keeps `none` until the site exists) |
+| Parameter AllowedOrigin | press Enter (default `http://127.0.0.1:5173` until the site exists) |
 | Confirm changes before deploy | `y` |
 | Allow SAM CLI IAM role creation | `Y` |
 | Disable rollback | `N` |
@@ -64,7 +64,7 @@ Answers for `sam deploy --guided`:
 | Save arguments to configuration file | `Y` (use the default file name and environment) |
 | "Deploy this changeset?" | `y` |
 
-Later deploys: `sam build; sam deploy` (it reuses `samconfig.toml`).
+Later deploys: `sam build; sam deploy` (it reuses `samconfig.toml`). An update keeps the stack's previous `AllowedOrigin` unless you pass `--parameter-overrides AllowedOrigin=...`.
 
 Put the outputs in `frontend\.env.local`. Never commit this file:
 ```
@@ -76,6 +76,8 @@ VITE_MAP_API_KEY=<key from describe-key>
 ```
 
 ## 3. Test user for curl checks (Task 3)
+The whole check is scripted: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh` (Git Bash). It creates a test user `smoke-test@patacard.invalid` with no email sent, then runs create → upload → share → view → route → access log → revoke → dead link → bad input. The manual commands follow.
+
 ```powershell
 aws cognito-idp sign-up --client-id <UserPoolClientId> --username you@example.com --password "<8+ chars>" --user-attributes Name=email,Value=you@example.com
 aws cognito-idp admin-confirm-sign-up --user-pool-id <UserPoolId> --username you@example.com

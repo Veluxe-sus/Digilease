@@ -1,40 +1,39 @@
 # Checkpoint: PataCard
 
 ## Now
-Task 1 done (10/10 tests). Task 2: `template.yaml` written, `sam validate --lint` passes; waiting for the user to deploy (SETUP §2). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
+Backend is LIVE on AWS and passes the end-to-end smoke test. Next: Task 4 (frontend skeleton + login). Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
-- Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).
-- Problem/solution brief published: https://claude.ai/artifact/YQVLt9N4wL71wjxMcKcLer (private link)
-- DIGIPIN spec verified against the official repo `INDIAPOST-gov/digipin`; example output checked (`4T396F42L7`).
-- Docs: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, README draft, DESIGN.
-- Design: `docs/DESIGN.md` + 6 Stitch mockups in `docs/mockups/` (phone s1/s2/s4, laptop d1-d3; Stitch project 2246405162473946986).
-- Task 1: `backend/src/api.js` reviewed against SPEC, 10/10 tests pass. Fixes:
-  - owner routes return 401 when there's no JWT subject
-  - route distance and time are summed from leg overviews (`LegAdditionalFeatures: ["Summary"]`), because `Route.Summary` is optional
-- Known gap: a card created with `photoType` whose upload never happened gets a `photoUrl` to a missing object. The frontend must hide the image on error.
-- Task 0: AWS CLI 2.36.49 + SAM 1.166.2; IAM user `vansh` (CLI-only, admin), account 499567237530, ap-south-1; budget `pata-card-5usd` ($5/month, alert at 80%).
+- Docs verified by the user: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, DESIGN, README (with the "why not WhatsApp" table).
+- Design: `docs/DESIGN.md` + 6 Stitch mockups in `docs/mockups/` (phone s1/s2/s4, laptop d1-d3).
+- Task 0: AWS CLI + SAM; IAM user `vansh`; account 499567237530, ap-south-1; $5 budget alarm.
+- Task 1: `api.js` reviewed, 10/10 unit tests (401 guard; route summary from legs).
+- Task 2: `template.yaml` deployed as stack `pata-card`. CORS fixed (no `!If`; see RESEARCH).
+  - ApiUrl `https://qqok8fblfe.execute-api.ap-south-1.amazonaws.com`
+  - UserPool `ap-south-1_EAyFdvVxW`, client `3vtdlrjkje7j84h3ok8c8tt70i`
+  - map key `pata-card-map-key`, bucket `pata-card-photobucket-rutsrsx2yeod`
+- Task 3: `scripts/smoke.sh` passes 10/10 live checks, including a real route (10.4 km, 26 min).
+  - Test user `smoke-test@patacard.invalid` exists in the pool (password random, not stored).
+- Known gap: a card whose photo upload failed has a `photoUrl` to a missing object. The frontend hides the image on error.
 
 ## Next
-1. User: `sam build` + `sam deploy --guided` (answers in SETUP §2), then `sam list stack-outputs`.
-2. PLAN Task 3: curl smoke test on AWS.
+1. Task 4: Vite React app in `frontend/`, `.env.local` from stack outputs, Amplify Auth login.
+2. Task 5: owner flow (map, live DIGIPIN, save, photo, share links, QR, access log).
+3. Task 6: receiver view + route. Then Task 7: Amplify Hosting + redeploy with `AllowedOrigin`.
 
 ## Decisions
-- Consent card, not a converter: India Post's portal already converts locations to codes.
-- JavaScript end to end: the official DIGIPIN file runs unchanged in the browser and in Lambda.
-- Serverless + Cognito: uses 7 services from the hackathon's Ship It list, at about $0 cost.
-- Store the DIGIPIN cell centre, not raw GPS: what we share is exactly what the code means.
-- Routes are computed in Lambda, so no routing key sits in the browser.
-- A website, not an app: receivers open a link with no install. Mobile-first; two panes at 1024px and wider.
-- CLI-only workflow: the console is used just once, to create the IAM user.
-- Location Service stays even without organizer confirmation (see AGENTS.md).
+- Consent card, not a converter. JavaScript end to end. Serverless + Cognito (7 Ship It services).
+- Store the DIGIPIN cell centre, not raw GPS. Routes computed in Lambda (no routing key in the browser).
+- A website, mobile-first; two panes at 1024px and wider.
+- `AllowedOrigin` defaults to `http://127.0.0.1:5173` until the Amplify URL exists.
+- The client allows USER_PASSWORD_AUTH only for CLI smoke tests; the web app uses SRP.
+- The user asked Claude to run deploys; infra commands still get announced before running.
 
 ## Blocked
 - Nothing.
 
 ## Handoff (for a new agent or account)
 - Rules: `AGENTS.md`. Behaviour: `docs/SPEC.md`. Tasks + tools: `docs/PLAN.md`. Facts: `docs/RESEARCH.md`. UI: `docs/DESIGN.md` + `docs/mockups/`. User commands: `docs/SETUP.md`.
-- Backend code is tested (Task 1 done). Continue at PLAN Task 2.
-- AWS state: IAM user and budget only. No stack, no Amplify app.
+- Re-check the live backend any time: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh`.
 - `aws` may not be on PATH until PowerShell restarts. Full path: `C:\Program Files\Amazon\AWSCLIV2\aws.exe`.
 - Don't trust this chat's memory; trust these files and `git log`.

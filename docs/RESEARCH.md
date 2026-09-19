@@ -61,3 +61,8 @@ Sources: https://aws.amazon.com/location/pricing/ · https://docs.aws.amazon.com
   - positions are `[lon, lat]`
   - `LegGeometryFormat: "Simple"` returns `Legs[].Geometry.LineString`; the default is FlexiblePolyline
   - `Car` travel mode is billed at the Core price
+
+## Learned while deploying (2026-09-19)
+- **SAM HttpApi silently drops `CorsConfiguration` when `AllowOrigins` is built with `!If`.** `sam validate --lint` still passes. Use plain lists: `["http://localhost:5173", !Ref AllowedOrigin]`. Check with `aws apigatewayv2 get-api ... --query CorsConfiguration`.
+- **On a stack update, CloudFormation keeps the previous parameter value**, not the template's new default. Pass `--parameter-overrides` when a parameter's meaning changes.
+- **Amazon Location Routes v2 works in ap-south-1.** `CalculateRoutes` with `LegGeometryFormat: "Simple"` + `LegAdditionalFeatures: ["Summary"]` returned 381 points, 10,361 m and 1,582 s for Chennai Central to the DIGIPIN example point.
