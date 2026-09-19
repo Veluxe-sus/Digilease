@@ -23,7 +23,7 @@ A calm, civic, mobile-first utility. It should feel like a well-made government-
 - **Never:** pure black, purple or neon, gradients on buttons or text, more than one accent.
 
 ## 3. Typography Rules
-- **Display and UI:** Satoshi (fallback: system-ui). Headings are semi-bold, tight tracking (-0.01em), and controlled in size: the page title is 24–28px on mobile. Hierarchy comes from weight and colour, not huge sizes.
+- **Display and UI:** Satoshi (fallback: system-ui). Satoshi is **not** on Google Fonts. Load it from Fontshare (`https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700&display=swap`, free licence) or self-host the woff2. JetBrains Mono comes from Google Fonts. Headings are semi-bold, tight tracking (-0.01em), and controlled in size: the page title is 24–28px on mobile. Hierarchy comes from weight and colour, not huge sizes.
 - **Body:** Satoshi 16px, line height 1.55, max 65 characters per line.
 - **Mono:** JetBrains Mono, used for the DIGIPIN code plate (24–32px, weight 700, letter-spacing 0.08em), expiry countdowns and timestamps in the access log.
 - **Labels:** 12px uppercase, letter-spacing 0.08em, Slate Muted.

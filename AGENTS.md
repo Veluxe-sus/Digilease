@@ -6,7 +6,7 @@ This file is the single source of rules. It works for Claude Code (through `CLAU
 
 ## Start of every session
 1. Read `.claude/CHECKPOINT.md`. Say in one line where the work stands.
-2. Read `docs/PLAN.md` and find the next unchecked task. Read `docs/SPEC.md` for behaviour and `docs/RESEARCH.md` for verified facts. Don't redo that research.
+2. Read `docs/PLAN.md` and find the next unchecked task. Read `docs/SPEC.md` for behaviour and `docs/RESEARCH.md` for verified facts. Don't redo that research. For any UI work, read `docs/DESIGN.md` and match `docs/mockups/`.
 3. Use the skills and MCP servers `docs/PLAN.md` lists for that task. If your agent doesn't have them, follow the fallback written next to each one.
 4. Before any code: say what you will change and which files. Wait for the user's go.
 
