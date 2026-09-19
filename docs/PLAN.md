@@ -103,7 +103,14 @@ Files: `frontend/src/components/MapView.jsx`, `frontend/src/pages/NewCard.jsx`, 
   - links list with status pill, copy, QR (`qrcode` → canvas) and revoke
   - access log
 - Follow `docs/DESIGN.md` (colours, type, components) and match `docs/mockups/` (Stitch project "PataCard", id 2246405162473946986). Then one pass with the `frontend-design` skill, not a redesign loop.
-- Mockup copy to NOT ship (false claims): "Verified property coordinates", "Zero Persisted Coordinates", "up to 10MB" (the limit is 5 MB).
+- Mockups: phone `s1-s4`, laptop `d1-d3` (two-pane, 1024px and wider; see DESIGN.md §5).
+- Mockup content to NOT ship. It is either false or out of scope:
+  - False verification or privacy claims: "Verified property coordinates", "GEO-VERIFIED", "Govt. Verified Portal Unit", "Zero persisted (GPS) coordinates", "Privacy protected under India Post guidelines", "India Post National Digital Postal Index Grid coordinate".
+  - A 10 MB upload limit (ours is 5 MB).
+  - Extra form fields: "Floor / Level", "Entry gate". Not in SPEC.
+  - Phone-number accounts ("+91 98450"): we sign in with email through Cognito.
+  - Traffic or road claims: "Congestion free", "25 m vehicular limit". We have no such data.
+  - A fake GPS accuracy chip, unless it shows the real browser accuracy value.
 - **Check:** create a card with a photo; create 2 links; revoke one; the list shows the right statuses.
 
 ## Task 6: Receiver view and route (about 1.5 hours)

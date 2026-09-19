@@ -50,6 +50,13 @@ A calm, civic, mobile-first utility. It should feel like a well-made government-
 - Each screen has a top app bar (back arrow + title), content, and a sticky bottom action bar holding the one primary action.
 - Section spacing is 24px; spacing inside a group is 12px. Grid for rows; nothing overlaps.
 - Minimum tap target 44px. No horizontal scrolling at 360px width.
+- **Laptop (1024px and wider): two panes.**
+  - A slim top bar across the full width: wordmark, "My cards", "New card", account menu.
+  - Left pane: the map, about 60% of the width, full height.
+  - Right pane: a white panel, about 40%, with a hairline left border and 32px padding. It scrolls on its own.
+  - The primary button sits at the bottom of the right pane, not in a sticky bar.
+  - Below 1024px, the panes stack into the mobile single column.
+  - Mockups: `docs/mockups/d1-new-card.png`, `d2-card.png`, `d3-receiver.png`.
 
 ## 6. Motion & Interaction
 - 200ms ease-out for sheets and pills. The status pill cross-fades when a link is revoked.
