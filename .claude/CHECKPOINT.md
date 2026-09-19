@@ -1,7 +1,7 @@
 # Checkpoint: PataCard
 
 ## Now
-Everything before code is ready. Waiting for the user's "verified" to start PLAN Task 1. Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
+Docs verified by the user. Task 1 done (10/10 backend tests pass). Next: Task 2, `template.yaml`. Deadline Sept 20 EOD; targets: live by 12:00 IST, submitted by 18:00 IST.
 
 ## Done
 - Problem chosen: Shaastra 2026 x India Post, Digital Address DPI (DIGIPIN).
@@ -9,13 +9,15 @@ Everything before code is ready. Waiting for the user's "verified" to start PLAN
 - DIGIPIN spec verified against the official repo `INDIAPOST-gov/digipin`; example output checked (`4T396F42L7`).
 - Docs: AGENTS, CLAUDE, RESEARCH, SPEC, PLAN, SETUP, README draft, DESIGN.
 - Design: `docs/DESIGN.md` + 6 Stitch mockups in `docs/mockups/` (phone s1/s2/s4, laptop d1-d3; Stitch project 2246405162473946986).
-- Draft `backend/src/api.js`, `backend/test/api.test.js`, `backend/package.json` written. Dependencies are installed; tests have not run.
+- Task 1: `backend/src/api.js` reviewed against SPEC, 10/10 tests pass. Fixes:
+  - owner routes return 401 when there's no JWT subject
+  - route distance and time are summed from leg overviews (`LegAdditionalFeatures: ["Summary"]`), because `Route.Summary` is optional
+- Known gap: a card created with `photoType` whose upload never happened gets a `photoUrl` to a missing object. The frontend must hide the image on error.
 - Task 0: AWS CLI 2.36.49 + SAM 1.166.2; IAM user `vansh` (CLI-only, admin), account 499567237530, ap-south-1; budget `pata-card-5usd` ($5/month, alert at 80%).
 
 ## Next
-1. User says "verified".
-2. PLAN Task 1: `cd backend && npm test`, then walk the user through `api.js` against SPEC.
-3. PLAN Task 2: `template.yaml`.
+1. PLAN Task 2: write `template.yaml`, run `sam validate --lint`; the user runs `sam build` + `sam deploy --guided`.
+2. PLAN Task 3: curl smoke test on AWS.
 
 ## Decisions
 - Consent card, not a converter: India Post's portal already converts locations to codes.
@@ -32,7 +34,7 @@ Everything before code is ready. Waiting for the user's "verified" to start PLAN
 
 ## Handoff (for a new agent or account)
 - Rules: `AGENTS.md`. Behaviour: `docs/SPEC.md`. Tasks + tools: `docs/PLAN.md`. Facts: `docs/RESEARCH.md`. UI: `docs/DESIGN.md` + `docs/mockups/`. User commands: `docs/SETUP.md`.
-- Existing backend code is untested. Start at PLAN Task 1.
+- Backend code is tested (Task 1 done). Continue at PLAN Task 2.
 - AWS state: IAM user and budget only. No stack, no Amplify app.
 - `aws` may not be on PATH until PowerShell restarts. Full path: `C:\Program Files\Amazon\AWSCLIV2\aws.exe`.
 - Don't trust this chat's memory; trust these files and `git log`.

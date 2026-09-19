@@ -2,8 +2,29 @@ const test = require("node:test");
 const assert = require("node:assert/strict");
 const { getDigiPin, getLatLngFromDigiPin } = require("../src/digipin");
 const {
-  validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, BadRequest,
+  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest,
 } = require("../src/api");
+
+test("owner routes refuse requests with no signed-in user", async () => {
+  for (const routeKey of ["POST /cards", "GET /cards", "GET /cards/{id}", "POST /cards/{id}/shares",
+    "GET /cards/{id}/access", "DELETE /shares/{token}"]) {
+    const res = await handler({ routeKey, pathParameters: { id: "x", token: "y" }, requestContext: {} });
+    assert.equal(res.statusCode, 401, routeKey);
+  }
+});
+
+test("route summary adds up leg overviews, falls back to route summary", () => {
+  const legs = [
+    { Geometry: { LineString: [[80, 13], [80.1, 13.1]] }, VehicleLegDetails: { Summary: { Overview: { Distance: 400, Duration: 60 } } } },
+    { Geometry: { LineString: [[80.1, 13.1], [80.2, 13.2]] }, PedestrianLegDetails: { Summary: { Overview: { Distance: 250, Duration: 180 } } } },
+  ];
+  assert.deepEqual(summarizeRoute({ Legs: legs }), {
+    line: [[80, 13], [80.1, 13.1], [80.1, 13.1], [80.2, 13.2]], distanceMeters: 650, durationSeconds: 240,
+  });
+  assert.deepEqual(summarizeRoute({ Legs: [], Summary: { Distance: 900, Duration: 120 } }),
+    { line: [], distanceMeters: 900, durationSeconds: 120 });
+  assert.deepEqual(summarizeRoute({ Legs: [] }), { line: [], distanceMeters: null, durationSeconds: null });
+});
 
 test("official DIGIPIN example encodes as documented", () => {
   assert.equal(getDigiPin(13.11179621, 80.20264269), "4T396F42L7");

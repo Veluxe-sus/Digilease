@@ -72,6 +72,27 @@ function validateOrigin(body) {
   return { lat, lon };
 }
 
+// Route.Summary is optional in Routes v2; leg overviews are the reliable source.
+function summarizeRoute(route) {
+  const line = route.Legs.flatMap((leg) => (leg.Geometry && leg.Geometry.LineString) || []);
+  let distance = 0;
+  let duration = 0;
+  let found = false;
+  for (const leg of route.Legs) {
+    const details = leg.VehicleLegDetails || leg.PedestrianLegDetails || leg.FerryLegDetails;
+    const overview = details && details.Summary && details.Summary.Overview;
+    if (overview) {
+      distance += overview.Distance;
+      duration += overview.Duration;
+      found = true;
+    }
+  }
+  if (!found && route.Summary) {
+    return { line, distanceMeters: route.Summary.Distance ?? null, durationSeconds: route.Summary.Duration ?? null };
+  }
+  return { line, distanceMeters: found ? distance : null, durationSeconds: found ? duration : null };
+}
+
 function isShareLive(share, nowSeconds) {
   return Boolean(share) && !share.revoked && share.expiresAt > nowSeconds;
 }
@@ -222,15 +243,11 @@ async function routeToShare(event, token) {
     Destination: [card.lon, card.lat],
     TravelMode: "Car",
     LegGeometryFormat: "Simple",
+    LegAdditionalFeatures: ["Summary"],
   }));
   const route = res.Routes && res.Routes[0];
   if (!route) return json(404, { error: "No route found to this address" });
-  const line = route.Legs.flatMap((leg) => (leg.Geometry && leg.Geometry.LineString) || []);
-  return json(200, {
-    line,
-    distanceMeters: route.Summary ? route.Summary.Distance : null,
-    durationSeconds: route.Summary ? route.Summary.Duration : null,
-  });
+  return json(200, summarizeRoute(route));
 }
 
 // ---------- router ----------
@@ -238,6 +255,9 @@ async function routeToShare(event, token) {
 async function handler(event) {
   const p = event.pathParameters || {};
   const sub = event.requestContext?.authorizer?.jwt?.claims?.sub;
+  // Defence in depth: API Gateway's JWT authorizer guards owner routes, but never act without an owner.
+  const isPublic = event.routeKey === "GET /s/{token}" || event.routeKey === "POST /s/{token}/route";
+  if (!isPublic && !sub) return json(401, { error: "Sign in to manage your address cards" });
   try {
     switch (event.routeKey) {
       case "POST /cards": return await createCard(event, sub);
@@ -257,4 +277,6 @@ async function handler(event) {
   }
 }
 
-module.exports = { handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, BadRequest };
+module.exports = {
+  handler, validateCardInput, validateShareInput, validateOrigin, isShareLive, newToken, summarizeRoute, BadRequest,
+};
