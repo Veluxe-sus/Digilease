@@ -1,29 +1,28 @@
 # Checkpoint: PataCard
 
 ## Now
-Site is live at https://main.d109k3dqf4r860.amplifyapp.com (Amplify, manual zip upload). Task 9: only the user's real-phone check is left. Claude only, in this folder. Deadline: live Sep 20 by 12:00 IST; video/submission by 18:00 IST.
+Tasks 0–9 done; the user's phone check passed. Task 10 is committed (`8cfcd06`) but not deployed: the backend redeploy (Overpass 30 s back-off) waits on the user's yes, and the user uploads the new frontend zip to Amplify. Live: https://main.d109k3dqf4r860.amplifyapp.com. GitHub: https://github.com/Veluxe-sus/pata_card (remote `origin`, branch `main`). Deadline: video/submission by 18:00 IST Sep 20.
 
 ## Done
-- Tasks 0–7 done and deployed (stack `pata-card`, ap-south-1, account 499567237530). Smoke steps 1–12 pass live.
-- Task 8 step 1 (`494f725`, deployed): `GET /s/{token}/area` fetches the ±500 m streets from Overpass once and keeps them in S3 at `areas/{cardId}.json`. Live check: first call 1.46 s from Overpass, second 0.28 s from S3, revoked link → 410.
-- Step 2 (`1c9d749`): `frontend/src/lib/geo.js` provides `distanceMeters`, `insideBox` and `alongRoute`, with tests.
-- Steps 3–4 (`26706e8`): `offline.js` (Cache Storage), `public/sw.js` (network first, cache fallback, `ignoreVary`), `OfflineMap.jsx`, and a `SharedView` chip plus the "Preview offline map" link. Playwright on the production build: first visit is enough; offline reload shows the streets, square, route, both codes, the distance and "along the route"; the outside and arrived states work; 320/360/1440 px have no overflow; revoke → copy deleted.
-- Bucket CORS GET deployed 2026-09-20; the door photo is saved and shows offline (Playwright).
-- Overpass policy and OSM credit rules noted in RESEARCH.
-- Task 9 (2026-09-20 ~02:00 IST): Amplify app `main.d109k3dqf4r860` with the SPA rewrite (includes `mjs`). Stack redeployed with `AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com` after adding `ForceUpdate: true` to MapApiKey (the first try rolled back). Verified: API CORS, bucket CORS and map-key referers all list the site; the live share link shows tiles, is saved for offline, and opens offline. To redeploy the frontend: `npm run build`, zip with `/` paths (Python, not Compress-Archive), then Amplify → Deploy updates.
+- Tasks 0–7 deployed (stack `pata-card`, ap-south-1, account 499567237530). Smoke steps 1–12 pass live.
+- Task 8, the offline map (`494f725`, `1c9d749`, `26706e8`): `/s/{token}/area` streets from Overpass cached in S3; `geo.js`; `offline.js`, `sw.js` (`ignoreVary`) and `OfflineMap.jsx`. Tested in Playwright; bucket CORS GET deployed so the photo is saved offline.
+- Task 9: Amplify app `main.d109k3dqf4r860` (manual zip, SPA rewrite includes `mjs`). Stack `AllowedOrigin` set to the site (MapApiKey needed `ForceUpdate: true`). The user's real-phone check passed: QR, route, airplane mode, revoke.
+- Location errors now name the cause (`4384c45`). Not on the live site until the new zip is uploaded.
+- Task 10 (`8cfcd06`): manual security review against SPEC (the `security-review` skill needs a remote; it had none then). One fix: the Lambda pauses 30 s after an Overpass failure. README has the live URL, the offline feature, a mermaid diagram, the security summary, what we learned, screenshots, and the OSM credit. The laptop offline view no longer scrolls.
 
 ## Next
-1. Task 9 real-phone check (user): sign in, create a card with GPS, share, print the PDF, scan the QR with a second phone, route, then airplane mode → offline map.
-2. Task 10 review (security review includes `/area` and the service worker). Polish item: a small vertical scrollbar on the laptop offline view. Then Task 11 demo.
+1. Deploy the backend (preview: ApiFunction + HttpApi modified). Always pass `--parameter-overrides AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com`. The user uploads `Desktop\pata-card-dist.zip` via Amplify → Deploy updates. Then `git push`.
+2. Task 11 demo video (shot list in PLAN). Optional: `code-review` of the whole diff.
+3. The user will recheck laptop location on a friend's laptop.
 
 ## Decisions
-- Claude only; one writer; Opus 5 for Task 8.
-- Offline streets from OpenStreetMap only; credit links to openstreetmap.org/copyright.
-- The page shows the downloaded photo blob, not a second request (avoids a CORS failure from a cached image).
-- Local tests run `vite preview --host 127.0.0.1 --port 5173`. An old dev server holds `[::1]:5173`, and the map key allows only localhost, so online tiles are blank on 127.0.0.1. That's expected.
+- Claude only; one writer; Opus 5.
+- Offline streets from OpenStreetMap only; the credit links to openstreetmap.org/copyright.
+- Zip the frontend with Python (forward-slash paths), not `Compress-Archive`.
+- Run sam from the project root; `sam.cmd` is at `C:\Program Files\Amazon\AWSSAMCLI\bin\`.
 
 ## Unverified
-- Real phone: QR scan, airplane mode, GPS route line, PDF from the hosted app.
+- Laptop geolocation with system location on (the user will check).
 
 ## Handoff
-Read `AGENTS.md`, `docs/PLAN.md`, `docs/SPEC.md`, `docs/DESIGN.md`. Tests: `backend npm test`, `frontend npm test`. Smoke (resets the smoke-test user's password each run): `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh`. SAM: `"C:\Program Files\Amazon\AWSSAMCLI\bin\sam.cmd"`. A hook sometimes leaves empty files named after `>`-fragments of shell commands (`{const`, `.topbar`); delete them before committing.
+Read `AGENTS.md`, `docs/PLAN.md`, `docs/SPEC.md`, `docs/DESIGN.md`. Tests: `backend npm test` (13), `frontend npm test` (10). Smoke: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh` (it resets the smoke-test user's password). A hook sometimes leaves empty files named after `>`-fragments of shell commands; delete them before committing.
