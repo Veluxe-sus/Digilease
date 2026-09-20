@@ -9,8 +9,8 @@ completely before touching anything, then read `AGENTS.md`, `.claude/CHECKPOINT.
 This repo is a working hackathon project, formerly **PataCard**, now renamed **DigiLease**. It turns
 an India Post DIGIPIN into an address card you share as one revocable link per person. The backend,
 the receiver view and the offline map all work and are deployed. The v1 frontend was a plain grey
-utility UI. Branch `v2-redesign` is a visual overhaul of the owner-facing surface. The landing page
-is finished; the signed-in pages are built but only partly verified.
+utility UI. Branch `v2-redesign` is a visual overhaul of the owner-facing surface. The landing page,
+signed-in routes and receiver offline regression are now browser-verified locally.
 
 ## Non-negotiables
 
@@ -100,8 +100,7 @@ in `--void`; only the confirmation step is a filled `--void` button.
 
 ## What is already built and working
 
-Four commits on `v2-redesign`, tree clean, `npm test` 10/10, `npm run lint` clean, `npm run build`
-green.
+The current `v2-redesign` tree passes `npm test` 10/10 and `npm run lint`; `npm run build` is green.
 
 - **Rename** PataCard to DigiLease across UI, README and `docs/*.md`. Stack names, bucket names and
   the GitHub repo stay `pata-card`; infrastructure is unchanged.
@@ -113,9 +112,10 @@ green.
 - **Sign-in** — still Amplify's `<Authenticator>`, logic untouched, restyled only through its own
   CSS variables, sitting on the same grid as the landing (`components/OwnerArea.jsx`, and the
   `[data-amplify-authenticator]` block in `cards.css`).
-- **`/cards` (`pages/MyCards.jsx`, `cards.css`)** — React Bits CardSwap deck on the left, the opened
-  card on the right. One card sits still, two to six ride the deck, seven or more fall back to a
-  scroll-snap rail. Confirmed working in the browser with two real cards.
+- **`/cards` (`pages/MyCards.jsx`, `cards.css`)** — React Bits DepthCarousel on the left, the opened
+  card on the right. One card sits still, two to six ride the depth rail, seven or more fall back to
+  a scroll-snap rail. Confirmed at 1440x900 and 390x844 with three real cards; arrows, dots, drag,
+  keyboard and autoplay all keep the opened detail in sync.
 - **`components/CardDetail.jsx`** — the opened card, shared by `/cards` and `/card/:id`. Share rows
   are tear stubs with a dashed perforation between them; a revoked stub stays visible and struck
   through, because seeing the dead link is the pitch.
@@ -135,42 +135,35 @@ All live in `frontend/src/components/reactbits/`. The edits are the risk surface
 | `CardNav.jsx` | `react-icons` swapped for Phosphor's `ArrowUpRight`. Hardcoded "Get Started" now takes label and handler from props. New `links` prop renders inline destinations on desktop. `brand` accepts a node. |
 | `MagicBento.jsx` | Takes real children instead of the demo `cardData`. Star particles, cursor magnetism and the click ripple were removed: twelve looping DOM nodes per card say nothing about the feature on the card. The cursor spotlight and border glow stay. |
 | `MagicBento.css` | The upstream global `:root` block (which sets `color-scheme`) is **scoped to `.bento-section`**; unscoped it fights this project's tokens. Shot captions sit *under* the image, not over it. |
-| `CardSwap.jsx` | Upstream `.card` renamed `.swap-card` (`.card` is far too generic here). The throw distance is scaled to the card height instead of a flat 500px, which otherwise made a 260px card vanish for most of the cycle. Stops under `prefers-reduced-motion` and when there are fewer than two cards. |
+| `DepthCarousel.jsx` | Takes a `renderItem` callback so the rail carries real DigiLease pass faces instead of demo images. Stable card keys and card-specific accessible labels were added. Narrow-screen scaling reserves less empty fan space so the DIGIPIN stays readable. Autoplay pauses on hover or focus, and reduced motion disables autoplay and animated transitions. |
 
 New dependencies, both free and MIT: `gsap@3.15` (four React Bits components need it) and
 `@phosphor-icons/react@2.1`.
 
 ## What is left to do, in priority order
 
-1. **Verify the signed-in pages in a browser.** `/cards` is confirmed; `/new`, `/card/:id` and
-   `/card/:id/print/:token` are **not**. Check at 1440x900 and 390x844. Specifically:
-   - `/new`: dragging the pin still updates the DIGIPIN live, "Use my location" still works, saving
-     still lands on `/card/:id`. This flow was not changed, only rethemed, so a failure means a
-     broken import or a CSS regression.
-   - `/card/:id`: the 220px map strip renders, and the content is not hidden under the fixed nav
-     (`.owner` carries `padding-top: 92px`).
-   - `/card/:id/print/:token`: still A6, still black on white, and the pill nav does **not** print.
-2. **Regression gate, non-negotiable before shipping:** open a live `/s/{token}` link, confirm the
-   receiver view and the offline save behave exactly as v1, then reload it in airplane mode.
-3. **Retake `docs/screenshots/*`.** Both bento shots were taken before the rename: one still contains
+The release gate is complete: `/new`, `/card/:id`, `/card/:id/print/:token` and `/cards` were checked
+at 1440x900 and 390x844. A fresh live `/s/{token}` link reached "Saved for offline", then rendered
+the saved map, marker, DIGIPIN and OpenStreetMap credit after a forced offline reload.
+
+1. **Retake `docs/screenshots/*`.** Both bento shots were taken before the rename: one still contains
    the old PataCard wordmark and the other a dev preview banner. They are currently cropped past the
    offending area with `object-position: center 42%` in `MagicBento.css`. Once retaken, copy the two
    phone shots to `frontend/public/shots/` and set that back to `top center`.
-4. **`docs/DESIGN.md` is stale.** It still documents the v1 world (Post Red `#C3272B`, Satoshi,
+2. **`docs/DESIGN.md` is stale.** It still documents the v1 world (Post Red `#C3272B`, Satoshi,
    survey-paper `#F4F6F8`) and now contradicts the code. Rewrite sections 2, 3 and 4 to the tokens
    above and the pass direction.
-5. **A door photograph.** The repo has none, so the hero pass deliberately shows no photo and the
+3. **A door photograph.** The repo has none, so the hero pass deliberately shows no photo and the
    "Landmark and door photo" bento cell is text only. One JPEG in `frontend/public/` would close the
    biggest visual gap. Do not substitute a stock or generated photo without asking the user.
-6. **Ship:** `npm run build`, zip the `dist` with a Python script using forward-slash paths (**not**
+4. **Ship:** `npm run build`, zip the `dist` with a Python script using forward-slash paths (**not**
    PowerShell `Compress-Archive`, which writes backslash paths Amplify rejects), then the user
    uploads it in Amplify under Deploy updates.
 
 ## Known rough edges, honestly stated
 
-- With exactly two cards the deck spends a noticeable share of each cycle mid-animation. The throw
-  is now scaled and the cadence slowed to 6 s, which made it acceptable, but a three-card demo looks
-  markedly better than a two-card one.
+- On narrow phones the carousel scales the pass to leave room for its arrows and depth edge. The
+  DIGIPIN remains readable, while the full-size detail directly below is the primary reading view.
 - App pages ship **light only**. There is no dark variant; that time went into the deck instead.
 - `CardNav`'s expanding-card menu recalculates its height on resize and has been seen to open empty
   after a browser zoom change. It is now phone-only, so it is off the main path, but it is not fixed.

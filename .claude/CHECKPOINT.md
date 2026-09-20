@@ -16,6 +16,9 @@ The previously unseen owner routes and the receiver offline reload are now brows
 - Live receiver link on a fresh local v2 production build: reached "Saved for offline" with a
   controlling service worker and 9 cached responses. Forced the network offline and reloaded;
   the saved map, door marker, DIGIPIN and OpenStreetMap credit rendered successfully.
+- `/cards` now uses the supplied React Bits DepthCarousel with real card faces. At both target
+  widths, arrows, dots, drag, keyboard and autoplay keep the opened detail in sync; no horizontal
+  overflow or console errors. One-card and 7+-card fallbacks remain unchanged.
 - Frontend tests 10/10, lint clean, production build green. Build still prints the existing
   DIGIPIN CommonJS-variable warning and large-chunk warning.
 

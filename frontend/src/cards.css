@@ -15,10 +15,12 @@
 .deck-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .deck-side { display: grid; gap: 20px; }
 
-/* CardSwap positions itself absolutely, so it needs a box to live in. The swap
-   throws the front card 500px downwards; clipping the stage turns that into the
-   card falling out of the deck instead of landing on the button below. */
+/* DepthCarousel needs a bounded stage for its 3D rail and controls. */
 .deck-stage { position: relative; height: 420px; overflow: hidden; }
+
+@media (max-width: 767px) {
+  .deck-stage { height: 360px; }
+}
 
 .deck-single { display: flex; justify-content: center; }
 .deck-single .deck-face {

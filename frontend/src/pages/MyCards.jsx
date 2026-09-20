@@ -1,12 +1,11 @@
 // The stack on the left, the opened card on the right.
 //
-// Two to six cards ride React Bits' CardSwap. One card cannot swap with anything,
-// so it sits still. Past six the deck gets too deep to read, so it falls back to a
-// scroll-snap rail. Clicking any card opens it on the right; the deck carries on
-// shuffling behind, which is why clicking sets the selection rather than the deck.
-import { useEffect, useRef, useState } from "react";
+// Two to six cards ride React Bits' DepthCarousel. One card has no depth to move
+// through, so it sits still. Past six the stack gets too deep to read, so it falls
+// back to a scroll-snap rail. Carousel focus opens that card on the right.
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import CardSwap, { Card } from "../components/reactbits/CardSwap.jsx";
+import DepthCarousel from "../components/reactbits/DepthCarousel.jsx";
 import CardDetail from "../components/CardDetail.jsx";
 import { api } from "../lib/api.js";
 import { formatDigipin } from "../lib/format.js";
@@ -34,7 +33,6 @@ export default function MyCards() {
   const [cards, setCards] = useState(null);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
-  const deckRef = useRef(null);
 
   useEffect(() => {
     api.listCards().then((d) => {
@@ -69,22 +67,23 @@ export default function MyCards() {
         </div>
 
         {useDeck && (
-          <div className="deck-stage" ref={deckRef}>
-            <CardSwap
-              width={320}
-              height={260}
-              cardDistance={44}
-              verticalDistance={46}
-              delay={6000}
-              pauseOnHover
-              skewAmount={3}
-              easing="linear"
-              onCardClick={(i) => setSelected(cards[i].cardId)}
-            >
-              {cards.map((c) => (
-                <Card key={c.cardId}><PassFace card={c} /></Card>
-              ))}
-            </CardSwap>
+          <div className="deck-stage">
+            <DepthCarousel
+              items={cards.map((card) => ({ ...card, alt: `Address card ${formatDigipin(card.digipin)}` }))}
+              renderItem={(card) => <PassFace card={card} />}
+              cardWidth={320}
+              cardHeight={260}
+              depth={150}
+              spread={58}
+              tilt={12}
+              visibleCards={3}
+              falloff={0.12}
+              blur={1.5}
+              autoplay
+              autoplayDelay={6000}
+              ariaLabel="Your address cards"
+              onChange={(_, card) => setSelected(card.cardId)}
+            />
           </div>
         )}
 
