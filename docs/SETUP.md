@@ -1,4 +1,4 @@
-# PataCard: commands you run
+# DigiLease: commands you run
 
 Run these in **PowerShell**. Paste the output back to Claude after each section.
 

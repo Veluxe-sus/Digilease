@@ -1,29 +1,43 @@
-# Checkpoint: PataCard
+# Checkpoint: DigiLease (was PataCard)
 
 ## Now
-Tasks 0–9 done; the user's phone check passed. Task 10 done; backend deployed. The new frontend zip awaits the user's Amplify upload. Live: https://main.d109k3dqf4r860.amplifyapp.com. GitHub: https://github.com/Veluxe-sus/pata_card (remote `origin`, branch `main`). Deadline: video/submission by 18:00 IST Sep 20.
+v2 frontend redesign, on branch `v2-redesign`. `main` is untouched at `5f7817f` and, with
+`Desktop\pata-card-dist.zip`, is the v1 fallback we submit if v2 is not verified by 17:30 IST today.
+Landing page is built and checked at 1440x900 and 390x844. The signed-in pages are written but
+**not yet seen**, because verifying them needs a Cognito session in the browser.
 
 ## Done
-- Tasks 0–7 deployed (stack `pata-card`, ap-south-1, account 499567237530). Smoke steps 1–12 pass live.
-- Task 8, the offline map (`494f725`, `1c9d749`, `26706e8`): `/s/{token}/area` streets from Overpass cached in S3; `geo.js`; `offline.js`, `sw.js` (`ignoreVary`) and `OfflineMap.jsx`. Tested in Playwright; bucket CORS GET deployed so the photo is saved offline.
-- Task 9: Amplify app `main.d109k3dqf4r860` (manual zip, SPA rewrite includes `mjs`). Stack `AllowedOrigin` set to the site (MapApiKey needed `ForceUpdate: true`). The user's real-phone check passed: QR, route, airplane mode, revoke.
-- Location errors now name the cause (`4384c45`). Not on the live site until the new zip is uploaded.
-- Task 10 (`8cfcd06`): manual security review against SPEC (the `security-review` skill needs a remote; it had none then). One fix: the Lambda pauses 30 s after an Overpass failure. README has the live URL, the offline feature, a mermaid diagram, the security summary, what we learned, screenshots, and the OSM credit. The laptop offline view no longer scrolls.
+- Rename PataCard to DigiLease across the UI, README and docs. Stack names, bucket names and the
+  repo stay `pata-card`; infrastructure is unchanged. `lib/digipin.js` untouched (a test pins it).
+- New palette (paper `#FBF7E4`, olive ink `#26301C`, brick `#B05A28`) in the `:root` block, with
+  `--post` aliased to `--accent` so every existing rule rethemed at once. Space Grotesk / Inter /
+  JetBrains Mono, where mono is only ever used for machine facts.
+- Landing at `/`: React Bits ShapeGrid as the DIGIPIN grid, a CSS-only pass on a lanyard with a real
+  countdown, a MagicBento of eight real features (two carry real screenshots), a plain statement of
+  what the product cannot do, and one CTA label used everywhere.
+- My cards: React Bits CardSwap deck (2 to 6 cards) beside the opened card. One card sits still,
+  seven or more fall back to a scroll-snap rail. Share rows are tear stubs; a revoked one stays
+  visible and struck through.
+- `CardView` is now a thin wrapper around a shared `CardDetail`. Sign-in is still Amplify's
+  `<Authenticator>`, restyled only through its own CSS variables, on the same grid as the landing.
+- Fixed: the print stylesheet hid the old `.topbar`, so the new pill nav would have printed on the A6.
 
 ## Next
-1. Backend deployed and pushed (`b19306f`). The user uploads `Desktop\pata-card-dist.zip` via Amplify → Deploy updates (location messages, laptop layout, street-map retry). Future deploys: always pass `--parameter-overrides AllowedOrigin=https://main.d109k3dqf4r860.amplifyapp.com`.
-2. Task 11 demo video (shot list in PLAN). Optional: `code-review` of the whole diff.
-3. The user will recheck laptop location on a friend's laptop.
-4. Overpass is slow at European peak (see RESEARCH). Before recording, open the demo card's link and wait for "Saved for offline"; after that its streets come from S3.
+1. **Needs the user:** sign in at http://localhost:5173/cards so `/cards`, `/new`, `/card/:id` and
+   `/card/:id/print/:token` can be checked in the browser.
+2. Regression gate: open a live `/s/{token}`, confirm the receiver view and the offline save behave
+   as v1, then reload in airplane mode. Nothing in `SharedView`/`OfflineMap`/`sw.js` was touched.
+3. Retake `docs/screenshots/*` after the rename. Both bento shots still contain v1 chrome and are
+   currently cropped past it (`object-position: center 42%` in `MagicBento.css`).
+4. Build, zip with the Python script (forward slashes), user uploads to Amplify.
 
 ## Decisions
-- Claude only; one writer; Opus 5.
-- Offline streets from OpenStreetMap only; the credit links to openstreetmap.org/copyright.
-- Zip the frontend with Python (forward-slash paths), not `Compress-Archive`.
-- Run sam from the project root; `sam.cmd` is at `C:\Program Files\Amazon\AWSSAMCLI\bin\`.
+- Direction is "the card is a physical pass": paper stock, lanyard, perforated tear stubs, A6 print.
+- Nothing on screen may be invented. No EPSG, RTK, cadastre, hashes, tokens, barcodes, counters, or
+  "verified" badges. A door photo is uploaded, never checked, so it is never called verified.
+- App pages ship light only; no dark variant, to spend the time on the deck instead.
+- New deps: `gsap` (four React Bits components need it) and `@phosphor-icons/react`. Both free.
 
-## Unverified
-- Laptop geolocation with system location on (the user will check).
-
-## Handoff
-Read `AGENTS.md`, `docs/PLAN.md`, `docs/SPEC.md`, `docs/DESIGN.md`. Tests: `backend npm test` (13), `frontend npm test` (10). Smoke: `AWS="/c/Program Files/Amazon/AWSCLIV2/aws.exe" bash scripts/smoke.sh` (it resets the smoke-test user's password). A hook sometimes leaves empty files named after `>`-fragments of shell commands; delete them before committing.
+## Blocked
+- No door photograph exists in the repo, so the hero pass shows no photo. One JPEG in
+  `frontend/public/` would let the pass and the "Landmark and door photo" cell show a real door.

@@ -1,4 +1,4 @@
-# Design System: PataCard
+# Design System: DigiLease
 
 ## 1. Visual Theme & Atmosphere
 A calm, civic, mobile-first utility. It should feel like a well-made government-grade tool that ordinary people trust at a stressful moment (an ambulance is on the way), not like a startup landing page. Every screen should read at a glance on a phone held in one hand, in sunlight.
@@ -75,7 +75,7 @@ A calm, civic, mobile-first utility. It should feel like a well-made government-
 Same look as sections 1–7; nothing new in colour or type. Mockup files to add: `s5-receiver.png`, `s6-offline.png`, `s7-print.png`, `s8-links.png` (phone) and `d4-receiver.png` (laptop), made in the Stitch project with the prompts in `docs/PLAN.md` → "Mockups". If there are no mockups, build from this text.
 
 ### 8.1 Receiver page, online (`/s/:token`)
-- **Top bar:** "PataCard" wordmark on the left (no back arrow; people arrive from a link). On the right a status chip: "Saving for offline…" (Slate Muted), then "Saved for offline" with a check icon (Live Green pill).
+- **Top bar:** "DigiLease" wordmark on the left (no back arrow; people arrive from a link). On the right a status chip: "Saving for offline…" (Slate Muted), then "Saved for offline" with a check icon (Live Green pill).
 - **Map:** about 50% of the viewport height, with the Post Red door pin. After a route, the Route Blue line and a blue "you" dot.
 - **Content:**
   - label "SHARED WITH YOU" and the link name ("Ravi (guest)")
@@ -117,7 +117,7 @@ Same look as sections 1–7; nothing new in colour or type. Mockup files to add:
   - primary button "Print / Save as PDF"
   - helper text: "Prints at A6 (postcard size). Choose 'Save as PDF' in the print dialog to get a file."
 - **The card** (A6 portrait, 105 × 148 mm, white, 1px Hairline border, 6 mm padding), top to bottom:
-  1. A row with the small "PataCard" wordmark on the left and "For: Wedding guests" (link name, muted) on the right.
+  1. A row with the small "DigiLease" wordmark on the left and "For: Wedding guests" (link name, muted) on the right.
   2. The door photo at 4:3, full width, 3 mm radius.
   3. A row: the QR at 55 mm (Ink Navy on white, a quiet zone of 4 modules), and next to it "Scan to find the door" (semi-bold) and "Open it once with internet. Near us it keeps working without signal." (muted).
   4. The DIGIPIN code plate (mono, 20 pt, Post Red border).

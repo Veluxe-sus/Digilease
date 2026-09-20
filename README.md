@@ -1,10 +1,10 @@
-# PataCard
+# DigiLease
 
 **An address you can hand over, and take back.**
 
 India's PIN code stops at the locality, so addresses run on landmarks, and ambulances and delivery riders lose time finding the door. India Post's DIGIPIN gives every ~3.8 m square of India a 10-character code, but people can't share it safely: there's no way to say *who* sees it, *for how long*, and to take it back.
 
-PataCard turns your DIGIPIN into an address card, with a landmark note and a door photo. You share it as separate links, one per receiver, each with an expiry. You see who opened each link and can revoke it any time. The receiver needs no app and no login: they see the exact spot and get a route to your door.
+DigiLease turns your DIGIPIN into an address card, with a landmark note and a door photo. You share it as separate links, one per receiver, each with an expiry. You see who opened each link and can revoke it any time. The receiver needs no app and no login: they see the exact spot and get a route to your door.
 
 Built for the WeMakeDevs x AWS **First Commit** hackathon (Ship It track). Problem source: Shaastra 2026 (IIT Madras) x India Post, *Digital Address DPI Innovation Hackathon*.
 
@@ -19,9 +19,9 @@ Built for the WeMakeDevs x AWS **First Commit** hackathon (Ship It track). Probl
 6. You see "Ambulance opened at 14:02". Revoke it, and the link dies.
 
 ## Why not just share a location on WhatsApp or Google Maps?
-Those are great for "where am I right now". PataCard is for "where is my door", given to people you don't know, on your terms.
+Those are great for "where am I right now". DigiLease is for "where is my door", given to people you don't know, on your terms.
 
-| Need | WhatsApp / Google Maps pin | PataCard |
+| Need | WhatsApp / Google Maps pin | DigiLease |
 |---|---|---|
 | Shares the **place**, not the person | Live location follows *you*; a static pin is just a dot | The card is your door, whether or not you're home |
 | Landmark + door photo with the location | Separate messages, lost in a chat | One link: exact spot, landmark note and door photo |
@@ -32,7 +32,7 @@ Those are great for "where am I right now". PataCard is for "where is my door", 
 | Works where the signal drops | Needs data to load the map | The saved street map, GPS dot and distance work offline |
 | National standard | A provider's own system | India Post's DIGIPIN |
 
-PataCard is a working prototype of the consent layer India Post has planned for DIGIPIN (DHRUVA): addresses shared with consent, per receiver, revocable.
+DigiLease is a working prototype of the consent layer India Post has planned for DIGIPIN (DHRUVA): addresses shared with consent, per receiver, revocable.
 
 ## Screenshots
 | Receiver, online | Offline map (phone) | Offline map (laptop) |

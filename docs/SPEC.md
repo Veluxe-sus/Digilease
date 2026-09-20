@@ -1,4 +1,4 @@
-# PataCard: specification
+# DigiLease: specification
 
 ## Problem
 India's 6-digit PIN code only identifies a locality, so addresses run on landmarks ("blue gate, behind the temple"). That costs ambulances, police, delivery riders and guests time.

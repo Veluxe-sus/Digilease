@@ -1,4 +1,4 @@
-# PataCard: build plan
+# DigiLease: build plan
 
 Tasks run in order. Each ends with a check. **(You)** marks steps the user runs. After each task, rewrite `.claude/CHECKPOINT.md` and commit.
 
@@ -25,7 +25,7 @@ Skill names are Claude Code skills (plugin names in brackets). MCP servers are w
 | `context7` | Tasks 2, 4–8 | Current docs: AWS SAM, SDK v3 (`client-geo-routes`, `lib-dynamodb`, `s3-presigned-post`), Amazon Location, MapLibre GL, Amplify v6 Auth, Service Worker and Cache Storage (MDN) | Official docs sites: docs.aws.amazon.com, maplibre.org, docs.amplify.aws, developer.mozilla.org, wiki.openstreetmap.org (Overpass API) |
 | `playwright` | Tasks 6–9 | Scripted browser run of create → share → view → revoke, and offline mode (`context.setOffline(true)`) | Do the flow by hand in two browser windows; DevTools "Offline" throttling |
 | `chrome-devtools` | Tasks 5–10 | Console and network errors, mobile emulation, Lighthouse accessibility check | Browser DevTools by hand |
-| `stitch` | Mockups step | Generate the new screens in the existing Stitch project "PataCard" (id 2246405162473946986) | Skip the mockups and build from `docs/DESIGN.md` §8 text |
+| `stitch` | Mockups step | Generate the new screens in the existing Stitch project "DigiLease" (id 2246405162473946986) | Skip the mockups and build from `docs/DESIGN.md` §8 text |
 
 ## Remaining work: order and time budget (written 2026-09-19, about 13:00 IST)
 Tasks 0–4 are done and Task 5 is written. What's left, in order:
@@ -55,9 +55,9 @@ Only with the `stitch` MCP. Use the existing project and its design system. Gene
 
 | File | Device | Prompt |
 |---|---|---|
-| `s5-receiver.png` | phone | Receiver page of PataCard for a shared address link. Top bar with the PataCard wordmark and a green "Saved for offline" pill. Map filling half the screen with a red teardrop pin and a blue route line. Below: "SHARED WITH YOU · Ravi (guest)", the DIGIPIN code plate 4T3 96F4 2L7 in bold monospace with a red border, landmark "Blue gate, behind Hanuman temple", a 4:3 door photo, "Link valid until 21 Sep, 18:00" in monospace. Sticky bottom bar: summary "2.4 km · 9 min", a red primary button "Update route", and a text button "Open in maps". |
+| `s5-receiver.png` | phone | Receiver page of DigiLease for a shared address link. Top bar with the DigiLease wordmark and a green "Saved for offline" pill. Map filling half the screen with a red teardrop pin and a blue route line. Below: "SHARED WITH YOU · Ravi (guest)", the DIGIPIN code plate 4T3 96F4 2L7 in bold monospace with a red border, landmark "Blue gate, behind Hanuman temple", a 4:3 door photo, "Link valid until 21 Sep, 18:00" in monospace. Sticky bottom bar: summary "2.4 km · 9 min", a red primary button "Update route", and a text button "Open in maps". |
 | `s6-offline.png` | phone | The same receiver page with no internet. A dark navy banner at the top: "No internet. Showing your saved map." A plain light map with only grey street lines, a dashed square outline, a blue route line, a red door pin and a blue "you" dot with a white ring. A white bottom sheet: "240 m to the door" large, "straight line" small, "about 310 m along the route". Two small monospace code plates side by side: "YOU 4T3 96F3 KK1" with a blue border and "DOOR 4T3 96F4 2L7" with a red border. A small door photo thumbnail and "Streets © OpenStreetMap contributors". |
-| `s7-print.png` | phone | Print preview screen. Top bar "Print card" with a back arrow. A white A6 postcard on a light grey page: small "PataCard" wordmark and "For: Wedding guests"; a door photo; a large QR code with "Scan to find the door" and "Open it once with internet. Near us it keeps working without signal."; the DIGIPIN plate 4T3 96F4 2L7; landmark text; "DIGIPIN by India Post". A red primary button "Print / Save as PDF". |
+| `s7-print.png` | phone | Print preview screen. Top bar "Print card" with a back arrow. A white A6 postcard on a light grey page: small "DigiLease" wordmark and "For: Wedding guests"; a door photo; a large QR code with "Scan to find the door" and "Open it once with internet. Near us it keeps working without signal."; the DIGIPIN plate 4T3 96F4 2L7; landmark text; "DIGIPIN by India Post". A red primary button "Print / Save as PDF". |
 | `s8-links.png` | phone | Address card page, links section. Segmented chips "2 h", "24 h", "72 h", "No expiry" (selected), "Custom" and a name field "Wedding guests". Helper text "Receivers can keep an offline copy until the link expires." A list of link rows separated by hairlines: "Wedding guests" with a green Live pill and "No expiry" in monospace; "Flipkart delivery" Live, "expires in 23 h"; "Courier" grey Revoked with strikethrough. Each live row has copy, QR, printer and revoke icons. |
 | `d4-receiver.png` | laptop, 1440px | The receiver page (from `s5-receiver.png`) in the two-pane laptop layout of `d3-receiver.png`: map on the left 60%, the details and the route button in a white right panel. |
 
@@ -139,7 +139,7 @@ Files: `frontend/src/components/MapView.jsx`, `frontend/src/pages/NewCard.jsx`, 
   - "New link" form (name + hours presets 2 / 24 / 72 / custom)
   - links list with status pill, copy, QR (`qrcode` → canvas) and revoke
   - access log
-- Follow `docs/DESIGN.md` (colours, type, components) and match `docs/mockups/` (Stitch project "PataCard", id 2246405162473946986). Then one pass with the `frontend-design` skill, not a redesign loop.
+- Follow `docs/DESIGN.md` (colours, type, components) and match `docs/mockups/` (Stitch project "DigiLease", id 2246405162473946986). Then one pass with the `frontend-design` skill, not a redesign loop.
 - Mockups: phone `s1-s4`, laptop `d1-d3` (two-pane, 1024px and wider; see DESIGN.md §5).
 - Mockup content to NOT ship. It is either false or out of scope:
   - False verification or privacy claims: "Verified property coordinates", "GEO-VERIFIED", "Govt. Verified Portal Unit", "Zero persisted (GPS) coordinates", "Privacy protected under India Post guidelines", "India Post National Digital Postal Index Grid coordinate".
@@ -186,7 +186,7 @@ Read SPEC "Last-km offline map" first. Check the Overpass API usage policy and t
 **Step 1, backend: the area route.**
 Files: `backend/src/api.js`, `backend/test/api.test.js`, `template.yaml`
 - `GET /s/{token}/area` (public): live-share check → read `areas/{cardId}.json` from S3 → if missing, fetch from Overpass, convert, store, return. No access entry.
-- Overpass query for the ±500 m box around the card's `lat`/`lon`: `[out:json][timeout:8];way["highway"](S,W,N,E);out geom;` sent by POST to `https://overpass-api.de/api/interpreter` with Node's built-in `fetch`, an 8 s `AbortSignal.timeout`, a 3 MB cap and a `User-Agent: PataCard (hackathon)`.
+- Overpass query for the ±500 m box around the card's `lat`/`lon`: `[out:json][timeout:8];way["highway"](S,W,N,E);out geom;` sent by POST to `https://overpass-api.de/api/interpreter` with Node's built-in `fetch`, an 8 s `AbortSignal.timeout`, a 3 MB cap and a `User-Agent: DigiLease (hackathon)`.
 - Pure helpers, tested first: `areaBox(lat, lon)` → `{south, west, north, east}`; `toStreets(overpassJson)` → `[{name, kind, line}]` with coordinates rounded to 6 decimals.
 - Overpass error, timeout or oversize → 503 `{error: "Street map not available right now"}`; nothing is stored.
 - Add the route to the public list in the handler's `isPublic` check.
