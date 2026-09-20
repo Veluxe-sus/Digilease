@@ -17,7 +17,7 @@ The owner card, print pass and cooler mineral-sage base palette are browser-veri
   landmark and actual expiry are the only data shown; no fake barcode or credential fields were
   added. Browser-checked with and without a door photo at 1440x900 and 390x844.
 - Added React Bits BlurText to the hero headline and a restrained BorderGlow to the lanyard pass.
-  Both respect reduced motion; the glow is disabled for touch pointers.
+  ShapeGrid now tracks across hero layers without blocking controls; reduced motion still applies.
 - Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN
   wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
   changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to

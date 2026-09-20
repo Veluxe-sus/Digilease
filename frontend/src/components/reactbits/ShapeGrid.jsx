@@ -120,8 +120,12 @@ const ShapeGrid = ({
       hoveredSquare.current = null;
     };
 
-    canvas.addEventListener("mousemove", handleMouseMove);
-    canvas.addEventListener("mouseleave", handleMouseLeave);
+    // The hero content is layered above the canvas. Listening at that shared
+    // boundary keeps the grid responsive behind text and the pass without
+    // disabling pointer events on real links or buttons.
+    const pointerSurface = canvas.closest(".hero") || canvas;
+    pointerSurface.addEventListener("mousemove", handleMouseMove);
+    pointerSurface.addEventListener("mouseleave", handleMouseLeave);
 
     // The grid only burns frames while it is on screen and the tab is in front.
     // Under prefers-reduced-motion it paints once and never animates.
@@ -161,8 +165,8 @@ const ShapeGrid = ({
       tryStop();
       io.disconnect();
       document.removeEventListener("visibilitychange", onVisibility);
-      canvas.removeEventListener("mousemove", handleMouseMove);
-      canvas.removeEventListener("mouseleave", handleMouseLeave);
+      pointerSurface.removeEventListener("mousemove", handleMouseMove);
+      pointerSurface.removeEventListener("mouseleave", handleMouseLeave);
     };
   }, [direction, speed, borderColor, hoverFillColor, squareSize, hoverTrailAmount]);
 
