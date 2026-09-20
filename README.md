@@ -17,6 +17,9 @@ Built for the WeMakeDevs x AWS **First Commit** hackathon (Ship It track). Probl
 4. The receiver opens the link and sees the spot, the photo and a route. The page saves itself on their phone.
 5. **The last kilometre works with no signal.** In airplane mode the saved page still opens: the streets around the door, the route, a blue "you" dot from GPS, both DIGIPINs ("You: …", "Door: …") and the distance to go.
 6. You see "Ambulance opened at 14:02". Revoke it, and the link dies.
+7. Done with a door entirely? Delete the card. That removes the door photo, the cached street area, every link issued from it and the access history in one go.
+
+Your cards live on `/cards`, a carousel of address passes you can page through; each one opens its links, QR codes and printable A6 card. The whole app has a light and a dark theme, and the choice sticks.
 
 ## Why not just share a location on WhatsApp or Google Maps?
 Those are great for "where am I right now". DigiLease is for "where is my door", given to people you don't know, on your terms.
@@ -60,6 +63,9 @@ flowchart LR
 - **AWS services:** Amplify Hosting, API Gateway, Lambda, DynamoDB, S3, Cognito, Amazon Location Service, CloudWatch Logs. One SAM template (`template.yaml`) in ap-south-1 (Mumbai).
 - **Offline streets come from OpenStreetMap**, not Amazon's map. The Lambda fetches the streets within 500 m of the door once, keeps them in S3, and the receiver's phone stores them. We didn't find a clear statement that Amazon's map data may be stored on a phone for offline use, so we don't; OpenStreetMap's licence (ODbL) allows it with credit.
 - **Cost:** about $0 at demo scale (free tiers; a few Location Service route calls).
+
+## Pitch deck
+`docs/DigiLease-deck.pptx` — 14 slides, the demo running order, built from the live screenshots in this repo. Speaker notes are not in the file; the running order is the slide order.
 
 ## Security in brief
 - Share links are 128-bit random tokens. Every public call checks that the link is neither revoked nor expired.
