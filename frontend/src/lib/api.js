@@ -39,6 +39,7 @@ export const api = {
   listCards: () => request("/cards"),
   createCard: (card) => request("/cards", { method: "POST", body: card }),
   getCard: (id) => request(`/cards/${enc(id)}`),
+  deleteCard: (id) => request(`/cards/${enc(id)}`, { method: "DELETE" }),
   createShare: (id, share) => request(`/cards/${enc(id)}/shares`, { method: "POST", body: share }),
   listAccess: (id) => request(`/cards/${enc(id)}/access`),
   revokeShare: (token) => request(`/shares/${enc(token)}`, { method: "DELETE" }),

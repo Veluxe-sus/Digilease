@@ -66,6 +66,7 @@ A chip shows "Saved for offline" when the card, area and page files are stored. 
 | `POST /cards` `{lat, lon, landmark?, photoType?}` | owner | 201 `{card, upload}`; `upload` is a presigned POST (5 min) when `photoType` is set |
 | `GET /cards` | owner | 200 `{cards}` |
 | `GET /cards/{id}` | owner | 200 `{card (with photoUrl), shares}`; 404 if not the owner's |
+| `DELETE /cards/{id}` | owner | 204; permanently deletes the card, its photo, shares and access history; 404 if not the owner's |
 | `POST /cards/{id}/shares` `{label, hours}` | owner | 201 `{share}`. `hours` is 1–168, or 0 for no expiry |
 | `GET /cards/{id}/access` | owner | 200 `{access}`, newest first, up to 50 |
 | `DELETE /shares/{token}` | owner | 204; 404 if not the owner's |

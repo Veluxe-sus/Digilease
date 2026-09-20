@@ -433,3 +433,15 @@
   color: var(--ink);
   background: var(--paper);
 }
+
+/* A destructive card action stays visible, but asks for a deliberate hold. */
+.card-title-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+.card-title-row h1 { min-width: 0; }
+.card-delete-trigger { flex: none; display: inline-flex; align-items: center; gap: 6px; color: var(--void); }
+.card-delete-confirm { align-items: start; background: var(--danger-soft); border-color: color-mix(in srgb, var(--void) 32%, var(--line)); }
+.card-delete-confirm > span:first-child { color: var(--ink); }
+
+@media (max-width: 560px) {
+  .card-title-row { align-items: center; }
+  .card-delete-trigger { padding-inline: 0; }
+}

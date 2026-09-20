@@ -94,6 +94,7 @@ Resources:
         CreateCard:   { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: /cards, Method: POST } }
         ListCards:    { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: /cards, Method: GET } }
         GetCard:      { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}", Method: GET } }
+        DeleteCard:   { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}", Method: DELETE } }
         CreateShare:  { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}/shares", Method: POST } }
         ListAccess:   { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/cards/{id}/access", Method: GET } }
         RevokeShare:  { Type: HttpApi, Properties: { ApiId: !Ref HttpApi, Path: "/shares/{token}", Method: DELETE } }

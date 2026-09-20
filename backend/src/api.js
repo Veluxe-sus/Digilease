@@ -5,9 +5,9 @@ const { randomBytes, randomUUID } = require("node:crypto");
 const { getDigiPin, getLatLngFromDigiPin } = require("./digipin");
 const { DynamoDBClient } = require("@aws-sdk/client-dynamodb");
 const {
-  DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand,
+  BatchWriteCommand, DeleteCommand, DynamoDBDocumentClient, GetCommand, PutCommand, QueryCommand, UpdateCommand,
 } = require("@aws-sdk/lib-dynamodb");
-const { S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
+const { DeleteObjectCommand, S3Client, GetObjectCommand, PutObjectCommand } = require("@aws-sdk/client-s3");
 const { createPresignedPost } = require("@aws-sdk/s3-presigned-post");
 const { getSignedUrl } = require("@aws-sdk/s3-request-presigner");
 const { GeoRoutesClient, CalculateRoutesCommand } = require("@aws-sdk/client-geo-routes");
@@ -154,6 +154,28 @@ async function getOwnedCard(cardId, ownerSub) {
   return Item && Item.ownerSub === ownerSub ? Item : null;
 }
 
+async function queryAll(input) {
+  const items = [];
+  let ExclusiveStartKey;
+  do {
+    const page = await db.send(new QueryCommand({ ...input, ExclusiveStartKey }));
+    items.push(...(page.Items || []));
+    ExclusiveStartKey = page.LastEvaluatedKey;
+  } while (ExclusiveStartKey);
+  return items;
+}
+
+async function deleteRows(tableName, rows, keyFor) {
+  for (let offset = 0; offset < rows.length; offset += 25) {
+    let pending = rows.slice(offset, offset + 25).map((row) => ({ DeleteRequest: { Key: keyFor(row) } }));
+    for (let attempt = 0; pending.length && attempt < 4; attempt++) {
+      const result = await db.send(new BatchWriteCommand({ RequestItems: { [tableName]: pending } }));
+      pending = result.UnprocessedItems?.[tableName] || [];
+    }
+    if (pending.length) throw new Error(`Could not finish deleting rows from ${tableName}`);
+  }
+}
+
 async function getLiveShare(token) {
   const { Item: share } = await db.send(new GetCommand({ TableName: SHARES_TABLE, Key: { token } }));
   if (!isShareLive(share, nowSeconds())) return null;
@@ -208,6 +230,29 @@ async function getCard(cardId, sub) {
     status: s.revoked ? "revoked" : isShareLive(s, now) ? "live" : "expired",
   }));
   return json(200, { card: { ...card, photoUrl: await photoUrl(card.photoKey) }, shares });
+}
+
+async function deleteCard(cardId, sub) {
+  const card = await getOwnedCard(cardId, sub);
+  if (!card) return json(404, { error: "Card not found" });
+  const [shares, access] = await Promise.all([
+    queryAll({
+      TableName: SHARES_TABLE, IndexName: "byCard",
+      KeyConditionExpression: "cardId = :c", ExpressionAttributeValues: { ":c": cardId },
+    }),
+    queryAll({
+      TableName: ACCESS_TABLE, KeyConditionExpression: "cardId = :c",
+      ExpressionAttributeValues: { ":c": cardId },
+    }),
+  ]);
+  await Promise.all([
+    deleteRows(SHARES_TABLE, shares, (share) => ({ token: share.token })),
+    deleteRows(ACCESS_TABLE, access, (entry) => ({ cardId: entry.cardId, ts: entry.ts })),
+  ]);
+  const objectKeys = [`areas/${cardId}.json`, ...(card.photoKey ? [card.photoKey] : [])];
+  await Promise.all(objectKeys.map((Key) => s3.send(new DeleteObjectCommand({ Bucket: PHOTO_BUCKET, Key }))));
+  await db.send(new DeleteCommand({ TableName: CARDS_TABLE, Key: { cardId } }));
+  return json(204);
 }
 
 async function createShare(event, cardId, sub) {
@@ -363,6 +408,7 @@ async function handler(event) {
       case "POST /cards": return await createCard(event, sub);
       case "GET /cards": return await listCards(sub);
       case "GET /cards/{id}": return await getCard(p.id, sub);
+      case "DELETE /cards/{id}": return await deleteCard(p.id, sub);
       case "POST /cards/{id}/shares": return await createShare(event, p.id, sub);
       case "GET /cards/{id}/access": return await listAccess(p.id, sub);
       case "DELETE /shares/{token}": return await revokeShare(p.token, sub);

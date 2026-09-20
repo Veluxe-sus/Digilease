@@ -3,7 +3,8 @@
 // revoked one stays on the card, struck through, because seeing the dead stub is
 // the point of the product.
 import { useCallback, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Trash } from "@phosphor-icons/react";
 import QRCode from "qrcode";
 import MapView from "./MapView.jsx";
 import DigipinPlate from "./DigipinPlate.jsx";
@@ -125,7 +126,8 @@ function TearStub({ share, cardId, onRevoked, openQr, qrOpen }) {
   );
 }
 
-export default function CardDetail({ id, showMap = false, notice, created, onBack }) {
+export default function CardDetail({ id, showMap = false, notice, created, onBack, onDeleted }) {
+  const navigate = useNavigate();
   const [card, setCard] = useState(null);
   const [shares, setShares] = useState([]);
   const [access, setAccess] = useState([]);
@@ -137,6 +139,9 @@ export default function CardDetail({ id, showMap = false, notice, created, onBac
   const [creating, setCreating] = useState(false);
   const [formErr, setFormErr] = useState("");
   const [qrFor, setQrFor] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [deleteErr, setDeleteErr] = useState("");
 
   const load = useCallback(async () => {
     try {
@@ -173,6 +178,19 @@ export default function CardDetail({ id, showMap = false, notice, created, onBac
     if (qrFor === token) setQrFor(null);
   }
 
+  async function removeCard() {
+    setDeleting(true);
+    setDeleteErr("");
+    try {
+      await api.deleteCard(id);
+      if (onDeleted) onDeleted(id);
+      else navigate("/cards", { replace: true });
+    } catch (err) {
+      setDeleteErr(err.message);
+      setDeleting(false);
+    }
+  }
+
   if (error) {
     return (
       <section className="detail">
@@ -196,9 +214,44 @@ export default function CardDetail({ id, showMap = false, notice, created, onBac
       )}
 
       <div className="panel-head">
-        <h1>{card.landmark || "My address card"}</h1>
+        <div className="card-title-row">
+          <h1>{card.landmark || "My address card"}</h1>
+          <button type="button" className="btn-text card-delete-trigger" onClick={() => setConfirmDelete(true)}>
+            <Trash size={17} weight="bold" aria-hidden="true" />
+            Delete card
+          </button>
+        </div>
         {created && <p className="notice">Card saved. Now make a link for each person who needs your address.</p>}
         {notice && <p className="error" role="alert">{notice}</p>}
+        {confirmDelete && (
+          <AnimatedContent distance={10} duration={0.22} scale={0.99} threshold={0}>
+            <div className="confirm card-delete-confirm" role="group" aria-label="Delete this card">
+              <span>This permanently removes the card, photo, links and access history.</span>
+              <div className="stub-actions">
+                <HoldButton
+                  size="sm"
+                  radius={12}
+                  holdTime={1600}
+                  releaseTime={180}
+                  resetAfter={1400}
+                  backgroundColor="var(--ink)"
+                  fillColor="var(--void)"
+                  textColor="var(--paper)"
+                  fillTextColor="var(--void-contrast)"
+                  glow={false}
+                  disabled={deleting}
+                  icon={<Trash size={16} weight="bold" aria-hidden="true" />}
+                  doneLabel="Deleting…"
+                  onHold={removeCard}
+                >
+                  Hold to delete
+                </HoldButton>
+                <button type="button" className="btn-chip" disabled={deleting} onClick={() => setConfirmDelete(false)}>Keep card</button>
+              </div>
+              {deleteErr && <span className="error small" role="alert">{deleteErr}</span>}
+            </div>
+          </AnimatedContent>
+        )}
       </div>
 
       <DigipinPlate code={card.digipin} />

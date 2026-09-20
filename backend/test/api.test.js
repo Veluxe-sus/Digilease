@@ -7,7 +7,7 @@ const {
 
 test("owner routes refuse requests with no signed-in user", async () => {
   for (const routeKey of ["POST /cards", "GET /cards", "GET /cards/{id}", "POST /cards/{id}/shares",
-    "GET /cards/{id}/access", "DELETE /shares/{token}"]) {
+    "GET /cards/{id}/access", "DELETE /cards/{id}", "DELETE /shares/{token}"]) {
     const res = await handler({ routeKey, pathParameters: { id: "x", token: "y" }, requestContext: {} });
     assert.equal(res.statusCode, 401, routeKey);
   }

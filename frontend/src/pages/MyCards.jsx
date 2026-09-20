@@ -98,6 +98,13 @@ export default function MyCards() {
     setSelected(cardId);
   }
 
+  function deletedCard(cardId) {
+    const remaining = cards.filter((card) => card.cardId !== cardId);
+    setCards(remaining);
+    setSelected(remaining[0]?.cardId ?? null);
+    setDetailDirection("next");
+  }
+
   return (
     <main className="cards-split">
       <section className="deck-side" aria-label="Your cards">
@@ -109,6 +116,7 @@ export default function MyCards() {
         {useDeck && (
           <div className="deck-stage">
             <DepthCarousel
+              key={cards.map((card) => card.cardId).join("|")}
               items={cards.map((card) => ({ ...card, alt: `Address card ${formatDigipin(card.digipin)}` }))}
               renderItem={(card) => <PassFace card={card} />}
               cardWidth={292}
@@ -165,7 +173,7 @@ export default function MyCards() {
             ease="power3.out"
             threshold={0}
           >
-            <CardDetail id={selected} />
+            <CardDetail id={selected} onDeleted={deletedCard} />
           </AnimatedContent>
         )}
       </div>

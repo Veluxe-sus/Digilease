@@ -9,7 +9,11 @@ setWorkerUrl("/maplibre/maplibre-gl-worker.mjs");
 
 const REGION = import.meta.env.VITE_REGION;
 const KEY = import.meta.env.VITE_MAP_API_KEY;
-const STYLE = `https://maps.geo.${REGION}.amazonaws.com/v2/styles/Standard/descriptor?key=${KEY}&political-view=IND`;
+
+function styleUrl() {
+  const colorScheme = document.documentElement.dataset.theme === "dark" ? "Dark" : "Light";
+  return `https://maps.geo.${REGION}.amazonaws.com/v2/styles/Standard/descriptor?key=${KEY}&political-view=IND&color-scheme=${colorScheme}`;
+}
 
 function pinElement() {
   const el = document.createElement("div");
@@ -42,7 +46,7 @@ export default function MapView({ pin, onPinChange, draggable = false, zoom = 16
   // Create the map once.
   useEffect(() => {
     const start = pin ? [pin.lon, pin.lat] : [79.0, 22.5];
-    const m = new MapLibre({ container: box.current, style: STYLE, center: start, zoom: pin ? zoom : 4, validateStyle: false });
+    const m = new MapLibre({ container: box.current, style: styleUrl(), center: start, zoom: pin ? zoom : 4, validateStyle: false });
     m.addControl(new NavigationControl({ showCompass: false }), "bottom-right");
     if (draggable) {
       m.on("click", (e) => onChange.current?.({ lat: e.lngLat.lat, lon: e.lngLat.lng }));
