@@ -1,4 +1,4 @@
-# PataCard
+# DigiLease
 
 **An address you can hand over, and take back.**
 
