@@ -1,11 +1,11 @@
 /* DigiLease tokens — paper, olive, brick. See docs/DESIGN.md */
 :root {
-  --paper: #F1F3EC;
+  --paper: #FAF6E9;
   --surface: #FFFFFF;
   --ink: #26301C;
   --ink-soft: #3A4630;
   --muted: #6B7360;
-  --line: #D2D7C9;
+  --line: #DFD6BA;
   --accent: #B05A28;
   --accent-press: #8E4720;
   --accent-contrast: #FFFFFF;

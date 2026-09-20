@@ -259,6 +259,7 @@
 /* ---------- Sign in ---------- */
 .auth-shell { position: relative; min-height: 100dvh; background: var(--paper); }
 .auth-grid { position: absolute; inset: 0; z-index: 0; opacity: 0.85; }
+:root[data-theme="dark"] .auth-grid { opacity: 0.4; }
 /* Signed in, so the grid goes away and the app pages are plain paper. */
 .auth-shell:has(.owner) .auth-grid { display: none; }
 

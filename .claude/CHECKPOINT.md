@@ -2,7 +2,7 @@
 
 ## Now
 Branch `v2-redesign`. `main` remains untouched at `5f7817f` as the submittable v1 fallback.
-The owner card, print pass, mineral-sage light theme and matching dark theme are browser-verified.
+The owner card, print pass, corrected warm light theme, dark theme and receiver are browser-verified.
 
 ## Verified on 2026-09-20
 - `/new`, `/card/:id`, `/card/:id/print/:token`, `/cards`, and the receiver offline reload were
@@ -22,9 +22,9 @@ The owner card, print pass, mineral-sage light theme and matching dark theme are
   wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
   changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to
   Phosphor icons.
-- Landing bento rows now reserve room for wrapped copy instead of clipping headings. Landing, `/new`, and
-  `/cards` were rechecked live at 1440x900 and 390x844. Tests 10/10, lint and build green.
-- The live-share `Print` link is now an undecorated, centred pill; verified in both themes and mobile.
+- Warm paper tokens are restored and dark grid layers are subdued. Receiver live, loading, dead and
+  offline states use the pass stock and tear-line language at 1440x900 and 390x844 in both themes.
+  A fresh controlled service worker passed forced-offline reload; tests 10/10 + 13/13, lint/build green.
 - Build still prints the existing DIGIPIN CommonJS-variable warning and large-chunk warning.
 ## Next
 1. Retake `docs/screenshots/*` after the rename and replace `frontend/public/shots/*`.

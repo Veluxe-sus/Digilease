@@ -18,6 +18,7 @@
 }
 
 .hero-grid { position: absolute; inset: 0; z-index: 0; opacity: 0.85; }
+:root[data-theme="dark"] .hero-grid { opacity: 0.4; }
 
 .hero-inner {
   position: relative;

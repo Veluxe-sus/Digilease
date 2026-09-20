@@ -7,6 +7,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import "./index.css";
 import "./hero.css";
 import "./cards.css";
+import "./receiver.css";
 import Hero from "./pages/Hero.jsx";
 import MyCards from "./pages/MyCards.jsx";
 import NewCard from "./pages/NewCard.jsx";
