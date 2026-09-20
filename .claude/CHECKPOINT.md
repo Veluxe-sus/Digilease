@@ -30,7 +30,7 @@ The owner card, print pass, corrected warm light theme, dark theme and receiver 
 1. Retake `docs/screenshots/*` after the rename and replace `frontend/public/shots/*`.
 2. Rewrite stale `docs/DESIGN.md` sections 2-4 for the v2 palette, fonts and pass direction.
 3. Add a real door photograph only if the user supplies one; do not fake or generate it.
-4. Zip the green `frontend/dist` with forward-slash paths, then the user uploads to Amplify.
+4. User uploads `Desktop\digilease-v2-dist.zip` to Amplify, then hard-reloads once.
 
 ## Non-negotiables
 - All work stays on `v2-redesign`; never edit or deploy `main`.
