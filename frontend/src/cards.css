@@ -265,7 +265,7 @@
 [data-amplify-authenticator] {
   position: relative;
   z-index: 1;
-  padding: 72px 16px;
+  padding: 0;
 
   /* Amplify UI v6 reads these, not the brand-primary block alone. */
   --amplify-colors-brand-primary-10: #F6EBE2;
@@ -304,16 +304,7 @@
   box-shadow: 0 18px 44px rgb(var(--shadow-rgb) / 28%);
   overflow: visible;
 }
-/* The same perforation as the pass, so the sign-in card is the same object. */
-[data-amplify-authenticator] [data-amplify-router]::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 62px;
-  border-top: 2px dashed var(--line);
-  pointer-events: none;
-}
+
 [data-amplify-authenticator] .amplify-heading { font-family: var(--display); letter-spacing: -0.02em; }
 [data-amplify-authenticator] .amplify-tabs__item { font-family: var(--font); font-weight: 600; }
 
@@ -323,4 +314,121 @@
   --amplify-colors-border-primary: var(--line);
   --amplify-colors-font-primary: var(--ink);
   --amplify-colors-font-secondary: var(--muted);
+}
+
+/* ---------- Sign in: the form sits beside the thing it unlocks ---------- */
+.auth-split {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 8px;
+  align-items: center;
+  justify-items: center;
+  min-height: 100dvh;
+  padding: 32px 16px;
+}
+.auth-brand {
+  display: grid;
+  gap: 18px;
+  justify-items: start;
+  width: min(440px, 100%);
+}
+.auth-wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+}
+.auth-title {
+  margin: 0;
+  font-size: clamp(1.9rem, 4.6vw, 2.9rem);
+  line-height: 1.06;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.auth-lede {
+  margin: 0;
+  max-width: 44ch;
+  color: var(--muted);
+  font-size: 1.02rem;
+}
+.auth-pass-glow { width: min(340px, 100%); }
+.auth-pass { width: 100%; }
+
+/* Amplify renders this inside its own card, under the perforation. */
+.auth-foot {
+  margin: 14px 0 0;
+  padding: 0 4px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+  text-align: center;
+}
+
+@media (min-width: 900px) {
+  .auth-split {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 440px);
+    gap: 72px;
+    align-items: center;
+    justify-items: stretch;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 48px 32px;
+  }
+  .auth-brand { width: auto; justify-self: end; max-width: 460px; }
+}
+
+/* Signed in: the split, the sample and the grid all stand down. */
+.auth-shell:has(.owner) .auth-split {
+  display: block;
+  min-height: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+.auth-shell:has(.owner) .auth-brand { display: none; }
+
+/* Amplify defaults that belong to no palette: its neutral blue-greys. */
+[data-amplify-authenticator] {
+  width: 100%;
+  --amplify-components-authenticator-router-box-shadow: none;
+  --amplify-components-authenticator-max-width: 100%;
+  --amplify-components-field-label-color: var(--ink);
+  --amplify-colors-neutral-80: var(--muted);
+  --amplify-colors-neutral-90: var(--ink);
+  --amplify-colors-neutral-100: var(--ink);
+  --amplify-colors-border-primary: var(--line);
+  --amplify-colors-border-secondary: var(--line);
+  --amplify-colors-border-focus: var(--accent);
+}
+[data-amplify-authenticator] .amplify-label {
+  color: var(--ink);
+  font-weight: 600;
+  font-size: 0.82rem;
+  letter-spacing: 0.01em;
+}
+[data-amplify-authenticator] .amplify-input::placeholder { color: var(--muted); opacity: 0.85; }
+[data-amplify-authenticator] .amplify-tabs { border-bottom-color: var(--line); }
+[data-amplify-authenticator] .amplify-tabs__item { color: var(--muted); border-bottom-color: var(--line); }
+[data-amplify-authenticator] .amplify-tabs__item[aria-selected="true"] { color: var(--accent); }
+[data-amplify-authenticator] .amplify-button--primary { font-weight: 600; letter-spacing: 0.005em; }
+/* Amplify draws the tab indicator on the block-start edge and leaves the inactive
+   half a default neutral, which reads as a stray white rule in dark mode. */
+[data-amplify-authenticator] .amplify-tabs__item {
+  border-block-start-color: var(--line);
+  border-block-end-color: transparent;
+}
+[data-amplify-authenticator] .amplify-tabs__item[aria-selected="true"] {
+  border-block-start-color: var(--accent);
+}
+/* The show-password toggle ships as a bare icon button with no theme colour. */
+[data-amplify-authenticator] .amplify-field-group__outer-end .amplify-button {
+  color: var(--muted);
+  border-color: var(--line);
+  background: var(--surface);
+}
+[data-amplify-authenticator] .amplify-field-group__outer-end .amplify-button:hover {
+  color: var(--ink);
+  background: var(--paper);
 }
