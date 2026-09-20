@@ -7,6 +7,8 @@ import { Link } from "react-router-dom";
 import QRCode from "qrcode";
 import MapView from "./MapView.jsx";
 import DigipinPlate from "./DigipinPlate.jsx";
+import AnimatedContent from "./reactbits/AnimatedContent.jsx";
+import CountUp from "./reactbits/CountUp.jsx";
 import HoldButton from "./reactbits/HoldButton.jsx";
 import { api } from "../lib/api.js";
 import { formatWhen, timeLeft } from "../lib/format.js";
@@ -86,33 +88,37 @@ function TearStub({ share, cardId, onRevoked, openQr, qrOpen }) {
       )}
 
       {confirming && share.status === "live" && (
-        <div className="confirm" role="group" aria-label={`Revoke ${share.label}`}>
-          <span>Revoke the link for {share.label}? It stops working right away.</span>
-          <div className="stub-actions">
-            <HoldButton
-              size="sm"
-              radius={18}
-              holdTime={1300}
-              releaseTime={180}
-              resetAfter={1200}
-              backgroundColor="var(--ink)"
-              fillColor="var(--void)"
-              textColor="var(--paper)"
-              fillTextColor="var(--void-contrast)"
-              glow={false}
-              disabled={busy}
-              doneLabel="Revoking…"
-              onHold={revoke}
-            >
-              Hold to revoke
-            </HoldButton>
-            <button type="button" className="btn-chip" onClick={() => setConfirming(false)}>Keep it</button>
+        <AnimatedContent distance={10} duration={0.22} scale={0.99} threshold={0}>
+          <div className="confirm" role="group" aria-label={`Revoke ${share.label}`}>
+            <span>Revoke the link for {share.label}? It stops working right away.</span>
+            <div className="stub-actions">
+              <HoldButton
+                size="sm"
+                radius={18}
+                holdTime={1300}
+                releaseTime={180}
+                resetAfter={1200}
+                backgroundColor="var(--ink)"
+                fillColor="var(--void)"
+                textColor="var(--paper)"
+                fillTextColor="var(--void-contrast)"
+                glow={false}
+                disabled={busy}
+                doneLabel="Revoking…"
+                onHold={revoke}
+              >
+                Hold to revoke
+              </HoldButton>
+              <button type="button" className="btn-chip" onClick={() => setConfirming(false)}>Keep it</button>
+            </div>
           </div>
-        </div>
+        </AnimatedContent>
       )}
 
       {qrOpen && share.status === "live" && (
-        <QrPanel url={url} label={share.label} printUrl={`/card/${cardId}/print/${share.token}`} />
+        <AnimatedContent distance={10} duration={0.22} scale={0.99} threshold={0}>
+          <QrPanel url={url} label={share.label} printUrl={`/card/${cardId}/print/${share.token}`} />
+        </AnimatedContent>
       )}
       {err && <p className="error small" role="alert">{err}</p>}
     </li>
@@ -210,7 +216,7 @@ export default function CardDetail({ id, showMap = false, notice, created, onBac
       <section className="block" aria-labelledby="links-h">
         <div className="block-head">
           <h2 id="links-h">Share links</h2>
-          <span className="muted small">{live} live</span>
+          <span className="muted small"><CountUp to={live} duration={0.4} /> live</span>
         </div>
         {shares.length === 0
           ? <p className="muted">No links yet. Create one for each person who needs your address.</p>

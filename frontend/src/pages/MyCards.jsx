@@ -5,6 +5,8 @@
 // back to a scroll-snap rail. Carousel focus opens that card on the right.
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import AnimatedContent from "../components/reactbits/AnimatedContent.jsx";
+import CountUp from "../components/reactbits/CountUp.jsx";
 import DepthCarousel from "../components/reactbits/DepthCarousel.jsx";
 import CardDetail from "../components/CardDetail.jsx";
 import { api } from "../lib/api.js";
@@ -101,7 +103,7 @@ export default function MyCards() {
       <section className="deck-side" aria-label="Your cards">
         <div className="deck-head-row">
           <h1>My cards</h1>
-          <span className="muted small">{cards.length} {cards.length === 1 ? "card" : "cards"}</span>
+          <span className="muted small"><CountUp to={cards.length} duration={0.45} /> {cards.length === 1 ? "card" : "cards"}</span>
         </div>
 
         {useDeck && (
@@ -153,9 +155,18 @@ export default function MyCards() {
 
       <div className="detail-side">
         {selected && (
-          <div key={selected} className={`detail-transition detail-transition--${detailDirection}`}>
+          <AnimatedContent
+            key={selected}
+            className="detail-transition"
+            direction="horizontal"
+            reverse={detailDirection === "prev"}
+            distance={14}
+            duration={0.28}
+            ease="power3.out"
+            threshold={0}
+          >
             <CardDetail id={selected} />
-          </div>
+          </AnimatedContent>
         )}
       </div>
     </main>

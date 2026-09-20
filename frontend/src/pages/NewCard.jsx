@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MapView from "../components/MapView.jsx";
 import DigipinPlate from "../components/DigipinPlate.jsx";
+import FadeContent from "../components/reactbits/FadeContent.jsx";
 import { getDigiPin } from "../lib/digipin.js";
 import { api, uploadPhoto } from "../lib/api.js";
 import { locationError } from "../lib/format.js";
@@ -97,44 +98,46 @@ export default function NewCard() {
       </section>
 
       <section className="split-panel">
-        <div className="panel-head">
-          <h1>New address card</h1>
-          <p className="muted">Your DIGIPIN points to a square of about 3.8 m. Add what a stranger needs to find your door.</p>
-        </div>
-
-        <DigipinPlate code={code || ""} label="Your DIGIPIN" large />
-        {code === null && <p className="error" role="alert">That spot is outside India's DIGIPIN area. Move the pin inside India.</p>}
-        {code && <p className="muted small">Updates as you move the pin.</p>}
-
-        <div className="field">
-          <label htmlFor="landmark" className="field-label">Landmark</label>
-          <input id="landmark" className="input" maxLength={MAX_LANDMARK} value={landmark}
-            placeholder="Blue gate, behind Hanuman temple, 2nd lane"
-            onChange={(e) => setLandmark(e.target.value)} />
-          <div className="field-foot">
-            <span className="muted small">What a rider sees at the gate.</span>
-            <span className="muted small code-num">{landmark.length} / {MAX_LANDMARK}</span>
+        <FadeContent className="panel-enter" duration={420} threshold={0.01} initialOpacity={0.2}>
+          <div className="panel-head">
+            <h1>New address card</h1>
+            <p className="muted">Your DIGIPIN points to a square of about 3.8 m. Add what a stranger needs to find your door.</p>
           </div>
-        </div>
 
-        <div className="field">
-          <span className="field-label">Door photo</span>
-          <label className={`dropzone ${preview ? "has-photo" : ""}`} htmlFor="photo">
-            {preview
-              ? <img src={preview} alt="Your door" />
-              : <span>Add a photo of your door<br /><span className="muted small">JPEG or PNG, up to 5 MB</span></span>}
-          </label>
-          <input id="photo" type="file" accept="image/jpeg,image/png" capture="environment" className="visually-hidden" onChange={pickPhoto} />
-          {photo && <button type="button" className="btn-text" onClick={() => setPhoto(null)}>Remove photo</button>}
-        </div>
+          <DigipinPlate code={code || ""} label="Your DIGIPIN" large />
+          {code === null && <p className="error" role="alert">That spot is outside India's DIGIPIN area. Move the pin inside India.</p>}
+          {code && <p className="muted small">Updates as you move the pin.</p>}
 
-        {error && <p className="error" role="alert">{error}</p>}
+          <div className="field">
+            <label htmlFor="landmark" className="field-label">Landmark</label>
+            <input id="landmark" className="input" maxLength={MAX_LANDMARK} value={landmark}
+              placeholder="Blue gate, behind Hanuman temple, 2nd lane"
+              onChange={(e) => setLandmark(e.target.value)} />
+            <div className="field-foot">
+              <span className="muted small">What a rider sees at the gate.</span>
+              <span className="muted small code-num">{landmark.length} / {MAX_LANDMARK}</span>
+            </div>
+          </div>
 
-        <div className="action-bar">
-          <button type="button" className="btn-primary btn-block" disabled={!canSave} onClick={save}>
-            {saving ? "Saving…" : "Save card"}
-          </button>
-        </div>
+          <div className="field">
+            <span className="field-label">Door photo</span>
+            <label className={`dropzone ${preview ? "has-photo" : ""}`} htmlFor="photo">
+              {preview
+                ? <img src={preview} alt="Your door" />
+                : <span>Add a photo of your door<br /><span className="muted small">JPEG or PNG, up to 5 MB</span></span>}
+            </label>
+            <input id="photo" type="file" accept="image/jpeg,image/png" capture="environment" className="visually-hidden" onChange={pickPhoto} />
+            {photo && <button type="button" className="btn-text" onClick={() => setPhoto(null)}>Remove photo</button>}
+          </div>
+
+          {error && <p className="error" role="alert">{error}</p>}
+
+          <div className="action-bar">
+            <button type="button" className="btn-primary btn-block" disabled={!canSave} onClick={save}>
+              {saving ? "Saving…" : "Save card"}
+            </button>
+          </div>
+        </FadeContent>
       </section>
     </div>
   );

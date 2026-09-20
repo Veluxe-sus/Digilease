@@ -16,8 +16,8 @@ The owner card, print pass, mineral-sage light theme and matching dark theme are
 - The A6 print card now shares the same pass construction. The recipient label, real QR, DIGIPIN,
   landmark and actual expiry are the only data shown; no fake barcode or credential fields were
   added. Browser-checked with and without a door photo at 1440x900 and 390x844.
-- React Bits BlurText and BorderGlow polish the hero; ShapeGrid tracks through its foreground layers.
-  HoldButton guards revoke; SquishSwitch controls persisted dark mode while passes stay light paper.
+- React Bits BlurText, BorderGlow and ShapeGrid polish the landing; FadeContent, AnimatedContent
+  and CountUp add restrained app feedback. HoldButton guards revoke; SquishSwitch persists dark mode.
 - Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN
   wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
   changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to

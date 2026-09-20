@@ -178,6 +178,7 @@ a { color: inherit; }
 .map-tall { height: 50dvh; min-height: 300px; }
 .map-short { height: 220px; }
 .split-panel { padding: 24px 16px 104px; display: grid; gap: 24px; max-width: 560px; margin: 0 auto; }
+.panel-enter { display: grid; gap: 24px; min-width: 0; }
 .panel-head { display: grid; gap: 8px; }
 .panel-head p { margin: 0; }
 .map-tools { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; pointer-events: none; }
