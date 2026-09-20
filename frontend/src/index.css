@@ -11,7 +11,7 @@
   --post: var(--accent);
   --post-press: var(--accent-press);
   --live: #4A7A3A;
-  --expired: #A8761F;
+  --expired: #8A6119;
   --void: #9B2F22;
   --route: #B05A28;
   --hero-bg: #191D14;
@@ -33,6 +33,7 @@
 }
 
 * { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
 html, body, #root { height: 100%; }
 body {
   margin: 0;
@@ -55,6 +56,7 @@ a { color: inherit; }
 /* DIGIPIN code plate: the brand element */
 .plate {
   display: inline-flex; align-items: center; justify-content: space-between; gap: 12px;
+  max-width: 100%;
   background: var(--surface); border: 2px solid var(--post); border-radius: 8px;
   padding: 12px 16px; font: 700 1.5rem/1.2 var(--mono); letter-spacing: 0.08em; color: var(--ink);
 }
@@ -64,13 +66,17 @@ a { color: inherit; }
 .btn-primary, .btn-secondary {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   min-height: 48px; padding: 0 20px; border-radius: var(--radius);
-  font: 600 1rem var(--font); text-decoration: none; cursor: pointer; transition: transform 80ms;
+  font: 600 1rem var(--font); text-decoration: none; cursor: pointer;
+  transition: transform 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
 }
 .btn-primary { background: var(--post); color: #fff; border: 0; }
 .btn-primary:hover { background: var(--post-press); }
 .btn-primary:active, .btn-secondary:active { transform: translateY(1px); }
 .btn-primary:disabled { opacity: 0.55; cursor: not-allowed; }
 .btn-secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--line); }
+@media (hover: hover) {
+  .btn-secondary:hover { border-color: var(--accent); box-shadow: 0 6px 18px rgb(38 48 28 / 8%); }
+}
 .btn-text { background: none; border: 0; color: var(--post); font: 600 0.95rem var(--font); cursor: pointer; padding: 8px; min-height: 44px; }
 
 
@@ -91,6 +97,7 @@ a { color: inherit; }
 [data-amplify-authenticator] { padding: 48px 16px; }
 
 @media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
   * { animation: none !important; transition: none !important; }
 }
 
@@ -115,9 +122,11 @@ a { color: inherit; }
 
 /* Plate: live characters */
 .plate-block { display: grid; }
+.plate-code { min-width: 0; white-space: nowrap; }
 .plate-code span { display: inline-block; transition: color 150ms; }
 .plate-code span.gap { margin-left: 0.5em; }
 .plate-code span.chg { color: var(--post); animation: flip 450ms ease-out; }
+.plate-empty { font: 600 0.95rem/1.2 var(--font); letter-spacing: 0; color: var(--muted); }
 @keyframes flip { from { transform: translateY(-3px); opacity: 0.4; } to { transform: none; opacity: 1; } }
 
 /* Two panes: map + panel. Phone: stacked. */

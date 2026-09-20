@@ -105,8 +105,9 @@ The current `v2-redesign` tree passes `npm test` 10/10 and `npm run lint`; `npm 
 - **Rename** PataCard to DigiLease across UI, README and `docs/*.md`. Stack names, bucket names and
   the GitHub repo stay `pata-card`; infrastructure is unchanged.
 - **`/` landing (`pages/Hero.jsx`, `hero.css`)** — verified at 1440x900 and 390x844. React Bits
-  ShapeGrid as the DIGIPIN grid (the squares *are* 3.8 m cells; hovering lights one). A CSS-only
-  pass on a lanyard with a countdown that really ticks (`components/LanyardPass.jsx`). Sections:
+  ShapeGrid as the DIGIPIN grid (the squares *are* 3.8 m cells; hovering lights one). BlurText gives
+  the headline one short word reveal; BorderGlow responds only near the physical pass edge. The pass
+  has a countdown that really ticks (`components/LanyardPass.jsx`). Sections:
   hero, who we are, what it is, an eight-cell MagicBento of real features, how it works, closer.
   Two bento cells carry real screenshots from `public/shots/`.
 - **Sign-in** — still Amplify's `<Authenticator>`, logic untouched, restyled only through its own
@@ -135,10 +136,12 @@ All live in `frontend/src/components/reactbits/`. The edits are the risk surface
 | `CardNav.jsx` | `react-icons` swapped for Phosphor's `ArrowUpRight`. Hardcoded "Get Started" now takes label and handler from props. New `links` prop renders inline destinations on desktop. `brand` accepts a node. |
 | `MagicBento.jsx` | Takes real children instead of the demo `cardData`. Star particles, cursor magnetism and the click ripple were removed: twelve looping DOM nodes per card say nothing about the feature on the card. The cursor spotlight and border glow stay. |
 | `MagicBento.css` | The upstream global `:root` block (which sets `color-scheme`) is **scoped to `.bento-section`**; unscoped it fights this project's tokens. Shot captions sit *under* the image, not over it. |
-| `DepthCarousel.jsx` | Takes a `renderItem` callback so the rail carries real DigiLease pass faces instead of demo images. Stable card keys and card-specific accessible labels were added. Narrow-screen scaling reserves less empty fan space so the DIGIPIN stays readable. Autoplay pauses on hover or focus, and reduced motion disables autoplay and animated transitions. |
+| `DepthCarousel.jsx` | Takes a `renderItem` callback so the rail carries real DigiLease pass faces instead of demo images. Stable card keys and card-specific accessible labels were added. Narrow-screen scaling reserves less empty fan space so the DIGIPIN stays readable. Autoplay pauses on hover or focus, reduced motion disables autoplay and animated transitions, and the control arrows use Phosphor. |
+| `BlurText.jsx` | Keeps the supplied word/letter API, adds a semantic `as` prop and an accessible whole-text label, and renders the final state immediately for reduced motion. It is used once, on the hero headline. |
+| `BorderGlow.jsx` | Keeps the supplied pointer-edge response, uses the paper/brick/olive palette, ignores touch pointers, resets on pointer leave and removes the effect for touch or reduced motion. It wraps only the hero pass. |
 
-New dependencies, both free and MIT: `gsap@3.15` (four React Bits components need it) and
-`@phosphor-icons/react@2.1`.
+New dependencies, all free and MIT: `gsap@3.15` (four React Bits components need it),
+`@phosphor-icons/react@2.1`, and `motion@13.4` (BlurText).
 
 ## What is left to do, in priority order
 
@@ -173,7 +176,7 @@ the saved map, marker, DIGIPIN and OpenStreetMap credit after a forced offline r
 ## Commands
 
 ```
-cd frontend && npm install          # gsap and @phosphor-icons/react are already in package.json
+cd frontend && npm install          # React Bits dependencies are already in package.json
 cd frontend && npm run dev          # port 5173, fixed: CORS and the map key allow only this origin
 cd frontend && npm test             # 10 tests, node:test, no framework
 cd frontend && npm run lint         # oxlint

@@ -2,6 +2,7 @@
 // DigiLease edit: renderItem lets the depth rail carry the app's real pass faces
 // instead of demo image URLs, while the image variant remains available.
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { CaretLeft, CaretRight } from "@phosphor-icons/react";
 import gsap from "gsap";
 import "./DepthCarousel.css";
 
@@ -354,14 +355,10 @@ export default function DepthCarousel({
       {showControls && count > 1 && (
         <>
           <button type="button" className="depth-carousel__arrow depth-carousel__arrow--prev" aria-label="Previous card" onClick={() => navigateBy(-1)}>
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path d="M15 5l-7 7 7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <CaretLeft size={20} weight="bold" aria-hidden="true" />
           </button>
           <button type="button" className="depth-carousel__arrow depth-carousel__arrow--next" aria-label="Next card" onClick={() => navigateBy(1)}>
-            <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
-              <path d="M9 5l7 7-7 7" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+            <CaretRight size={20} weight="bold" aria-hidden="true" />
           </button>
         </>
       )}

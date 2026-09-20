@@ -29,12 +29,12 @@ export default function DigipinPlate({ code, label = "DIGIPIN", large = false })
     <div className="plate-block">
       <span className="field-label">{label}</span>
       <div className={`plate ${large ? "plate-lg" : ""}`}>
-        <span className="plate-code" aria-live="polite" aria-label={code ? `DIGIPIN ${code.split("").join(" ")}` : "No DIGIPIN"}>
+        <span className={`plate-code${code ? "" : " plate-empty"}`} aria-live="polite" aria-label={code ? `DIGIPIN ${code.split("").join(" ")}` : "Choose a point on the map"}>
           {code
             ? [...code].map((c, i) => (
               <span key={i} className={`${changed.has(i) ? "chg" : ""} ${i === 3 || i === 7 ? "gap" : ""}`}>{c}</span>
             ))
-            : "— — —"}
+            : "Tap the map"}
         </span>
         {code && (
           <button type="button" className="btn-icon" onClick={copy} aria-label="Copy DIGIPIN">

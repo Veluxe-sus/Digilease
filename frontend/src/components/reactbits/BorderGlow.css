@@ -1,0 +1,98 @@
+.border-glow-card {
+  --edge-proximity: 0;
+  --cursor-angle: 45deg;
+  --edge-sensitivity: 30;
+  --color-sensitivity: calc(var(--edge-sensitivity) + 20);
+  --border-radius: 16px;
+  --glow-padding: 32px;
+  --cone-spread: 22;
+
+  position: relative;
+  display: grid;
+  isolation: isolate;
+  border: 1px solid rgb(255 255 255 / 15%);
+  border-radius: var(--border-radius);
+  background: var(--card-bg, #fff);
+  box-shadow: 0 18px 44px rgb(38 48 28 / 16%);
+}
+
+.border-glow-card--light { border-color: rgb(38 48 28 / 13%); }
+
+.border-glow-card::before,
+.border-glow-card::after,
+.border-glow-card > .edge-light {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 250ms ease-out;
+}
+
+.border-glow-card::before {
+  z-index: 0;
+  border: 1px solid transparent;
+  background:
+    linear-gradient(var(--card-bg, #fff) 0 100%) padding-box,
+    var(--gradient-one) border-box,
+    var(--gradient-two) border-box,
+    var(--gradient-three) border-box,
+    var(--gradient-four) border-box,
+    var(--gradient-five) border-box,
+    var(--gradient-six) border-box,
+    var(--gradient-seven) border-box,
+    var(--gradient-base) border-box;
+  opacity: max(0, calc((var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity))));
+  mask-image: conic-gradient(
+    from var(--cursor-angle) at center,
+    #000 calc(var(--cone-spread) * 1%),
+    transparent calc((var(--cone-spread) + 15) * 1%),
+    transparent calc((100 - var(--cone-spread) - 15) * 1%),
+    #000 calc((100 - var(--cone-spread)) * 1%)
+  );
+}
+
+.border-glow-card::after {
+  z-index: 0;
+  background:
+    var(--gradient-one), var(--gradient-two), var(--gradient-three),
+    var(--gradient-four), var(--gradient-five), var(--gradient-six),
+    var(--gradient-seven), var(--gradient-base);
+  opacity: max(0, calc(var(--fill-opacity) * (var(--edge-proximity) - var(--color-sensitivity)) / (100 - var(--color-sensitivity))));
+  mix-blend-mode: soft-light;
+}
+
+.border-glow-card > .edge-light {
+  inset: calc(var(--glow-padding) * -1);
+  z-index: 2;
+  opacity: max(0, calc((var(--edge-proximity) - var(--edge-sensitivity)) / (100 - var(--edge-sensitivity))));
+  mask-image: conic-gradient(from var(--cursor-angle) at center, #000 2.5%, transparent 10%, transparent 90%, #000 97.5%);
+}
+
+.border-glow-card > .edge-light::before {
+  content: "";
+  position: absolute;
+  inset: var(--glow-padding);
+  border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 1px var(--glow-color),
+    inset 0 0 6px var(--glow-color-40),
+    inset 0 0 18px var(--glow-color-20),
+    0 0 2px var(--glow-color-50),
+    0 0 10px var(--glow-color-30),
+    0 0 28px var(--glow-color-10);
+}
+
+.border-glow-inner {
+  position: relative;
+  z-index: 1;
+  min-width: 0;
+  border-radius: inherit;
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+  .border-glow-card::before,
+  .border-glow-card::after,
+  .border-glow-card > .edge-light { display: none; }
+}

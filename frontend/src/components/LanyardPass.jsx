@@ -8,6 +8,7 @@
 // skipped the photo.
 import { useEffect, useRef, useState } from "react";
 import { formatDigipin } from "../lib/format.js";
+import BorderGlow from "./reactbits/BorderGlow.jsx";
 
 const SAMPLE_CODE = "4T396F42L7";
 const WINDOW_MS = 23 * 3600e3 + 48 * 60e3;
@@ -58,36 +59,48 @@ export default function LanyardPass() {
       <div className="lanyard-ribbon" aria-hidden="true" />
       <div className="lanyard-clip" aria-hidden="true" />
 
-      <article className="pass">
-        <header className="pass-head">
-          <strong className="pass-mark">DigiLease</strong>
-          <span className="pass-state">Live</span>
-        </header>
+      <BorderGlow
+        className="pass-glow"
+        backgroundColor="#FFFFFF"
+        borderRadius={16}
+        edgeSensitivity={34}
+        glowRadius={28}
+        glowIntensity={0.42}
+        coneSpread={20}
+        fillOpacity={0.08}
+        colors={["#B05A28", "#D9CFA8", "#4A7A3A"]}
+      >
+        <article className="pass">
+          <header className="pass-head">
+            <strong className="pass-mark">DigiLease</strong>
+            <span className="pass-state">Live</span>
+          </header>
 
-        <div className="pass-plate">
-          <span className="pass-plate-label">DIGIPIN</span>
-          <strong className="pass-plate-code">{formatDigipin(SAMPLE_CODE)}</strong>
-        </div>
-
-        <p className="pass-landmark">Blue gate, behind Hanuman temple, 2nd lane</p>
-
-        <dl className="pass-meta">
-          <div>
-            <dt>For</dt>
-            <dd>Ambulance</dd>
+          <div className="pass-plate">
+            <span className="pass-plate-label">DIGIPIN</span>
+            <strong className="pass-plate-code">{formatDigipin(SAMPLE_CODE)}</strong>
           </div>
-          <div>
-            <dt>Expires in</dt>
-            <dd className="code-num">{left}</dd>
-          </div>
-        </dl>
 
-        <div className="pass-tear" aria-hidden="true" />
-        <footer className="pass-foot">
-          <span className="muted small">Opened once, 14:02</span>
-          <span className="pass-revoke">Revoke</span>
-        </footer>
-      </article>
+          <p className="pass-landmark">Blue gate, behind Hanuman temple, 2nd lane</p>
+
+          <dl className="pass-meta">
+            <div>
+              <dt>For</dt>
+              <dd>Ambulance</dd>
+            </div>
+            <div>
+              <dt>Expires in</dt>
+              <dd className="code-num">{left}</dd>
+            </div>
+          </dl>
+
+          <div className="pass-tear" aria-hidden="true" />
+          <footer className="pass-foot">
+            <span className="muted small">Opened once, 14:02</span>
+            <span className="pass-revoke">Revoke</span>
+          </footer>
+        </article>
+      </BorderGlow>
     </div>
   );
 }

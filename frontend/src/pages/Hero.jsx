@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import ShapeGrid from "../components/reactbits/ShapeGrid.jsx";
 import BentoGrid, { BentoCard } from "../components/reactbits/MagicBento.jsx";
+import BlurText from "../components/reactbits/BlurText.jsx";
 import SiteNav from "../components/SiteNav.jsx";
 import LanyardPass from "../components/LanyardPass.jsx";
 import useReveal from "../lib/useReveal.js";
@@ -37,7 +38,7 @@ const FEATURES = [
   },
   {
     title: "Revoke in one tap",
-    body: "The link stops working immediately. Nothing to ask back, nothing to delete from a chat.",
+    body: "Online views stop immediately. Nothing to ask back, nothing to delete from a chat.",
   },
   {
     title: "Landmark and door photo",
@@ -77,10 +78,13 @@ export default function Hero() {
 
         <div className="hero-inner">
           <div className="hero-copy">
-            <h1 className="hero-title">
-              An address you can hand over,{" "}
-              <em>and take back.</em>
-            </h1>
+            <BlurText
+              as="h1"
+              className="hero-title hero-title-words"
+              text="An address you can hand over, and take back."
+              delay={55}
+              stepDuration={0.28}
+            />
             <p className="hero-lede">
               DIGIPIN names every 3.8 m of India. DigiLease lets you share yours one person at a time.
             </p>
