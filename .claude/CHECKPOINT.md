@@ -1,48 +1,36 @@
-# Checkpoint: DigiLease (was PataCard)
+# Checkpoint: DigiLease v2
 
 ## Now
-v2 frontend redesign, on branch `v2-redesign`. `main` is untouched at `5f7817f` and, with
-`Desktop\pata-card-dist.zip`, is the v1 fallback we submit if v2 is not verified by 17:30 IST today.
-Landing page is built and checked at 1440x900 and 390x844. The signed-in pages are written but
-**not yet seen**, because verifying them needs a Cognito session in the browser.
+Branch `v2-redesign`. `main` remains untouched at `5f7817f` as the submittable v1 fallback.
+The previously unseen owner routes and the receiver offline reload are now browser-verified.
 
-## Done
-- Rename PataCard to DigiLease across the UI, README and docs. Stack names, bucket names and the
-  repo stay `pata-card`; infrastructure is unchanged. `lib/digipin.js` untouched (a test pins it).
-- New palette (paper `#FBF7E4`, olive ink `#26301C`, brick `#B05A28`) in the `:root` block, with
-  `--post` aliased to `--accent` so every existing rule rethemed at once. Space Grotesk / Inter /
-  JetBrains Mono, where mono is only ever used for machine facts.
-- Landing at `/`: React Bits ShapeGrid as the DIGIPIN grid, a CSS-only pass on a lanyard with a real
-  countdown, a MagicBento of eight real features (two carry real screenshots), a plain statement of
-  what the product cannot do, and one CTA label used everywhere.
-- My cards: React Bits CardSwap deck (2 to 6 cards) beside the opened card. One card sits still,
-  seven or more fall back to a scroll-snap rail. Share rows are tear stubs; a revoked one stays
-  visible and struck through.
-- `CardView` is now a thin wrapper around a shared `CardDetail`. Sign-in is still Amplify's
-  `<Authenticator>`, restyled only through its own CSS variables, on the same grid as the landing.
-- Fixed: the print stylesheet hid the old `.topbar`, so the new pill nav would have printed on the A6.
-- Nav destinations are inline on desktop, hamburger only under 768px. The links were hidden behind the
-  hamburger, which is why /cards looked like it had no deck: nobody could reach it.
-- CardSwap throws the front card a distance scaled to the card, not a flat 500px that made it vanish.
+## Verified on 2026-09-20
+- `/new` at 1440x900 and 390x844: layout holds, no horizontal overflow, map renders, tapping and
+  dragging the pin update the DIGIPIN live, and saving redirects to `/card/:id`.
+- Browser geolocation reached the correct 15-second timeout message because the in-app browser
+  supplied no GPS fix. The device-level success path remains unverified, not known broken.
+- `/card/:id` at both widths: the map is 220 px, content clears the fixed nav, and layout has no
+  horizontal overflow. Fixed a desktop-only 0 px map regression by scoping the split-map rule.
+- `/card/:id/print/:token` at both widths: A6 proportions on desktop, responsive phone preview,
+  and print CSS hides the pill nav and forces black on white.
+- Live receiver link on a fresh local v2 production build: reached "Saved for offline" with a
+  controlling service worker and 9 cached responses. Forced the network offline and reloaded;
+  the saved map, door marker, DIGIPIN and OpenStreetMap credit rendered successfully.
+- Frontend tests 10/10, lint clean, production build green. Build still prints the existing
+  DIGIPIN CommonJS-variable warning and large-chunk warning.
+
+## Test data created
+- One no-landmark card was created while proving the save redirect.
+- It has a 24-hour share named "Release check". It will expire automatically.
 
 ## Next
-**A full handoff for the next agent is `docs/HANDOFF-CODEX.md`. Read that first.**
+1. Retake `docs/screenshots/*` after the rename and replace `frontend/public/shots/*`.
+2. Rewrite stale `docs/DESIGN.md` sections 2-4 for the v2 palette, fonts and pass direction.
+3. Add a real door photograph only if the user supplies one; do not fake or generate it.
+4. Run the final build, zip `dist` with forward-slash paths, then the user uploads to Amplify.
 
-1. Verify `/new`, `/card/:id` and `/card/:id/print/:token` in a browser at 1440x900 and 390x844.
-   `/cards` is confirmed working with two real cards; the other three are built but unseen.
-2. Regression gate: open a live `/s/{token}`, confirm the receiver view and the offline save behave
-   as v1, then reload in airplane mode. Nothing in `SharedView`/`OfflineMap`/`sw.js` was touched.
-3. Retake `docs/screenshots/*` after the rename. Both bento shots still contain v1 chrome and are
-   currently cropped past it (`object-position: center 42%` in `MagicBento.css`).
-4. Build, zip with the Python script (forward slashes), user uploads to Amplify.
-
-## Decisions
-- Direction is "the card is a physical pass": paper stock, lanyard, perforated tear stubs, A6 print.
-- Nothing on screen may be invented. No EPSG, RTK, cadastre, hashes, tokens, barcodes, counters, or
-  "verified" badges. A door photo is uploaded, never checked, so it is never called verified.
-- App pages ship light only; no dark variant, to spend the time on the deck instead.
-- New deps: `gsap` (four React Bits components need it) and `@phosphor-icons/react`. Both free.
-
-## Blocked
-- No door photograph exists in the repo, so the hero pass shows no photo. One JPEG in
-  `frontend/public/` would let the pass and the "Landmark and door photo" cell show a real door.
+## Non-negotiables
+- All work stays on `v2-redesign`; never edit or deploy `main`.
+- Never edit either DIGIPIN source file or the protected receiver/backend files in the handoff.
+- Visible claims must stay within the honesty table and banned-vocabulary rules in
+  `docs/HANDOFF-CODEX.md`.

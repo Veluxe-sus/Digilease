@@ -136,7 +136,7 @@ a { color: inherit; }
 @media (min-width: 1024px) {
   .split { display: grid; grid-template-columns: minmax(0, 1.45fr) minmax(380px, 1fr); height: calc(100dvh - 92px); }
   .split-map { height: 100%; }
-  .map-tall, .map-short { height: 100%; }
+  .split-map > .map-tall, .split-map > .map-short { height: 100%; }
   .split-panel { max-width: none; margin: 0; overflow-y: auto; background: var(--surface); border-left: 1px solid var(--line); padding: 32px 32px 32px; }
   .action-bar { position: static; padding: 0; border: 0; background: none; }
 }
