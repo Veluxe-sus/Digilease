@@ -2,7 +2,7 @@
 
 ## Now
 Branch `v2-redesign`. `main` remains untouched at `5f7817f` as the submittable v1 fallback.
-The frontend motion/polish pass is complete and browser-verified.
+The owner card and print-pass polish is complete and browser-verified.
 
 ## Verified on 2026-09-20
 - `/new`, `/card/:id`, `/card/:id/print/:token`, `/cards`, and the receiver offline reload were
@@ -10,6 +10,12 @@ The frontend motion/polish pass is complete and browser-verified.
 - `/cards` uses the supplied React Bits DepthCarousel with real card faces. It never advances on
   its own; arrows, dots, drag and keyboard selection update the detail with a short directional
   fade/slide.
+- The deck face is now a portrait address pass using only real card data: DIGIPIN, landmark and
+  saved date. The desktop page uses a calmer 36/64 split, larger section rhythm, five equal expiry
+  choices and a full-width secondary action. Mobile has no horizontal overflow.
+- The A6 print card now shares the same pass construction. The recipient label, real QR, DIGIPIN,
+  landmark and actual expiry are the only data shown; no fake barcode or credential fields were
+  added. Browser-checked with and without a door photo at 1440x900 and 390x844.
 - Added React Bits BlurText to the hero headline and a restrained BorderGlow to the lanyard pass.
   Both respect reduced motion; the glow is disabled for touch pointers.
 - Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN

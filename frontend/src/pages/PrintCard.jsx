@@ -46,23 +46,44 @@ export default function PrintCard() {
       <article className="print-card" aria-label={`Printable address card for ${share.label}`}>
         <header className="print-card-head">
           <strong>DigiLease</strong>
-          <span>For: {share.label}</span>
+          <span>Address pass</span>
         </header>
+
+        <div className="print-recipient">
+          <span>Private link for</span>
+          <strong>{share.label}</strong>
+          <span className="print-dot-field" aria-hidden="true" />
+        </div>
+
         {card.photoUrl && <img className="print-photo" src={card.photoUrl} alt="Door" />}
+
         <div className="print-scan">
           <img className="print-qr" src={qr} alt={`QR code for ${share.label}`} />
-          <div>
+          <div className="print-scan-copy">
+            <span className="print-step">Scan</span>
             <strong>Scan to find the door</strong>
             <p>Open it once with internet. Near us it keeps working without signal.</p>
           </div>
         </div>
+
         <div className="print-digipin">
           <span>DIGIPIN</span>
           <strong>{formatDigipin(card.digipin)}</strong>
         </div>
-        <p className="print-landmark">{card.landmark || "No landmark added"}</p>
+
+        <div className="print-pass-meta">
+          <div>
+            <span>Landmark</span>
+            <strong className="print-landmark">{card.landmark || "No landmark added"}</strong>
+          </div>
+          <div>
+            <span>Link access</span>
+            <strong>{formatPrintExpiry(share.expiresAt) || "No expiry"}</strong>
+          </div>
+        </div>
+
         <footer className="print-card-foot">
-          <span>{formatPrintExpiry(share.expiresAt)}</span>
+          <span>Private share link</span>
           <span>DIGIPIN by India Post</span>
         </footer>
       </article>

@@ -12,19 +12,48 @@ import { formatDigipin } from "../lib/format.js";
 
 const MAX_IN_DECK = 6;
 
+function savedOn(value) {
+  if (!value) return "Address card";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "Address card";
+  return new Intl.DateTimeFormat("en-IN", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  }).format(date);
+}
+
 function PassFace({ card }) {
   return (
     <div className="deck-face">
-      <div className="deck-head">
+      <div className="deck-pass-head">
         <strong className="pass-mark">DigiLease</strong>
-        <span className="deck-hint">Open</span>
+        <span className="deck-hint">Private address pass</span>
       </div>
-      <div className="pass-plate">
-        <span className="pass-plate-label">DIGIPIN</span>
-        <strong className="pass-plate-code">{formatDigipin(card.digipin)}</strong>
+
+      <div className="deck-pass-body">
+        <span className="deck-kicker">India Post DIGIPIN</span>
+        <strong className="deck-code">{formatDigipin(card.digipin)}</strong>
+        <p className="deck-landmark">{card.landmark || <span className="muted">No landmark added</span>}</p>
+        <span className="deck-dot-field" aria-hidden="true" />
       </div>
-      <p className="deck-landmark">{card.landmark || <span className="muted">No landmark</span>}</p>
+
+      <div className="deck-pass-meta">
+        <div>
+          <span>Saved</span>
+          <strong>{savedOn(card.createdAt)}</strong>
+        </div>
+        <div>
+          <span>Sharing</span>
+          <strong>By private link</strong>
+        </div>
+      </div>
+
       <div className="pass-tear deck-tear" aria-hidden="true" />
+      <div className="deck-pass-foot">
+        <span>Open card</span>
+        <span aria-hidden="true">→</span>
+      </div>
     </div>
   );
 }
@@ -80,14 +109,16 @@ export default function MyCards() {
             <DepthCarousel
               items={cards.map((card) => ({ ...card, alt: `Address card ${formatDigipin(card.digipin)}` }))}
               renderItem={(card) => <PassFace card={card} />}
-              cardWidth={320}
-              cardHeight={260}
-              depth={150}
-              spread={58}
-              tilt={12}
-              visibleCards={3}
-              falloff={0.12}
-              blur={1.5}
+              cardWidth={292}
+              cardHeight={360}
+              radius={18}
+              depth={120}
+              spread={50}
+              tilt={9}
+              visibleCards={2}
+              falloff={0.1}
+              blur={1}
+              duration={520}
               ariaLabel="Your address cards"
               onChange={(_, card) => chooseCard(card.cardId)}
             />
