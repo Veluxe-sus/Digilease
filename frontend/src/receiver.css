@@ -57,6 +57,21 @@
   background: var(--paper);
 }
 
+/* The shared panel reserves 104px for a fixed action bar, but the receiver's bar
+   carries a route summary, the route button and the maps link, so it runs taller
+   than that and was slicing the offline-preview link in half. */
+@media (max-width: 1023px) {
+  .split-panel.receiver-panel { padding-bottom: 188px; }
+}
+
+/* A door photo is whatever the owner's camera gave us. Portrait shots were
+   filling the whole panel, so cap the height and crop instead. */
+.receiver-place .door {
+  max-height: 220px;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .receiver-panel > * {
     animation: receiver-arrive 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
