@@ -28,7 +28,7 @@
   --glow-radius: 260px;
 }
 
-.bento-card:hover { box-shadow: 0 10px 28px rgba(38, 48, 28, 0.1); }
+.bento-card:hover { box-shadow: 0 10px 28px rgb(var(--shadow-rgb) / 20%); }
 
 /* The border lights where the cursor is, so you can see which cell you are on. */
 .bento-card::after {

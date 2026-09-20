@@ -2,7 +2,7 @@
 
 ## Now
 Branch `v2-redesign`. `main` remains untouched at `5f7817f` as the submittable v1 fallback.
-The owner card, print pass and cooler mineral-sage base palette are browser-verified.
+The owner card, print pass, mineral-sage light theme and matching dark theme are browser-verified.
 
 ## Verified on 2026-09-20
 - `/new`, `/card/:id`, `/card/:id/print/:token`, `/cards`, and the receiver offline reload were
@@ -16,8 +16,8 @@ The owner card, print pass and cooler mineral-sage base palette are browser-veri
 - The A6 print card now shares the same pass construction. The recipient label, real QR, DIGIPIN,
   landmark and actual expiry are the only data shown; no fake barcode or credential fields were
   added. Browser-checked with and without a door photo at 1440x900 and 390x844.
-- Added React Bits BlurText to the hero headline and a restrained BorderGlow to the lanyard pass.
-  ShapeGrid now tracks across hero layers without blocking controls; reduced motion still applies.
+- React Bits BlurText and BorderGlow polish the hero; ShapeGrid tracks through its foreground layers.
+  HoldButton guards revoke; SquishSwitch controls persisted dark mode while passes stay light paper.
 - Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN
   wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
   changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to

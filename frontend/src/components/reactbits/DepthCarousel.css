@@ -29,7 +29,7 @@
   overflow: hidden;
   border: 1px solid var(--line);
   background: var(--surface);
-  box-shadow: 0 22px 50px -18px rgba(38, 48, 28, 0.38), 0 8px 20px -12px rgba(38, 48, 28, 0.3);
+  box-shadow: 0 22px 50px -18px rgb(var(--shadow-rgb) / 52%), 0 8px 20px -12px rgb(var(--shadow-rgb) / 42%);
   will-change: transform, opacity, filter;
   cursor: pointer;
   transform: translate(-50%, -50%);
@@ -51,9 +51,9 @@
   padding: 0;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(251, 247, 228, 0.94);
+  background: color-mix(in srgb, var(--paper) 94%, transparent);
   color: var(--ink);
-  box-shadow: 0 6px 18px rgba(38, 48, 28, 0.14);
+  box-shadow: 0 6px 18px rgb(var(--shadow-rgb) / 26%);
   cursor: pointer;
   transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
@@ -75,7 +75,7 @@
   padding: 8px 12px;
   border: 1px solid var(--line);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.9);
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
 }
 
 .depth-carousel__dot {

@@ -15,6 +15,14 @@ import SharedView from "./pages/SharedView.jsx";
 import PrintCard from "./pages/PrintCard.jsx";
 import OwnerArea from "./components/OwnerArea.jsx";
 
+const THEME_KEY = "digilease-theme";
+let initialTheme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+try {
+  const savedTheme = localStorage.getItem(THEME_KEY);
+  if (savedTheme === "light" || savedTheme === "dark") initialTheme = savedTheme;
+} catch { /* The system preference still gives us a safe default. */ }
+document.documentElement.dataset.theme = initialTheme;
+
 Amplify.configure({
   Auth: {
     Cognito: {

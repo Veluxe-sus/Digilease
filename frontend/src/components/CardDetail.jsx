@@ -7,6 +7,7 @@ import { Link } from "react-router-dom";
 import QRCode from "qrcode";
 import MapView from "./MapView.jsx";
 import DigipinPlate from "./DigipinPlate.jsx";
+import HoldButton from "./reactbits/HoldButton.jsx";
 import { api } from "../lib/api.js";
 import { formatWhen, timeLeft } from "../lib/format.js";
 
@@ -53,6 +54,7 @@ function TearStub({ share, cardId, onRevoked, openQr, qrOpen }) {
 
   async function revoke() {
     setBusy(true);
+    setErr("");
     try {
       await api.revokeShare(share.token);
       onRevoked(share.token);
@@ -87,7 +89,23 @@ function TearStub({ share, cardId, onRevoked, openQr, qrOpen }) {
         <div className="confirm" role="group" aria-label={`Revoke ${share.label}`}>
           <span>Revoke the link for {share.label}? It stops working right away.</span>
           <div className="stub-actions">
-            <button type="button" className="btn-danger" disabled={busy} onClick={revoke}>{busy ? "Revoking…" : "Revoke link"}</button>
+            <HoldButton
+              size="sm"
+              radius={18}
+              holdTime={1300}
+              releaseTime={180}
+              resetAfter={1200}
+              backgroundColor="var(--ink)"
+              fillColor="var(--void)"
+              textColor="var(--paper)"
+              fillTextColor="var(--void-contrast)"
+              glow={false}
+              disabled={busy}
+              doneLabel="Revoking…"
+              onHold={revoke}
+            >
+              Hold to revoke
+            </HoldButton>
             <button type="button" className="btn-chip" onClick={() => setConfirming(false)}>Keep it</button>
           </div>
         </div>

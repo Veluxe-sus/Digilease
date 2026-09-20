@@ -4,7 +4,9 @@
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentUser } from "aws-amplify/auth";
+import { MoonStars, Sun } from "@phosphor-icons/react";
 import CardNav from "./reactbits/CardNav.jsx";
+import SquishSwitch from "./reactbits/SquishSwitch.jsx";
 
 const INK = "#26301C";
 const INK_SOFT = "#3A4630";
@@ -15,6 +17,7 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
   const { pathname } = useLocation();
   // `undefined` means "ask Cognito"; OwnerArea already knows the answer.
   const [detected, setDetected] = useState(false);
+  const [darkMode, setDarkMode] = useState(() => document.documentElement.dataset.theme === "dark");
 
   useEffect(() => {
     if (signedInProp !== undefined) return undefined;
@@ -28,6 +31,13 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
   }, [signedInProp]);
 
   const signedIn = signedInProp === undefined ? detected : signedInProp;
+
+  const changeTheme = (nextDark) => {
+    const theme = nextDark ? "dark" : "light";
+    document.documentElement.dataset.theme = theme;
+    try { localStorage.setItem("digilease-theme", theme); } catch { /* Storage may be unavailable. */ }
+    setDarkMode(nextDark);
+  };
 
   const brand = (
     <button type="button" className="wordmark-btn" onClick={() => navigate("/")}>
@@ -56,7 +66,7 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
         {
           label: "Account",
           bgColor: ACCENT,
-          textColor: "#FFFFFF",
+          textColor: "var(--accent-contrast)",
           links: [{ label: "Sign out", ariaLabel: "Sign out", href: "#signout", onClick: onSignOut }],
         },
       ]
@@ -79,7 +89,7 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
         {
           label: "Account",
           bgColor: ACCENT,
-          textColor: "#FFFFFF",
+          textColor: "var(--accent-contrast)",
           links: [{ label: "Log in", ariaLabel: "Log in", href: "/cards", onClick: () => navigate("/cards") }],
         },
       ];
@@ -95,13 +105,38 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
         { label: "How it works", href: "#how" },
       ];
 
+  const themeSwitch = (
+    <span className="theme-toggle" title={darkMode ? "Dark mode" : "Light mode"}>
+      {darkMode
+        ? <MoonStars className="theme-toggle-icon" weight="fill" aria-hidden="true" />
+        : <Sun className="theme-toggle-icon" weight="bold" aria-hidden="true" />}
+      <SquishSwitch
+        checked={darkMode}
+        onChange={changeTheme}
+        ariaLabel={darkMode ? "Use light mode" : "Use dark mode"}
+        trackColor="var(--paper)"
+        trackOnColor="var(--accent)"
+        thumbColor="var(--ink)"
+        thumbOnColor="var(--surface)"
+        width={50}
+        height={28}
+        radius={14}
+        speed={65}
+        stretch={28}
+        hoverScale={1.03}
+        colorDuration={220}
+      />
+    </span>
+  );
+
   return (
     <CardNav
       brand={brand}
       items={items}
       links={links}
+      utility={themeSwitch}
       className={fixed ? "is-fixed" : ""}
-      menuColor={INK}
+      menuColor="var(--ink)"
       ctaLabel={signedIn ? "Sign out" : "Log in"}
       onCta={signedIn ? onSignOut : () => navigate("/cards")}
     />

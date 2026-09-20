@@ -22,7 +22,7 @@
   background-color: var(--surface);
   border: 1px solid var(--line);
   border-radius: var(--radius);
-  box-shadow: 0 6px 24px rgba(38, 48, 28, 0.1);
+  box-shadow: 0 6px 24px rgb(var(--shadow-rgb) / 18%);
   position: relative;
   overflow: hidden;
   will-change: height;
@@ -90,6 +90,10 @@
 }
 .card-nav-cta-button:hover { background-color: var(--accent-press); }
 .card-nav-cta-button:active { transform: translateY(1px); }
+
+.card-nav-utility { display: flex; align-items: center; margin-right: 8px; }
+.theme-toggle { display: inline-flex; align-items: center; gap: 7px; color: var(--muted); }
+.theme-toggle-icon { width: 17px; height: 17px; color: var(--accent); flex: 0 0 auto; }
 
 .card-nav-content {
   position: absolute;
@@ -161,14 +165,17 @@
     transition: color 150ms, background-color 150ms;
   }
   .card-nav-links a:hover { color: var(--ink); background: var(--paper); }
-  .card-nav-links a.on { color: var(--accent); background: #F6EBE2; }
+  .card-nav-links a.on { color: var(--accent); background: var(--accent-soft); }
 }
 
 @media (max-width: 768px) {
   .card-nav-container { top: 0.75rem; }
   .card-nav-top { padding: 8px 12px; }
-  .hamburger-menu { order: 2; }
+  .hamburger-menu { order: 3; }
   .logo-container { position: static; transform: none; order: 1; }
+  .card-nav-utility { order: 2; margin-left: auto; margin-right: 6px; }
+  .theme-toggle { gap: 5px; }
+  .theme-toggle-icon { display: none; }
   .card-nav-cta-button { display: none; }
   .card-nav-content { flex-direction: column; align-items: stretch; justify-content: flex-start; }
   .nav-card { min-height: 64px; flex: 1 1 auto; }

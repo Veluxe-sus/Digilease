@@ -14,9 +14,10 @@ const CardNav = ({
   logoAlt = "Logo",
   items,
   links = [],
+  utility,
   className = "",
   ease = "power3.out",
-  baseColor = "#fff",
+  baseColor = "var(--surface)",
   menuColor,
   buttonBgColor,
   buttonTextColor,
@@ -130,7 +131,7 @@ const CardNav = ({
             onClick={toggleMenu}
             aria-label={isExpanded ? "Close menu" : "Open menu"}
             aria-expanded={isExpanded}
-            style={{ color: menuColor || "#000" }}
+            style={{ color: menuColor || "var(--ink)" }}
           >
             <span className="hamburger-line" />
             <span className="hamburger-line" />
@@ -162,6 +163,8 @@ const CardNav = ({
               ))}
             </nav>
           )}
+
+          {utility ? <div className="card-nav-utility">{utility}</div> : null}
 
           <button
             type="button"

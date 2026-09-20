@@ -104,9 +104,18 @@
   transition: transform 300ms ease-out;
 }
 .pass {
+  /* The example pass remains a sheet of physical paper in either page theme. */
+  --surface: #FFFFFF;
+  --ink: #26301C;
+  --muted: #6B7360;
+  --line: #D2D7C9;
+  --accent: #B05A28;
+  --live: #4A7A3A;
+  --void: #9B2F22;
   position: relative;
   width: 100%;
   background: var(--surface);
+  color: var(--ink);
   border-radius: 16px;
   padding: 20px 20px 0;
   overflow: hidden;
