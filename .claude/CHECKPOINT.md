@@ -21,10 +21,15 @@ Landing page is built and checked at 1440x900 and 390x844. The signed-in pages a
 - `CardView` is now a thin wrapper around a shared `CardDetail`. Sign-in is still Amplify's
   `<Authenticator>`, restyled only through its own CSS variables, on the same grid as the landing.
 - Fixed: the print stylesheet hid the old `.topbar`, so the new pill nav would have printed on the A6.
+- Nav destinations are inline on desktop, hamburger only under 768px. The links were hidden behind the
+  hamburger, which is why /cards looked like it had no deck: nobody could reach it.
+- CardSwap throws the front card a distance scaled to the card, not a flat 500px that made it vanish.
 
 ## Next
-1. **Needs the user:** sign in at http://localhost:5173/cards so `/cards`, `/new`, `/card/:id` and
-   `/card/:id/print/:token` can be checked in the browser.
+**A full handoff for the next agent is `docs/HANDOFF-CODEX.md`. Read that first.**
+
+1. Verify `/new`, `/card/:id` and `/card/:id/print/:token` in a browser at 1440x900 and 390x844.
+   `/cards` is confirmed working with two real cards; the other three are built but unseen.
 2. Regression gate: open a live `/s/{token}`, confirm the receiver view and the offline save behave
    as v1, then reload in airplane mode. Nothing in `SharedView`/`OfflineMap`/`sw.js` was touched.
 3. Retake `docs/screenshots/*` after the rename. Both bento shots still contain v1 chrome and are
