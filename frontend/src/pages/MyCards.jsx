@@ -33,6 +33,7 @@ export default function MyCards() {
   const [cards, setCards] = useState(null);
   const [error, setError] = useState("");
   const [selected, setSelected] = useState(null);
+  const [detailDirection, setDetailDirection] = useState("next");
 
   useEffect(() => {
     api.listCards().then((d) => {
@@ -58,6 +59,14 @@ export default function MyCards() {
 
   const useDeck = cards.length > 1 && cards.length <= MAX_IN_DECK;
 
+  function chooseCard(cardId) {
+    if (cardId === selected) return;
+    const from = cards.findIndex((card) => card.cardId === selected);
+    const to = cards.findIndex((card) => card.cardId === cardId);
+    setDetailDirection(from >= 0 && to < from ? "prev" : "next");
+    setSelected(cardId);
+  }
+
   return (
     <main className="cards-split">
       <section className="deck-side" aria-label="Your cards">
@@ -79,10 +88,8 @@ export default function MyCards() {
               visibleCards={3}
               falloff={0.12}
               blur={1.5}
-              autoplay
-              autoplayDelay={6000}
               ariaLabel="Your address cards"
-              onChange={(_, card) => setSelected(card.cardId)}
+              onChange={(_, card) => chooseCard(card.cardId)}
             />
           </div>
         )}
@@ -101,7 +108,7 @@ export default function MyCards() {
                   type="button"
                   className={`deck-rail-item ${selected === c.cardId ? "on" : ""}`}
                   aria-current={selected === c.cardId}
-                  onClick={() => setSelected(c.cardId)}
+                  onClick={() => chooseCard(c.cardId)}
                 >
                   <PassFace card={c} />
                 </button>
@@ -114,7 +121,11 @@ export default function MyCards() {
       </section>
 
       <div className="detail-side">
-        {selected && <CardDetail key={selected} id={selected} />}
+        {selected && (
+          <div key={selected} className={`detail-transition detail-transition--${detailDirection}`}>
+            <CardDetail id={selected} />
+          </div>
+        )}
       </div>
     </main>
   );

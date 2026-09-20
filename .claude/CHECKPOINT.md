@@ -7,8 +7,9 @@ The frontend motion/polish pass is complete and browser-verified.
 ## Verified on 2026-09-20
 - `/new`, `/card/:id`, `/card/:id/print/:token`, `/cards`, and the receiver offline reload were
   already verified at 1440x900 and 390x844; see `docs/HANDOFF-CODEX.md` for the full gate.
-- `/cards` uses the supplied React Bits DepthCarousel with real card faces; arrows, dots, drag,
-  keyboard and autoplay keep the opened detail in sync.
+- `/cards` uses the supplied React Bits DepthCarousel with real card faces. It never advances on
+  its own; arrows, dots, drag and keyboard selection update the detail with a short directional
+  fade/slide.
 - Added React Bits BlurText to the hero headline and a restrained BorderGlow to the lanyard pass.
   Both respect reduced motion; the glow is disabled for touch pointers.
 - Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN
