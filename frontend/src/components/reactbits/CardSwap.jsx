@@ -76,7 +76,11 @@ const CardSwap = ({
       const tl = gsap.timeline();
       tlRef.current = tl;
 
-      tl.to(elFront, { y: "+=500", duration: config.durDrop, ease: config.ease });
+      // Upstream throws the front card a flat 500px. On a short card that means it
+      // leaves the stage and the deck reads as empty for most of the cycle, so the
+      // throw is scaled to the card instead.
+      const throwBy = (typeof height === "number" ? height : 400) + 90;
+      tl.to(elFront, { y: `+=${throwBy}`, duration: config.durDrop, ease: config.ease });
       tl.addLabel("promote", `-=${config.durDrop * config.promoteOverlap}`);
 
       rest.forEach((idx, i) => {
@@ -125,7 +129,7 @@ const CardSwap = ({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing, childArr.length]);
+  }, [cardDistance, verticalDistance, delay, pauseOnHover, skewAmount, easing, childArr.length, height]);
 
   const rendered = childArr.map((child, i) =>
     isValidElement(child)

@@ -141,6 +141,29 @@
 .nav-card-link:hover { opacity: 0.72; }
 .nav-card-link-icon { width: 14px; height: 14px; flex: 0 0 14px; }
 
+/* Desktop: brand left, destinations in the open, action right, all on one line.
+   The hamburger and its expanding cards are the phone menu only. */
+.card-nav-links { display: none; }
+
+@media (min-width: 769px) {
+  .hamburger-menu { display: none; }
+  .logo-container { position: static; transform: none; margin-right: auto; }
+  .card-nav-links { display: flex; align-items: center; gap: 2px; margin-right: 10px; }
+  .card-nav-links a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 40px;
+    padding: 0 12px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--muted);
+    font: 600 0.95rem var(--font);
+    transition: color 150ms, background-color 150ms;
+  }
+  .card-nav-links a:hover { color: var(--ink); background: var(--paper); }
+  .card-nav-links a.on { color: var(--accent); background: #F6EBE2; }
+}
+
 @media (max-width: 768px) {
   .card-nav-container { top: 0.75rem; }
   .card-nav-top { padding: 8px 12px; }

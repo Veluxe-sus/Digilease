@@ -13,6 +13,7 @@ const CardNav = ({
   logo,
   logoAlt = "Logo",
   items,
+  links = [],
   className = "",
   ease = "power3.out",
   baseColor = "#fff",
@@ -138,6 +139,29 @@ const CardNav = ({
           <div className="logo-container">
             {brand || <img src={logo} alt={logoAlt} className="logo" />}
           </div>
+
+          {/* Desktop keeps its destinations in the open. The expanding cards below
+              are the phone's menu, not the only way to reach anything. */}
+          {links.length > 0 && (
+            <nav className="card-nav-links" aria-label="Sections">
+              {links.map((l) => (
+                <a
+                  key={l.label}
+                  href={l.href}
+                  className={l.active ? "on" : ""}
+                  aria-current={l.active ? "page" : undefined}
+                  onClick={(e) => {
+                    if (l.onClick) {
+                      e.preventDefault();
+                      l.onClick();
+                    }
+                  }}
+                >
+                  {l.label}
+                </a>
+              ))}
+            </nav>
+          )}
 
           <button
             type="button"

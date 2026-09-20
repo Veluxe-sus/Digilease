@@ -75,9 +75,9 @@ export default function MyCards() {
               height={260}
               cardDistance={44}
               verticalDistance={46}
-              delay={4000}
+              delay={6000}
               pauseOnHover
-              skewAmount={5}
+              skewAmount={3}
               easing="linear"
               onCardClick={(i) => setSelected(cards[i].cardId)}
             >

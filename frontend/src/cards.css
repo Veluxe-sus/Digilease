@@ -15,8 +15,10 @@
 .deck-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
 .deck-side { display: grid; gap: 20px; }
 
-/* CardSwap positions itself absolutely, so it needs a box to live in. */
-.deck-stage { position: relative; height: 400px; }
+/* CardSwap positions itself absolutely, so it needs a box to live in. The swap
+   throws the front card 500px downwards; clipping the stage turns that into the
+   card falling out of the deck instead of landing on the button below. */
+.deck-stage { position: relative; height: 420px; overflow: hidden; }
 
 .deck-single { display: flex; justify-content: center; }
 .deck-single .deck-face {
@@ -35,6 +37,8 @@
   padding: 18px 18px 0;
   box-sizing: border-box;
 }
+.deck-face .pass-plate { margin-top: 14px; }
+.deck-face .pass-plate-code { font-size: 1.35rem; }
 .deck-head { display: flex; align-items: center; justify-content: space-between; }
 .deck-hint {
   font: 500 0.68rem var(--mono);
@@ -42,11 +46,12 @@
   text-transform: uppercase;
   color: var(--muted);
 }
-.deck-landmark { margin: 14px 0 auto; font-size: 0.95rem; line-height: 1.4; }
-.deck-tear { margin-top: 14px; }
+.deck-landmark { margin: 12px 0 auto; font-size: 0.95rem; line-height: 1.4; }
+/* The perforation sits on the bottom edge of the card, where you would tear it. */
+.deck-tear { margin: 0 -18px; }
 .deck-tear::before, .deck-tear::after { background: var(--paper); }
 .deck-face + * { margin: 0; }
-.deck-new { justify-self: start; }
+.deck-new { justify-self: start; margin-top: 4px; }
 
 /* ---------- Seven or more: a rail, because the deck stops being readable ---------- */
 .deck-rail {

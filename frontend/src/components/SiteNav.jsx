@@ -2,7 +2,7 @@
 // it offers from whether somebody is signed in. The expanding cards carry the same
 // destinations as the button, because CardNav hides its button under 768px.
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getCurrentUser } from "aws-amplify/auth";
 import CardNav from "./reactbits/CardNav.jsx";
 
@@ -12,6 +12,7 @@ const ACCENT = "#B05A28";
 
 export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = false }) {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
   // `undefined` means "ask Cognito"; OwnerArea already knows the answer.
   const [detected, setDetected] = useState(false);
 
@@ -83,10 +84,22 @@ export default function SiteNav({ signedIn: signedInProp, onSignOut, fixed = fal
         },
       ];
 
+  const links = signedIn
+    ? [
+        { label: "My cards", href: "/cards", onClick: () => navigate("/cards"), active: pathname.startsWith("/card") },
+        { label: "New card", href: "/new", onClick: () => navigate("/new"), active: pathname === "/new" },
+      ]
+    : [
+        { label: "What it is", href: "#what" },
+        { label: "Features", href: "#features" },
+        { label: "How it works", href: "#how" },
+      ];
+
   return (
     <CardNav
       brand={brand}
       items={items}
+      links={links}
       className={fixed ? "is-fixed" : ""}
       menuColor={INK}
       ctaLabel={signedIn ? "Sign out" : "Log in"}
