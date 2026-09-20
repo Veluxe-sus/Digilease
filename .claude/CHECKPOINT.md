@@ -22,8 +22,8 @@ The owner card and print-pass polish is complete and browser-verified.
   wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
   changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to
   Phosphor icons.
-- Landing, `/new`, and `/cards` rechecked live at 1440x900 and 390x844. No console warnings or
-  errors. Frontend tests 10/10, lint clean, production build green.
+- Landing bento rows now reserve room for wrapped copy instead of clipping headings. Landing, `/new`, and
+  `/cards` were rechecked live at 1440x900 and 390x844. Tests 10/10, lint and build green.
 - Build still prints the existing DIGIPIN CommonJS-variable warning and large-chunk warning.
 
 ## Next

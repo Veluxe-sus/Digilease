@@ -91,7 +91,9 @@
 }
 
 @media (min-width: 1024px) {
-  .bento-section { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 190px; }
+  /* Text-heavy cells can wrap to six lines at browser zoom. The extra row room
+     keeps their headings inside without letting screenshots set the row height. */
+  .bento-section { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 220px; }
   .bento-card { min-height: 0; }
   .span-2x2 { grid-column: span 2; grid-row: span 2; }
   .span-2 { grid-column: span 2; }
