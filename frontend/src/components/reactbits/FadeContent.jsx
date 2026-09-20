@@ -31,7 +31,7 @@ export default function FadeContent({
     if (!el) return undefined;
 
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      gsap.set(el, { autoAlpha: 1, filter: "blur(0px)", clearProps: "willChange" });
+      gsap.set(el, { autoAlpha: 1, clearProps: "willChange,filter" });
       onComplete?.();
       return () => gsap.killTweensOf(el);
     }
@@ -42,10 +42,13 @@ export default function FadeContent({
     const startPct = (1 - threshold) * 100;
     const getSeconds = (value) => (typeof value === "number" && value > 10 ? value / 1000 : value);
 
+    // A filter, and will-change: transform, each make this element the containing
+    // block for position: fixed descendants. `/new` puts its fixed action bar
+    // inside one of these, so neither is set unless the blur is actually used.
     gsap.set(el, {
       autoAlpha: initialOpacity,
-      filter: blur ? "blur(10px)" : "blur(0px)",
-      willChange: "opacity, filter, transform",
+      ...(blur ? { filter: "blur(10px)" } : {}),
+      willChange: blur ? "opacity, filter" : "opacity",
     });
 
     const timeline = gsap.timeline({
@@ -68,7 +71,7 @@ export default function FadeContent({
 
     timeline.to(el, {
       autoAlpha: 1,
-      filter: "blur(0px)",
+      ...(blur ? { filter: "blur(0px)" } : {}),
       duration: getSeconds(duration),
       ease,
     });

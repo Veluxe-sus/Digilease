@@ -235,6 +235,12 @@ a { color: inherit; }
 .log { list-style: none; margin: 0; padding: 0; }
 .log li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); }
 
+/* Receiver chrome. The owner pages use SiteNav; the shared view keeps this bar. */
+.topbar {
+  position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 16px;
+  padding: 0 16px; min-height: 56px; background: var(--surface); border-bottom: 1px solid var(--line);
+}
+
 /* Top bar never wraps on small phones */
 .topbar, .topnav a, .btn-text { white-space: nowrap; }
 @media (max-width: 420px) {

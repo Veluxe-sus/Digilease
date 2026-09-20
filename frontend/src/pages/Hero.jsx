@@ -37,7 +37,7 @@ const FEATURES = [
     body: "Every open is logged against the link it came in on, with the time.",
   },
   {
-    title: "Revoke in one tap",
+    title: "Revoke it yourself",
     body: "Online views stop immediately. Nothing to ask back, nothing to delete from a chat.",
   },
   {
