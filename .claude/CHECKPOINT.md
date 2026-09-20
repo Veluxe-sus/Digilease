@@ -18,10 +18,9 @@ The owner card, print pass, corrected warm light theme, dark theme and receiver 
   added. Browser-checked with and without a door photo at 1440x900 and 390x844.
 - React Bits BlurText, BorderGlow and ShapeGrid polish the landing; FadeContent, AnimatedContent
   and CountUp add restrained app feedback. HoldButton guards revoke; SquishSwitch persists dark mode.
-- Smoothed native anchor/button transitions without scroll hijacking. Fixed the narrow DIGIPIN
-  wrap, replaced the empty em-dash plate with `Tap the map`, darkened expired amber for contrast,
-  changed the revoke claim to `Online views stop immediately`, and moved carousel arrows to
-  Phosphor icons.
+- Smoothed native anchor/button transitions without scroll hijacking and shifted the desktop auth
+  panel 24px left. Fixed the narrow DIGIPIN wrap, empty em-dash plate, expired amber contrast and
+  revoke copy, and moved carousel arrows to Phosphor icons.
 - The receiver phone view now uses the theme-matched Amazon map, a capped door photo and in-flow
   route controls. Card deletion requires a hold and removes the card, photo, offline area, links and
   access history. Browser check passed at 390x844; tests 10/10 + 13/13, lint/build and SAM build green.

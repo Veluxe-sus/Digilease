@@ -378,6 +378,7 @@
     padding: 48px 32px;
   }
   .auth-brand { width: auto; justify-self: end; max-width: 460px; }
+  .auth-shell:not(:has(.owner)) [data-amplify-authenticator] { transform: translateX(-24px); }
 }
 
 /* Signed in: the split, the sample and the grid all stand down. */
