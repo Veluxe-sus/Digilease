@@ -24,8 +24,8 @@ The owner card, print pass, mineral-sage light theme and matching dark theme are
   Phosphor icons.
 - Landing bento rows now reserve room for wrapped copy instead of clipping headings. Landing, `/new`, and
   `/cards` were rechecked live at 1440x900 and 390x844. Tests 10/10, lint and build green.
+- The live-share `Print` link is now an undecorated, centred pill; verified in both themes and mobile.
 - Build still prints the existing DIGIPIN CommonJS-variable warning and large-chunk warning.
-
 ## Next
 1. Retake `docs/screenshots/*` after the rename and replace `frontend/public/shots/*`.
 2. Rewrite stale `docs/DESIGN.md` sections 2-4 for the v2 palette, fonts and pass direction.
