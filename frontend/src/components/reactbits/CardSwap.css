@@ -1,0 +1,32 @@
+/* React Bits CardSwap. `.card` renamed `.swap-card` so it cannot collide. */
+.card-swap-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  perspective: 900px;
+  overflow: visible;
+}
+
+.swap-card {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  border-radius: var(--radius);
+  border: 1px solid var(--line);
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(38, 48, 28, 0.14);
+  cursor: pointer;
+  transform-style: preserve-3d;
+  will-change: transform;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+@media (max-width: 1024px) {
+  .card-swap-container { transform: translate(-50%, -50%) scale(0.8); }
+}
+@media (max-width: 560px) {
+  .card-swap-container { transform: translate(-50%, -50%) scale(0.62); }
+}

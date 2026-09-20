@@ -25,7 +25,7 @@ export default function PrintCard() {
   useEffect(() => {
     if (!share) return;
     const url = `${window.location.origin}/s/${token}`;
-    QRCode.toDataURL(url, { margin: 4, width: 700, color: { dark: "#16202B", light: "#FFFFFF" } })
+    QRCode.toDataURL(url, { margin: 4, width: 700, color: { dark: "#26301C", light: "#FFFFFF" } })
       .then(setQr).catch(() => setError("The QR code could not be made. Try again."));
   }, [share, token]);
 
@@ -45,7 +45,7 @@ export default function PrintCard() {
 
       <article className="print-card" aria-label={`Printable address card for ${share.label}`}>
         <header className="print-card-head">
-          <strong>PataCard</strong>
+          <strong>DigiLease</strong>
           <span>For: {share.label}</span>
         </header>
         {card.photoUrl && <img className="print-photo" src={card.photoUrl} alt="Door" />}

@@ -1,0 +1,175 @@
+/* The owner's side: a deck of passes on the left, the opened one on the right. */
+
+.owner { padding-top: 92px; min-height: 100dvh; background: var(--paper); }
+
+.cards-split {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8px 20px 96px;
+  display: grid;
+  gap: 32px;
+  grid-template-columns: 1fr;
+  align-items: start;
+}
+
+.deck-head-row { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.deck-side { display: grid; gap: 20px; }
+
+/* CardSwap positions itself absolutely, so it needs a box to live in. */
+.deck-stage { position: relative; height: 400px; }
+
+.deck-single { display: flex; justify-content: center; }
+.deck-single .deck-face {
+  width: 320px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: 0 10px 30px rgba(38, 48, 28, 0.12);
+}
+
+/* ---------- One pass in the deck ---------- */
+.deck-face {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 18px 18px 0;
+  box-sizing: border-box;
+}
+.deck-head { display: flex; align-items: center; justify-content: space-between; }
+.deck-hint {
+  font: 500 0.68rem var(--mono);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.deck-landmark { margin: 14px 0 auto; font-size: 0.95rem; line-height: 1.4; }
+.deck-tear { margin-top: 14px; }
+.deck-tear::before, .deck-tear::after { background: var(--paper); }
+.deck-face + * { margin: 0; }
+.deck-new { justify-self: start; }
+
+/* ---------- Seven or more: a rail, because the deck stops being readable ---------- */
+.deck-rail {
+  list-style: none;
+  margin: 0;
+  padding: 4px;
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+}
+.deck-rail li { scroll-snap-align: start; flex: 0 0 auto; }
+.deck-rail-item {
+  width: 280px;
+  height: 230px;
+  padding: 0;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 150ms, box-shadow 150ms;
+}
+.deck-rail-item.on { border-color: var(--accent); box-shadow: 0 0 0 2px rgba(176, 90, 40, 0.16); }
+
+/* ---------- The opened card ---------- */
+.detail-side { min-width: 0; }
+.detail {
+  display: grid;
+  gap: 24px;
+  padding: 24px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+}
+.detail h1 { font-size: 1.5rem; }
+.detail-map { border-radius: 12px; overflow: hidden; }
+.back-link { justify-self: start; padding-left: 0; }
+.page-detail { max-width: 720px; }
+
+/* ---------- Share links as tear stubs ---------- */
+.stubs { list-style: none; margin: 0; padding: 0; }
+.stub {
+  display: grid;
+  gap: 10px;
+  padding: 16px 0;
+  position: relative;
+}
+/* A perforation between stubs: each one tears off and goes to one person. */
+.stub + .stub { border-top: 2px dashed var(--line); }
+.stub-main { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 10px; }
+.stub-name { font-weight: 700; }
+.stub-actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+/* A revoked stub stays on the card. The dead link is the point. */
+.stub-revoked { opacity: 0.55; }
+.stub-revoked .stub-name { text-decoration: line-through; }
+
+.btn-text-danger { color: var(--void); }
+
+@media (min-width: 1020px) {
+  .cards-split { grid-template-columns: minmax(340px, 0.85fr) minmax(0, 1.15fr); gap: 40px; }
+  .deck-side { position: sticky; top: 108px; }
+}
+
+/* ---------- Sign in ---------- */
+.auth-shell { position: relative; min-height: 100dvh; background: var(--paper); }
+.auth-grid { position: absolute; inset: 0; z-index: 0; opacity: 0.85; }
+/* Signed in, so the grid goes away and the app pages are plain paper. */
+.auth-shell:has(.owner) .auth-grid { display: none; }
+
+[data-amplify-authenticator] {
+  position: relative;
+  z-index: 1;
+  padding: 72px 16px;
+
+  /* Amplify UI v6 reads these, not the brand-primary block alone. */
+  --amplify-colors-brand-primary-10: #F6EBE2;
+  --amplify-colors-brand-primary-20: #EFD9C9;
+  --amplify-colors-brand-primary-40: #D79366;
+  --amplify-colors-brand-primary-60: #C0713F;
+  --amplify-colors-brand-primary-80: #B05A28;
+  --amplify-colors-brand-primary-90: #8E4720;
+  --amplify-colors-brand-primary-100: #6F3718;
+  --amplify-colors-primary-10: #F6EBE2;
+  --amplify-colors-primary-40: #D79366;
+  --amplify-colors-primary-60: #C0713F;
+  --amplify-colors-primary-80: #B05A28;
+  --amplify-colors-primary-90: #8E4720;
+  --amplify-colors-primary-100: #6F3718;
+  --amplify-components-button-primary-background-color: var(--accent);
+  --amplify-components-button-primary-hover-background-color: var(--accent-press);
+  --amplify-components-button-primary-focus-background-color: var(--accent-press);
+  --amplify-components-button-link-color: var(--accent);
+  --amplify-components-button-link-hover-color: var(--accent-press);
+  --amplify-components-tabs-item-active-color: var(--accent);
+  --amplify-components-tabs-item-active-border-color: var(--accent);
+  --amplify-components-tabs-item-focus-color: var(--accent);
+  --amplify-components-fieldcontrol-focus-border-color: var(--accent);
+  --amplify-components-fieldcontrol-border-radius: 10px;
+  --amplify-components-authenticator-router-border-color: var(--line);
+  --amplify-components-authenticator-router-background-color: var(--surface);
+  --amplify-colors-font-primary: var(--ink);
+  --amplify-colors-font-secondary: var(--muted);
+}
+
+[data-amplify-authenticator] [data-amplify-router] {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 44px rgba(38, 48, 28, 0.14);
+  overflow: visible;
+}
+/* The same perforation as the pass, so the sign-in card is the same object. */
+[data-amplify-authenticator] [data-amplify-router]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 62px;
+  border-top: 2px dashed var(--line);
+  pointer-events: none;
+}
+[data-amplify-authenticator] .amplify-heading { font-family: var(--display); letter-spacing: -0.02em; }
+[data-amplify-authenticator] .amplify-tabs__item { font-family: var(--font); font-weight: 600; }

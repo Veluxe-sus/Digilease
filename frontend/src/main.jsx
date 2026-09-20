@@ -5,7 +5,9 @@ import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "./index.css";
-import Landing from "./pages/Landing.jsx";
+import "./hero.css";
+import "./cards.css";
+import Hero from "./pages/Hero.jsx";
 import MyCards from "./pages/MyCards.jsx";
 import NewCard from "./pages/NewCard.jsx";
 import CardView from "./pages/CardView.jsx";
@@ -27,7 +29,7 @@ createRoot(document.getElementById("root")).render(
   <StrictMode>
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<Landing />} />
+        <Route path="/" element={<Hero />} />
         <Route path="/s/:token" element={<SharedView />} />
         <Route element={<OwnerArea />}>
           <Route path="/cards" element={<MyCards />} />

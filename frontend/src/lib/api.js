@@ -1,4 +1,4 @@
-// Thin fetch wrapper for the PataCard API. Owner calls carry the Cognito ID token
+// Thin fetch wrapper for the DigiLease API. Owner calls carry the Cognito ID token
 // (the HTTP API's JWT authorizer checks its audience, which only the ID token has).
 import { fetchAuthSession } from "aws-amplify/auth";
 
@@ -25,7 +25,7 @@ async function request(path, { method = "GET", body, auth = true } = {}) {
   try {
     res = await fetch(BASE + path, init);
   } catch {
-    throw new ApiError(0, "Can't reach PataCard. Check your connection and try again.");
+    throw new ApiError(0, "Can't reach DigiLease. Check your connection and try again.");
   }
   if (res.status === 204) return null;
   const data = await res.json().catch(() => ({}));

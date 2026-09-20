@@ -10,7 +10,7 @@ import { canSaveOffline, deleteCopy, loadCopy, saveAppShell, saveJson, savePhoto
 function ReceiverHeader({ saveState }) {
   return (
     <header className="topbar">
-      <span className="wordmark">PataCard</span>
+      <span className="wordmark">DigiLease</span>
       {saveState === "saving" && <span className="save-chip">Saving for offline…</span>}
       {saveState === "saved" && <span className="save-chip saved">✓ Saved for offline</span>}
     </header>
@@ -165,7 +165,7 @@ export default function SharedView() {
         <main className="dead-link">
           <p className="label">Link ended</p>
           <h1>This address is no longer shared</h1>
-          <p className="muted">Ask the owner for a new PataCard link.</p>
+          <p className="muted">Ask the owner for a new DigiLease link.</p>
         </main>
       </div>
     );

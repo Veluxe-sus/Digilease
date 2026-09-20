@@ -1,0 +1,100 @@
+/* React Bits MagicBento, relit for paper. The upstream file sets these on :root,
+   which would overwrite this project's tokens; here they are scoped to the grid. */
+.bento-section {
+  position: relative;
+  user-select: none;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr;
+}
+
+.bento-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  gap: 8px;
+  min-height: 190px;
+  padding: 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+
+  --glow-x: 50%;
+  --glow-y: 50%;
+  --glow-intensity: 0;
+  --glow-radius: 260px;
+}
+
+.bento-card:hover { box-shadow: 0 10px 28px rgba(38, 48, 28, 0.1); }
+
+/* The border lights where the cursor is, so you can see which cell you are on. */
+.bento-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: radial-gradient(
+    var(--glow-radius) circle at var(--glow-x) var(--glow-y),
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.9)) 0%,
+    rgba(var(--glow-color), calc(var(--glow-intensity) * 0.35)) 32%,
+    transparent 62%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.bento-card__title {
+  margin: 0;
+  font-family: var(--display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+}
+
+.bento-card__body { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; }
+
+/* Cells that carry a real screenshot. */
+.bento-card--shot { justify-content: flex-end; padding: 0; }
+.bento-card--shot img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.bento-card--shot .bento-card__text {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  padding: 18px 22px;
+  background: linear-gradient(to top, rgba(25, 29, 20, 0.92), rgba(25, 29, 20, 0.72) 62%, transparent);
+}
+.bento-card--shot .bento-card__title { color: #fff; }
+.bento-card--shot .bento-card__body { color: rgba(255, 255, 255, 0.82); }
+
+.global-spotlight { will-change: transform, opacity; pointer-events: none; }
+
+@media (min-width: 640px) {
+  .bento-section { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1024px) {
+  .bento-section { grid-template-columns: repeat(4, 1fr); grid-auto-rows: 190px; }
+  .bento-card { min-height: 0; }
+  .span-2x2 { grid-column: span 2; grid-row: span 2; }
+  .span-2 { grid-column: span 2; }
+  .span-1x2 { grid-row: span 2; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bento-card::after { display: none; }
+}
