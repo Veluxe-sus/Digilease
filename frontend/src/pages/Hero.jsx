@@ -143,8 +143,6 @@ export default function Hero() {
           What it cannot do: a receiver can screenshot what they saw, and an offline copy keeps working on
           their phone until it next goes online. Revoking stops every online view at once.
         </p>
-
-        <Link to="/cards" className="btn-primary band-cta">Make my card</Link>
       </section>
 
       <section className="band reveal" id="how">

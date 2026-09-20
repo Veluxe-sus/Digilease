@@ -24,7 +24,7 @@ The owner card, print pass, corrected warm light theme, dark theme and receiver 
   Phosphor icons.
 - Warm paper tokens are restored and dark grid layers are subdued. Receiver live, loading, dead and
   offline states use the pass stock and tear-line language at 1440x900 and 390x844 in both themes.
-  A fresh controlled service worker passed forced-offline reload; tests 10/10 + 13/13, lint/build green.
+  Offline reload passed; the duplicate landing CTA is gone at both widths; tests 10/10 + 13/13, lint/build green.
 - Build still prints the existing DIGIPIN CommonJS-variable warning and large-chunk warning.
 ## Next
 1. Retake `docs/screenshots/*` after the rename and replace `frontend/public/shots/*`.
