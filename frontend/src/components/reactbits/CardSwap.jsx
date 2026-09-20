@@ -132,7 +132,7 @@ const CardSwap = ({
       ? cloneElement(child, {
           key: i,
           ref: refs[i],
-          style: { width, height, ...(child.props.style ?? {}) },
+          style: { width, height, ...child.props.style },
           onClick: (e) => {
             child.props.onClick?.(e);
             onCardClick?.(i);

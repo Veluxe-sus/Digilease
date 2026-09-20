@@ -254,6 +254,15 @@
 }
 .wordmark { font-family: var(--display); font-weight: 700; font-size: 1.1rem; letter-spacing: -0.02em; }
 
+/* On phones the pass sits under the copy, so a full-length strap would run
+   straight through the buttons. Keep it short and let it start below them. */
+@media (max-width: 899px) {
+  .lanyard { padding-top: 98px; margin-top: 16px; }
+  .lanyard-ribbon { height: 86px; }
+  .lanyard-clip { top: 78px; }
+  .hero { padding-top: 96px; }
+}
+
 @media (min-width: 900px) {
   .hero-inner { grid-template-columns: 1.1fr 0.9fr; gap: 64px; }
   .band-cols { grid-template-columns: 1fr 1fr; gap: 48px; }
