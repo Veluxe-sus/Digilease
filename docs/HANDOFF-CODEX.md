@@ -14,8 +14,10 @@ signed-in routes and receiver offline regression are now browser-verified locall
 
 ## Non-negotiables
 
-- **`main` is the fallback and must stay untouched at `5f7817f`.** With `Desktop\pata-card-dist.zip`
-  it is the submittable v1. All work goes on `v2-redesign`. If v2 is not verified in time, v1 ships.
+- ~~**`main` is the fallback and must stay untouched at `5f7817f`.**~~ **Lifted 2026-09-20.** v2 was
+  verified and merged into `main`; `main` and `v2-redesign` now point at the same commit. The v1
+  fallback is preserved as the tag **`v1-fallback`** (`5f7817f`), together with
+  `Desktop\pata-card-dist.zip`. To ship v1 instead, deploy from that tag — do not reset `main`.
 - **Deadline: 18:00 IST on 2026-09-20** for video and submission. Go/no-go on v2 at 17:30.
 - **Never edit `frontend/src/lib/digipin.js` or `backend/src/digipin.js`.** They are India Post's
   file. A test asserts the frontend copy equals the backend copy plus one appended export line.

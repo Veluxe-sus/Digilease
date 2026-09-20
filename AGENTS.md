@@ -1,6 +1,6 @@
-# PataCard: rules for any AI agent
+# DigiLease: rules for any AI agent
 
-PataCard makes consent-based DIGIPIN address cards. Built for the WeMakeDevs x AWS First Commit hackathon, Ship It track (live on AWS, public URL, 3-minute demo video). Build window Sept 17–20, 2026.
+DigiLease (repo and stack name: `pata-card`) makes consent-based DIGIPIN address cards. Built for the WeMakeDevs x AWS First Commit hackathon, Ship It track (live on AWS, public URL, 3-minute demo video). Build window Sept 17–20, 2026.
 
 This file is the single source of rules. It works for Claude Code (through `CLAUDE.md`), Codex, and any other agent.
 
