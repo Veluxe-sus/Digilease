@@ -2,7 +2,7 @@
 
 ## Now
 Branch `v2-redesign`. `main` remains untouched at `5f7817f` as the submittable v1 fallback.
-The owner card and print-pass polish is complete and browser-verified.
+The owner card, print pass and cooler mineral-sage base palette are browser-verified.
 
 ## Verified on 2026-09-20
 - `/new`, `/card/:id`, `/card/:id/print/:token`, `/cards`, and the receiver offline reload were

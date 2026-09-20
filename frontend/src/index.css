@@ -1,10 +1,10 @@
 /* DigiLease tokens — paper, olive, brick. See docs/DESIGN.md */
 :root {
-  --paper: #FBF7E4;
+  --paper: #F1F3EC;
   --surface: #FFFFFF;
   --ink: #26301C;
   --muted: #6B7360;
-  --line: #D9CFA8;
+  --line: #D2D7C9;
   --accent: #B05A28;
   --accent-press: #8E4720;
   /* Legacy alias: every rule that already said --post now means the accent. */
